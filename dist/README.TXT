@@ -1,32 +1,51 @@
-========================
-BUILD OUTPUT DESCRIPTION
-========================
+=======================================================================
+JCalendar - v1.4 - 07/09/2011 - Readme File  - 
+=======================================================================
 
-When you build an Java application project that has a main class, the IDE
-automatically copies all of the JAR
-files on the projects classpath to your projects dist/lib folder. The IDE
-also adds each of the JAR files to the Class-Path element in the application
-JAR files manifest file (MANIFEST.MF).
+(C) 1999 - 2011 Kai Toedter
+Released under GNU Lesser General Public License (see jcalendar-license.txt)
+kai@toedter.com
+www.toedter.com
 
-To run the project from the command line, go to the dist folder and
-type the following:
+=======================================================================
+THANKS
 
-java -jar "PRN-Proyecto-HelpDes.jar" 
+I would like to thank all the people who have sent e-mails and
+provided bug fixes and suggestions.
 
-To distribute this project, zip up the dist folder (including the lib folder)
-and distribute the ZIP file.
+=======================================================================
+UPDATES
 
-Notes:
+JCalendar is updated from time to time.
+Check the web site to stay informed about the updates:
+  http://www.toedter.com
+  https://max-server.myftp.org/trac/jcalendar
 
-* If two JAR files on the project classpath have the same name, only the first
-JAR file is copied to the lib folder.
-* Only JAR files are copied to the lib folder.
-If the classpath contains other types of files or folders, these files (folders)
-are not copied.
-* If a library on the projects classpath also has a Class-Path element
-specified in the manifest,the content of the Class-Path element has to be on
-the projects runtime path.
-* To set a main class in a standard Java project, right-click the project node
-in the Projects window and choose Properties. Then click Run and enter the
-class name in the Main Class field. Alternatively, you can manually type the
-class name in the manifest Main-Class element.
+=======================================================================
+CONTENTS
+
+At the top level you find this file and a text version of the LGPL
+license. Please read the file "index.html" in the doc directory.
+
+This distribution contains several sub-directories.
+They are listed and described below:
+
+  bin\             contains a launch script for the JCalendar
+                   demo application for Windows 7/Vista/XP/2000/NT/98.
+  lib\             contains the software binaries (jar files) for
+                   JCalendar, JUnit and the JGoodies Looks Look & Feel.
+  doc              contains HTML documentation (start with index.html).
+  doc\api          contains JavaDoc documentation.
+  src\             contains all the sources to create a distribution.
+               
+
+=======================================================================
+Plastic Look & Feel
+
+Plastic Look & Feel is part of JGoodies Looks Look & Feel, (C) JGoodies,
+published under the BSD License.
+
+The official web site is:
+	http://www.jgoodies.com
+
+=======================================================================

@@ -8,12 +8,12 @@ package Designs.Admin;
  *
  * @author Camara
  */
-public class gestUsuarioEditar_1 extends javax.swing.JPanel {
+public class gestUsuarioEditar extends javax.swing.JPanel {
 
     /**
      * Creates new form gestUsuarioEditar
      */
-    public gestUsuarioEditar_1() {
+    public gestUsuarioEditar() {
         initComponents();
     }
 

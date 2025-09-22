@@ -2,10 +2,10 @@
 package Designs.Admin;
 
    
-public class menuAdmin_1 extends javax.swing.JPanel {
+public class menuAdmin extends javax.swing.JPanel {
 
     
-    public menuAdmin_1() {
+    public menuAdmin() {
         initComponents();
     }
 
@@ -35,8 +35,8 @@ public class menuAdmin_1 extends javax.swing.JPanel {
 
         jLabel6.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setText("Reportes y Estadisticas");
-        btnVer.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 10, -1, -1));
+        jLabel6.setText("Ver solicitudes");
+        btnVer.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 10, -1, -1));
 
         add(btnVer, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 160, 270, 50));
 
@@ -49,7 +49,7 @@ public class menuAdmin_1 extends javax.swing.JPanel {
 
         jLabel8.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel8.setText("Solicitudes");
+        jLabel8.setText("Asignar solicitudes");
         btnAsignar.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(71, 13, -1, -1));
 
         add(btnAsignar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 260, 270, 50));
