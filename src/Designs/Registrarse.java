@@ -34,7 +34,7 @@ public class Registrarse extends javax.swing.JPanel {
         btnRegistroUsuario = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
 
-        setBackground(new java.awt.Color(0, 255, 51));
+        setBackground(new java.awt.Color(153, 255, 255));
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Registro de Usuario", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial Black", 1, 18))); // NOI18N
         jPanel1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
