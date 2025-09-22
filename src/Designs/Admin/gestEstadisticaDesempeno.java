@@ -4,6 +4,12 @@
  */
 package Designs.Admin;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  *
  * @author CastellaSagarra
@@ -44,12 +50,31 @@ public class gestEstadisticaDesempeno extends javax.swing.JPanel {
 
         jComboBox1.setEditable(true);
         jComboBox1.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        jComboBox1.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+                jComboBox1PopupMenuWillBecomeVisible(evt);
+            }
+        });
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
 
         jComboBox2.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Productividad", "Eficiencia", "Calidad", "Todos los indicadores" }));
 
         jButton1.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         jButton1.setText("Generar Estadisticas");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -85,6 +110,63 @@ public class gestEstadisticaDesempeno extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void jComboBox1PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_jComboBox1PopupMenuWillBecomeVisible
+        cargarEmpleados();
+    }//GEN-LAST:event_jComboBox1PopupMenuWillBecomeVisible
+
+    private void cargarEmpleados() {
+    // Evitar recargar múltiples veces
+    if (jComboBox1.getItemCount() > 0) {
+        return;
+    }
+    
+    Connection conn = null;
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    
+    try {
+        // Configuración de la conexión - AJUSTA ESTOS DATOS
+        String URL = "jdbc:postgresql://localhost:5432/proyectoProgra"; // nombre de base de datos
+        String USER = "postgres";  // nombre de usuario de Postgre
+        String PASSWORD = "hs23012";  // contraseña de PostgreSQL
+        
+        conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        String sql = "SELECT id_usuario, username, nombre FROM usuarios WHERE activo = true"; // Ajusta según tu tabla
+        stmt = conn.prepareStatement(sql);
+        rs = stmt.executeQuery();
+        
+        // Limpiar y agregar elemento por defecto
+        jComboBox1.removeAllItems();
+                
+        // Llenar el ComboBox
+        while (rs.next()) {
+            String nombreEmpleado = rs.getString("nombre");
+            jComboBox1.addItem(nombreEmpleado);
+        }
+        
+    } catch (SQLException e) {
+        System.err.println("Error al cargar empleados: " + e.getMessage());
+        e.printStackTrace(); // Opcional: para ver el stack trace completo
+    } finally {
+        // CERRAR RECURSOS - Esto es importante para evitar memory leaks
+        try {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        } catch (SQLException e) {
+            System.err.println("Error al cerrar conexión: " + e.getMessage());
+        }
+    }
+}
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -94,4 +176,7 @@ public class gestEstadisticaDesempeno extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     // End of variables declaration//GEN-END:variables
+
 }
+
+
