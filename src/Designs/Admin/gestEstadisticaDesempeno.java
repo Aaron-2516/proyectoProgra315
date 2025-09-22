@@ -9,6 +9,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import Designs.DatabaseConnection;
 
 /**
  *
@@ -119,47 +120,23 @@ public class gestEstadisticaDesempeno extends javax.swing.JPanel {
     }//GEN-LAST:event_jComboBox1PopupMenuWillBecomeVisible
 
     private void cargarEmpleados() {
-    // Evitar recargar múltiples veces
-    if (jComboBox1.getItemCount() > 0) {
-        return;
-    }
+    if (jComboBox1.getItemCount() > 0) return;
     
-    Connection conn = null;
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    
-    try {
-        // Configuración de la conexión - AJUSTA ESTOS DATOS
-        String URL = "jdbc:postgresql://localhost:5432/proyectoProgra"; // nombre de base de datos
-        String USER = "postgres";  // nombre de usuario de Postgre
-        String PASSWORD = "hs23012";  // contraseña de PostgreSQL
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(
+             "SELECT username FROM usuarios WHERE activo = true ORDER BY username");
+         ResultSet rs = stmt.executeQuery()) {
         
-        conn = DriverManager.getConnection(URL, USER, PASSWORD);
-        String sql = "SELECT id_usuario, username, nombre FROM usuarios WHERE activo = true"; // Ajusta según tu tabla
-        stmt = conn.prepareStatement(sql);
-        rs = stmt.executeQuery();
-        
-        // Limpiar y agregar elemento por defecto
         jComboBox1.removeAllItems();
-                
-        // Llenar el ComboBox
+        
+        
         while (rs.next()) {
-            String nombreEmpleado = rs.getString("nombre");
-            jComboBox1.addItem(nombreEmpleado);
+            jComboBox1.addItem(rs.getString("username"));
         }
         
     } catch (SQLException e) {
         System.err.println("Error al cargar empleados: " + e.getMessage());
-        e.printStackTrace(); // Opcional: para ver el stack trace completo
-    } finally {
-        // CERRAR RECURSOS - Esto es importante para evitar memory leaks
-        try {
-            if (rs != null) rs.close();
-            if (stmt != null) stmt.close();
-            if (conn != null) conn.close();
-        } catch (SQLException e) {
-            System.err.println("Error al cerrar conexión: " + e.getMessage());
-        }
+        e.printStackTrace();
     }
 }
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
