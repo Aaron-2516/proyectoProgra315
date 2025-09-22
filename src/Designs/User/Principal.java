@@ -40,14 +40,14 @@ public class Principal extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGap(282, 282, 282)
                 .addComponent(jLabel1)
-                .addContainerGap(418, Short.MAX_VALUE))
+                .addContainerGap(93, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(179, 179, 179)
                 .addComponent(jLabel1)
-                .addContainerGap(233, Short.MAX_VALUE))
+                .addContainerGap(124, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 

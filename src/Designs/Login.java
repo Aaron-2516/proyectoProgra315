@@ -1,20 +1,107 @@
-
 package Designs;
 
-
-import java.awt.*;
+import Designs.DashboardUsuario;
+import Designs.DatabaseConnection;
+import Designs.auth.Role;
+import Designs.auth.User;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-
+import java.awt.event.*;
+import java.sql.*;
 
 public class Login extends javax.swing.JFrame {
 
-    
     public Login() {
         initComponents();
+        
+        // Acción al hacer clic en el botón "Acceder"
+        btnAcceder.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String usuario = UsuarioTxt.getText();
+                String contrasena = new String(contrasenaTxt.getPassword());
+
+                // Validar login
+                if (validarLogin(usuario, contrasena)) {
+                    // Obtener el rol
+                    Role rol = obtenerRol(usuario);
+
+                    if (rol != null) {
+                        // Si el rol es válido, abrir el Dashboard correspondiente
+                        new DashboardUsuario(new User(usuario, rol)).setVisible(true);
+                        dispose(); // Cierra la ventana de login
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Rol del usuario no encontrado.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Usuario o Contraseña incorrectos.");
+                }
+            }
+        });
+    }
+    
+    // Método para validar el login (sin cifrado de contraseñas)
+    public boolean validarLogin(String usuario, String contrasena) {
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            // Consulta para obtener la contraseña del usuario
+            String query = "SELECT contrasena FROM usuarios WHERE username = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, usuario);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                String storedPassword = rs.getString("contrasena"); // Obtener la contraseña almacenada
+                return contrasena.equals(storedPassword);  // Comparar la contraseña ingresada con la almacenada
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;  // Si no se encuentra el usuario o la contraseña no coincide
     }
 
- 
+    // Método para obtener el rol del usuario
+public Role obtenerRol(String usuario) {
+    try (Connection connection = DatabaseConnection.getConnection()) {
+        // Realizamos el JOIN entre usuarios y roles usando rol_id
+        String query = "SELECT r.rol FROM usuarios u "
+                     + "JOIN roles r ON u.rol_id = r.id_rol "
+                     + "WHERE u.username = ?";  // Obtener el rol de la tabla roles usando rol_id
+        PreparedStatement stmt = connection.prepareStatement(query);
+        stmt.setString(1, usuario);  // Establecer el username en la consulta
+
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            // Obtener el nombre del rol desde la tabla roles
+            String rol = rs.getString("rol").toUpperCase(); // Aseguramos que el nombre del rol esté en mayúsculas
+            return Role.valueOf(rol);  // Convertir el nombre del rol a un valor de enum Role
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return null;  // Si no se encuentra el usuario o rol, retornamos null
+}
+
+
+    // Método principal para ejecutar el login
+    public static void main(String args[]) {
+        // Establecer el look and feel de Nimbus
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+
+        // Crear y mostrar la ventana de login
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Login().setVisible(true);
+            }
+        });
+    }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -34,8 +121,8 @@ public class Login extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JSeparator();
         usuario1 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
-        jPasswordField1 = new javax.swing.JPasswordField();
-        jButton1 = new javax.swing.JButton();
+        contrasenaTxt = new javax.swing.JPasswordField();
+        btnAcceder = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         fondo = new javax.swing.JLabel();
@@ -84,6 +171,7 @@ public class Login extends javax.swing.JFrame {
         panelInterno.add(usuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 180, -1, -1));
 
         UsuarioTxt.setBorder(null);
+        UsuarioTxt.setName("usuarioTxt"); // NOI18N
         UsuarioTxt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 UsuarioTxtActionPerformed(evt);
@@ -96,12 +184,14 @@ public class Login extends javax.swing.JFrame {
         panelInterno.add(usuario1, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 106, -1, 20));
         panelInterno.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 150, 213, -1));
 
-        jPasswordField1.setText("jPasswordField1");
-        jPasswordField1.setBorder(null);
-        panelInterno.add(jPasswordField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 210, 170, -1));
+        contrasenaTxt.setText("jPasswordField1");
+        contrasenaTxt.setBorder(null);
+        contrasenaTxt.setName("contrasenaTxt"); // NOI18N
+        panelInterno.add(contrasenaTxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 210, 170, -1));
 
-        jButton1.setText("ACCEDER");
-        panelInterno.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 250, 120, -1));
+        btnAcceder.setText("ACCEDER");
+        btnAcceder.setName("btnAcceder"); // NOI18N
+        panelInterno.add(btnAcceder, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 250, 120, -1));
 
         jLabel5.setText("¿No tienes cuenta?");
         panelInterno.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 310, -1, -1));
@@ -136,50 +226,20 @@ public class Login extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Login().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField UsuarioTxt;
+    private javax.swing.JButton btnAcceder;
+    private javax.swing.JPasswordField contrasenaTxt;
     private javax.swing.JLabel cuadroInterno;
     private javax.swing.JLabel fondo;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
