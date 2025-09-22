@@ -184,7 +184,6 @@ public Role obtenerRol(String usuario) {
         panelInterno.add(usuario1, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 106, -1, 20));
         panelInterno.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 150, 213, -1));
 
-        contrasenaTxt.setText("jPasswordField1");
         contrasenaTxt.setBorder(null);
         contrasenaTxt.setName("contrasenaTxt"); // NOI18N
         panelInterno.add(contrasenaTxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 210, 170, -1));

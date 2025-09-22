@@ -35,8 +35,8 @@ public class menuAdmin extends javax.swing.JPanel {
 
         jLabel6.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setText("Ver solicitudes");
-        btnVer.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 10, -1, -1));
+        jLabel6.setText("Reportes y estadisticas");
+        btnVer.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 10, -1, -1));
 
         add(btnVer, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 160, 270, 50));
 
