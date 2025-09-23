@@ -4,19 +4,35 @@
  */
 package Designs.Admin;
 
+import org.jdesktop.swingx.JXDatePicker;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Date;
+
 /**
  *
  * @author CastellaSagarra
  */
 public class gestReporteSolicitud extends javax.swing.JPanel {
 
+    
     /**
      * Creates new form gestReporteSolicitud
      */
     public gestReporteSolicitud() {
         initComponents();
+        configurarDatePickers();
     }
-
+    
+    //Validacion seleccion fecha maximo fecha actual
+    private void configurarDatePickers() {
+    dateFin.getMonthView().setUpperBound(new Date());
+    dateInicio.getMonthView().setUpperBound(new Date());
+    
+    dateInicio.setFormats("dd/MM/yyyy");
+    dateFin.setFormats("dd/MM/yyyy");
+}
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -26,34 +42,34 @@ public class gestReporteSolicitud extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jButton1 = new javax.swing.JButton();
+        txtReporteSolicitud = new javax.swing.JLabel();
+        txtaFechaInicio = new javax.swing.JLabel();
+        txtFechaFin = new javax.swing.JLabel();
+        txtTipoSolicitud = new javax.swing.JLabel();
+        cmbTipoSolicitud = new javax.swing.JComboBox<>();
+        btnGenerarReporte = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        jXDatePicker1 = new org.jdesktop.swingx.JXDatePicker();
-        jXDatePicker2 = new org.jdesktop.swingx.JXDatePicker();
+        dateInicio = new org.jdesktop.swingx.JXDatePicker();
+        dateFin = new org.jdesktop.swingx.JXDatePicker();
 
-        jLabel1.setBackground(new java.awt.Color(0, 0, 0));
-        jLabel1.setFont(new java.awt.Font("Arial Black", 0, 24)); // NOI18N
-        jLabel1.setText("Reporte de Solicitud");
+        txtReporteSolicitud.setBackground(new java.awt.Color(0, 0, 0));
+        txtReporteSolicitud.setFont(new java.awt.Font("Arial Black", 0, 24)); // NOI18N
+        txtReporteSolicitud.setText("Reporte de Solicitud");
 
-        jLabel2.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        jLabel2.setText("Fecha de Inicio:");
+        txtaFechaInicio.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        txtaFechaInicio.setText("Fecha de Inicio:");
 
-        jLabel3.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        jLabel3.setText("Fecha de Fin:");
+        txtFechaFin.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        txtFechaFin.setText("Fecha de Fin:");
 
-        jLabel4.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        jLabel4.setText("Tipo de Solicitud:");
+        txtTipoSolicitud.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        txtTipoSolicitud.setText("Tipo de Solicitud:");
 
-        jComboBox1.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Todas", "Solicitud de Informacion", "Solicitud de Soporte", "Solicitud de Permisos" }));
+        cmbTipoSolicitud.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        cmbTipoSolicitud.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Todas", "Solicitud de Informacion", "Solicitud de Soporte", "Solicitud de Permisos" }));
 
-        jButton1.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        jButton1.setText("Generar Reporte");
+        btnGenerarReporte.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        btnGenerarReporte.setText("Generar Reporte");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -66,6 +82,12 @@ public class gestReporteSolicitud extends javax.swing.JPanel {
             .addGap(0, 100, Short.MAX_VALUE)
         );
 
+        dateFin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dateFinActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -73,14 +95,14 @@ public class gestReporteSolicitud extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGap(35, 35, 35)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jXDatePicker2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jXDatePicker1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel1)
+                    .addComponent(dateFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dateInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnGenerarReporte)
+                    .addComponent(cmbTipoSolicitud, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtTipoSolicitud)
+                    .addComponent(txtFechaFin)
+                    .addComponent(txtaFechaInicio)
+                    .addComponent(txtReporteSolicitud)
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(503, Short.MAX_VALUE))
         );
@@ -88,37 +110,41 @@ public class gestReporteSolicitud extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(17, 17, 17)
-                .addComponent(jLabel1)
+                .addComponent(txtReporteSolicitud)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel2)
+                .addComponent(txtaFechaInicio)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jXDatePicker1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(dateInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel3)
+                .addComponent(txtFechaFin)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jXDatePicker2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(dateFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(12, 12, 12)
-                .addComponent(jLabel4)
+                .addComponent(txtTipoSolicitud)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cmbTipoSolicitud, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton1)
+                .addComponent(btnGenerarReporte)
                 .addGap(18, 18, 18)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(159, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void dateFinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dateFinActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_dateFinActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
+    private javax.swing.JButton btnGenerarReporte;
+    private javax.swing.JComboBox<String> cmbTipoSolicitud;
+    private org.jdesktop.swingx.JXDatePicker dateFin;
+    private org.jdesktop.swingx.JXDatePicker dateInicio;
     private javax.swing.JPanel jPanel1;
-    private org.jdesktop.swingx.JXDatePicker jXDatePicker1;
-    private org.jdesktop.swingx.JXDatePicker jXDatePicker2;
+    private javax.swing.JLabel txtFechaFin;
+    private javax.swing.JLabel txtReporteSolicitud;
+    private javax.swing.JLabel txtTipoSolicitud;
+    private javax.swing.JLabel txtaFechaInicio;
     // End of variables declaration//GEN-END:variables
 }
