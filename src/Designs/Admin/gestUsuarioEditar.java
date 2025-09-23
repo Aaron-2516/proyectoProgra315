@@ -74,6 +74,7 @@ public class gestUsuarioEditar extends javax.swing.JPanel {
     return true;
 }
     
+    
 
     /**
      * This method is called from within the constructor to initialize the form.

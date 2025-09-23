@@ -14,6 +14,9 @@ public class DatabaseConnection {
     private static final String USER = "postgres";  //  nombre de usuario de Postgre
     private static final String PASSWORD = "flgQPCalVrITecZMhMiuyYlbrcVniAhY";  // contraseña de PostgreSQL
     
+    //private static final String URL = "jdbc:postgresql://localhost:5432/proyectoProgra";
+    //private static final String USER = "postgres";
+    //private static final String PASSWORD = "hs23012";
     
     public static Connection getConnection() {
         Connection connection = null;
