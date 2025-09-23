@@ -5,7 +5,6 @@ import Designs.auth.User;
 import Designs.User.menuUsuario;
 import Designs.Admin.menuAdmin;
 import Designs.User.Principal;
-import Designs.User.Cancelar;
 import Designs.User.Crear;
 import Designs.User.Consultar;
 import Designs.User.Actualizar;
@@ -78,13 +77,11 @@ public class DashboardUsuario extends javax.swing.JFrame {
         content.add(new Principal(), R_PRINCIPAL);
         content.add(new Consultar(), R_CONSULTAR);
         content.add(new Crear(), R_CREAR);
-        content.add(new Cancelar(), R_CANCELAR);
         content.add(new Actualizar(), R_ACTUALIZAR);
 
         makePanelButton(m.getBtnPrincipal(), () -> showView(R_PRINCIPAL));
         makePanelButton(m.getBtnConsultar(), () -> showView(R_CONSULTAR));
         makePanelButton(m.getBtnCrear(), () -> showView(R_CREAR));
-        makePanelButton(m.getBtnCancelar(), () -> showView(R_CANCELAR));
         makePanelButton(m.getBtnActualizar(), () -> showView(R_ACTUALIZAR));
 
         selectMenu(m.getBtnPrincipal());

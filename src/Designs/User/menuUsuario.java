@@ -14,9 +14,6 @@ public class menuUsuario extends javax.swing.JPanel {
     private void initComponents() {
 
         Menu = new javax.swing.JPanel();
-        btnCancelar = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
         btnCrear = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -34,20 +31,6 @@ public class menuUsuario extends javax.swing.JPanel {
 
         Menu.setBackground(new java.awt.Color(13, 71, 161));
         Menu.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        btnCancelar.setBackground(new java.awt.Color(18, 90, 173));
-        btnCancelar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnCancelar.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel5.setText("jLabel1");
-        btnCancelar.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 16, -1, -1));
-
-        jLabel6.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setText("Cancelar solicitud");
-        btnCancelar.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(71, 13, -1, -1));
-
-        Menu.add(btnCancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 300, 270, 50));
 
         btnCrear.setBackground(new java.awt.Color(18, 90, 173));
         btnCrear.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -112,7 +95,6 @@ public class menuUsuario extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Menu;
     private javax.swing.JPanel btnActualizar;
-    private javax.swing.JPanel btnCancelar;
     private javax.swing.JPanel btnConsultar;
     private javax.swing.JPanel btnCrear;
     private javax.swing.JPanel btnPrincipal;
@@ -121,8 +103,6 @@ public class menuUsuario extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
@@ -132,7 +112,6 @@ public class menuUsuario extends javax.swing.JPanel {
     public javax.swing.JPanel getBtnPrincipal()  { return btnPrincipal; }
     public javax.swing.JPanel getBtnConsultar()  { return btnConsultar; }
     public javax.swing.JPanel getBtnCrear()      { return btnCrear; }
-    public javax.swing.JPanel getBtnCancelar()   { return btnCancelar; }
     public javax.swing.JPanel getBtnActualizar() { return btnActualizar; }
     /** Opcional: si quieres acceder al contenedor del menú */
     public javax.swing.JPanel getMenuPanel()     { return Menu; }
