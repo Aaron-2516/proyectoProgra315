@@ -4,6 +4,8 @@
  */
 package Designs.User;
 
+import java.awt.Color;
+
 /**
  *
  * @author Camara
@@ -17,6 +19,10 @@ public class Crear extends javax.swing.JPanel {
         initComponents();
     }
 
+  
+    
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -26,32 +32,125 @@ public class Crear extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jLabel1 = new javax.swing.JLabel();
+        colores = new javax.swing.JComboBox<>();
+        jButton1 = new javax.swing.JButton();
+        descripcion1 = new javax.swing.JScrollPane();
+        descripcion = new javax.swing.JTextArea();
 
-        setBackground(new java.awt.Color(51, 0, 255));
+        setBackground(new java.awt.Color(153, 204, 255));
 
-        jLabel1.setText("CREAR");
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel1.setText("tikect para soporte");
+
+        colores.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Información", "Bajo", "Medio", "Alto", "Crítico", "Emergencia" }));
+        colores.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                coloresActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("crear");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        descripcion.setColumns(20);
+        descripcion.setRows(5);
+        descripcion1.setViewportView(descripcion);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(80, 80, 80)
-                .addComponent(jLabel1)
-                .addContainerGap(284, Short.MAX_VALUE))
+                .addGap(81, 81, 81)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(colores, 0, 161, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 89, Short.MAX_VALUE)
+                .addComponent(descripcion1, javax.swing.GroupLayout.PREFERRED_SIZE, 336, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(164, 164, 164)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 370, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(108, 108, 108)
+                .addContainerGap()
                 .addComponent(jLabel1)
-                .addContainerGap(176, Short.MAX_VALUE))
+                .addGap(86, 86, 86)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(colores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(descripcion1, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(94, Short.MAX_VALUE))
         );
+
+        jLabel1.getAccessibleContext().setAccessibleDescription("");
     }// </editor-fold>//GEN-END:initComponents
+
+    private void coloresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_coloresActionPerformed
+    
+                                              
+    int index = colores.getSelectedIndex(); 
+    
+    if (index >= 0) {
+        switch (index) {
+            case 0: // Verde
+                descripcion.setText("█ Verde - Situación rutinaria o informativa.\n"
+                                   + "Ejemplo: actualizaciones o mantenimientos programados.");
+                descripcion.setForeground(Color.BLACK);
+                break;
+            case 1: // Azul
+                descripcion.setText("█ Azul - Incidente menor, no afecta procesos críticos.\n"
+                                   + "Ejemplo: problema en correo interno o impresora.");
+                descripcion.setForeground(Color.BLACK);
+                break;
+            case 2: // Amarillo
+                descripcion.setText("█ Amarillo - Afecta parcialmente la productividad.\n"
+                                   + "Ejemplo: caída de aplicación de apoyo con alternativas.");
+                descripcion.setForeground(Color.BLACK);
+                break;
+            case 3: // Naranja
+                descripcion.setText("█ Naranja - Problema importante en un área crítica.\n"
+                                   + "Ejemplo: falla en sistema de cajeros en una zona.");
+                descripcion.setForeground(Color.BLACK);
+                break;
+            case 4: // Rojo
+                descripcion.setText("█ Rojo - Falla grave en servicios esenciales.\n"
+                                   + "Ejemplo: caída del sistema de transacciones.");
+                descripcion.setForeground(Color.BLACK);
+                break;
+            case 5: // Negro
+                descripcion.setText("█ Negro - Riesgo extremo: seguridad o continuidad del negocio.\n"
+                                   + "Ejemplo: ataque de ransomware en servidores críticos.");
+                descripcion.setForeground(Color.BLACK);
+                break;
+        }
+    }
+
+        
+    }//GEN-LAST:event_coloresActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JComboBox<String> colores;
+    private javax.swing.JTextArea descripcion;
+    private javax.swing.JScrollPane descripcion1;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
 }
