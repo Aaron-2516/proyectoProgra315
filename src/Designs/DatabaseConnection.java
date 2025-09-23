@@ -10,10 +10,11 @@ import java.util.logging.Logger;
 
 public class DatabaseConnection {
 
-    private static final String URL = "jdbc:postgresql://localhost:5432/proyectoProgra"; //  nombre de base de datos
+    private static final String URL = "jdbc:postgresql://metro.proxy.rlwy.net:32564/railway"; //  nombre de base de datos
     private static final String USER = "postgres";  //  nombre de usuario de Postgre
-    private static final String PASSWORD = "hs23012";  // contraseña de PostgreSQL
-
+    private static final String PASSWORD = "flgQPCalVrITecZMhMiuyYlbrcVniAhY";  // contraseña de PostgreSQL
+    
+    
     public static Connection getConnection() {
         Connection connection = null;
         try {
