@@ -238,6 +238,7 @@ public class gestUsuarioLista extends javax.swing.JPanel {
         
         // Cargar datos actuales del usuario
         cargarDatosUsuario(idUsuario, txtNombreEdit, txtApellidoEdit, txtUsuarioEdit, cmbRol);
+        limpiarLabelsInfo();
         
         // Agregar componentes al panel
         panelEdicion.add(lblNombre);
@@ -360,6 +361,17 @@ public class gestUsuarioLista extends javax.swing.JPanel {
     public void refrescarDatos() {
         cargarUsuarios();
     }
+    
+    private void actualizarDatos() {
+        // Recargar los usuarios desde la base de datos
+        cargarUsuarios();
+        // Limpiar la selección actual
+        tblListaUsuarios.clearSelection();
+        // Limpiar la información del panel lateral
+        limpiarLabelsInfo();
+        // Actualizar estado de los botones
+        configurarBotones();
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -384,6 +396,7 @@ public class gestUsuarioLista extends javax.swing.JPanel {
         txtRol = new javax.swing.JLabel();
         btnEliminarUsuario = new javax.swing.JButton();
         btnEditarUsuario = new javax.swing.JButton();
+        btnActualizar = new javax.swing.JButton();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -410,7 +423,7 @@ public class gestUsuarioLista extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(tblListaUsuarios);
 
-        add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 80, 400, 270));
+        add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 80, 410, 270));
 
         PanelInfoUsuario.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -450,23 +463,58 @@ public class gestUsuarioLista extends javax.swing.JPanel {
 
         btnEliminarUsuario.setBackground(new java.awt.Color(204, 0, 0));
         btnEliminarUsuario.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        btnEliminarUsuario.setText("Eliminar");
+        btnEliminarUsuario.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/trash_120980.png")));
+        btnEliminarUsuario.setText("");
+        btnEliminarUsuario.setToolTipText("Eliminar usuario");
         btnEliminarUsuario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEliminarUsuarioActionPerformed(evt);
             }
         });
-        add(btnEliminarUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 370, -1, -1));
+        btnEliminarUsuario.setText("");
+        btnEliminarUsuario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarUsuarioActionPerformed(evt);
+            }
+        });
+        add(btnEliminarUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 370, 100, 40));
 
-        btnEditarUsuario.setBackground(new java.awt.Color(0, 204, 51));
+        btnEditarUsuario.setBackground(new java.awt.Color(0, 153, 0));
         btnEditarUsuario.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        btnEditarUsuario.setText("Editar");
+        btnEditarUsuario.setText("");
+        btnEditarUsuario.setMaximumSize(new java.awt.Dimension(94, 29));
+        btnEditarUsuario.setMinimumSize(new java.awt.Dimension(94, 29));
+        btnEditarUsuario.setPreferredSize(new java.awt.Dimension(94, 29));
+        btnEditarUsuario.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/writing.png")));
+        btnEditarUsuario.setText("");
+        btnEditarUsuario.setToolTipText("Editar usuario");
         btnEditarUsuario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEditarUsuarioActionPerformed(evt);
             }
         });
-        add(btnEditarUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 370, -1, -1));
+        btnEditarUsuario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarUsuarioActionPerformed(evt);
+            }
+        });
+        add(btnEditarUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 370, 100, 40));
+
+        btnActualizar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/reload_refresh_update_icon_134497.png")));
+        btnActualizar.setText("");
+        btnActualizar.setToolTipText("Actualizar datos");
+        btnActualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnActualizarActionPerformed(evt);
+            }
+        });
+        btnActualizar.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        btnActualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnActualizarActionPerformed(evt);
+            }
+        });
+        add(btnActualizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 20, 70, 40));
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEditarUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarUsuarioActionPerformed
@@ -477,9 +525,14 @@ public class gestUsuarioLista extends javax.swing.JPanel {
         eliminarUsuario();
     }//GEN-LAST:event_btnEliminarUsuarioActionPerformed
 
+    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
+        actualizarDatos();
+    }//GEN-LAST:event_btnActualizarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel PanelInfoUsuario;
+    private javax.swing.JButton btnActualizar;
     private javax.swing.JButton btnEditarUsuario;
     private javax.swing.JButton btnEliminarUsuario;
     private javax.swing.JLabel jLabel1;

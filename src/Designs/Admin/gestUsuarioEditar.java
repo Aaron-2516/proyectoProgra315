@@ -39,42 +39,98 @@ public class gestUsuarioEditar extends javax.swing.JPanel {
         jtfNombre.requestFocus();
         return false;
     }
-    
     if (jtfApellido.getText().trim().isEmpty()) {
         JOptionPane.showMessageDialog(this, "El campo Apellido es obligatorio", "Error", JOptionPane.ERROR_MESSAGE);
         jtfApellido.requestFocus();
         return false;
     }
-    
     if (jtfUsuario.getText().trim().isEmpty()) {
         JOptionPane.showMessageDialog(this, "El campo Usuario es obligatorio", "Error", JOptionPane.ERROR_MESSAGE);
         jtfUsuario.requestFocus();
         return false;
     }
-    
     if (jtfCorreo.getText().trim().isEmpty()) {
         JOptionPane.showMessageDialog(this, "El campo Correo es obligatorio", "Error", JOptionPane.ERROR_MESSAGE);
         jtfCorreo.requestFocus();
         return false;
     }
-    
     if (String.valueOf(jpfContrasena.getPassword()).isEmpty()) {
         JOptionPane.showMessageDialog(this, "El campo Contraseña es obligatorio", "Error", JOptionPane.ERROR_MESSAGE);
         jpfContrasena.requestFocus();
         return false;
     }
-    
     // Validar formato de email básico
     if (!jtfCorreo.getText().contains("@") || !jtfCorreo.getText().contains(".")) {
         JOptionPane.showMessageDialog(this, "Por favor ingrese un correo electrónico válido", "Error", JOptionPane.ERROR_MESSAGE);
         jtfCorreo.requestFocus();
         return false;
-    }
-    
+    }    
     return true;
 }
     
-    
+    private void agregarUsuario() {
+        if (!validarCampos()) {
+            return;
+        }       
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        
+        try {
+            // Obtener la conexión a la base de datos
+            conn = DatabaseConnection.getConnection();            
+            // Consulta SQL para insertar el usuario
+            String sql = "INSERT INTO usuarios (nombre, apellido, username, correo, contrasena, rol_id) VALUES (?, ?, ?, ?, ?, ?)";
+            
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, jtfNombre.getText().trim());
+            pstmt.setString(2, jtfApellido.getText().trim());
+            pstmt.setString(3, jtfUsuario.getText().trim());
+            pstmt.setString(4, jtfCorreo.getText().trim());
+            pstmt.setString(5, new String(jpfContrasena.getPassword()));
+            
+            // Asignar el rol_id según la selección del ComboBox
+            String rolSeleccionado = (String) cmbRol.getSelectedItem();
+            int rolId;
+            
+            switch (rolSeleccionado) {
+                case "Empleado":
+                    rolId = 3;
+                    break;
+                case "Tecnico":
+                    rolId = 2;
+                    break;
+                case "Programador":
+                    rolId = 2;
+                    break;
+                default:
+                    rolId = 3; // Por defecto empleado
+                    break;
+            }
+            
+            pstmt.setInt(6, rolId);
+            
+            // Ejecutar la inserción
+            int filasAfectadas = pstmt.executeUpdate();
+            
+            if (filasAfectadas > 0) {
+                JOptionPane.showMessageDialog(this, "Usuario agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                limpiarCampos();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al agregar el usuario", "Error", JOptionPane.ERROR_MESSAGE);
+            }            
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error de base de datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } finally {
+            // Cerrar recursos
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }        
+    }   
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -232,7 +288,7 @@ public class gestUsuarioEditar extends javax.swing.JPanel {
     }//GEN-LAST:event_cmbRolActionPerformed
 
     private void btnAgregarUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarUsuarioActionPerformed
-       
+       agregarUsuario();
     }//GEN-LAST:event_btnAgregarUsuarioActionPerformed
 
     private void jtfNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtfNombreActionPerformed
