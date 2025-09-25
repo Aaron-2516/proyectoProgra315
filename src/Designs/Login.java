@@ -4,12 +4,15 @@ import Designs.DashboardUsuario;
 import Designs.DatabaseConnection;
 import Designs.auth.Role;
 import Designs.auth.User;
+import java.awt.Frame;
 import javax.swing.*;
 import java.awt.event.*;
 import java.sql.*;
 
 public class Login extends javax.swing.JFrame {
 
+    public static Registrarse fr;
+    
     public Login() {
         initComponents();
         
@@ -124,7 +127,7 @@ public Role obtenerRol(String usuario) {
         contrasenaTxt = new javax.swing.JPasswordField();
         btnAcceder = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
+        btnRegistroLogin = new javax.swing.JButton();
         fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -195,8 +198,13 @@ public Role obtenerRol(String usuario) {
         jLabel5.setText("¿No tienes cuenta?");
         panelInterno.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 310, -1, -1));
 
-        jButton2.setText("REGISTRARSE");
-        panelInterno.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 310, -1, -1));
+        btnRegistroLogin.setText("REGISTRARSE");
+        btnRegistroLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegistroLoginActionPerformed(evt);
+            }
+        });
+        panelInterno.add(btnRegistroLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 310, -1, -1));
 
         panel2.add(panelInterno, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 70, 600, 350));
 
@@ -222,6 +230,14 @@ public Role obtenerRol(String usuario) {
         // TODO add your handling code here:
     }//GEN-LAST:event_UsuarioTxtActionPerformed
 
+    private void btnRegistroLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistroLoginActionPerformed
+    JDialog dialog = new JDialog((Frame) this.getParent(), "Registro de Usuario", true);
+    dialog.setContentPane(new Registrarse()); // Aquí agregas tu JPanel
+    dialog.pack();
+    dialog.setLocationRelativeTo(this);
+    dialog.setVisible(true);
+    }//GEN-LAST:event_btnRegistroLoginActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -230,10 +246,10 @@ public Role obtenerRol(String usuario) {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField UsuarioTxt;
     private javax.swing.JButton btnAcceder;
+    private javax.swing.JButton btnRegistroLogin;
     private javax.swing.JPasswordField contrasenaTxt;
     private javax.swing.JLabel cuadroInterno;
     private javax.swing.JLabel fondo;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
