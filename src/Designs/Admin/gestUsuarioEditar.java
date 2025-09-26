@@ -26,112 +26,100 @@ public class gestUsuarioEditar extends javax.swing.JPanel {
     }
     
     private void limpiarCampos() {
-    jtfNombre.setText("");
-    jtfApellido.setText("");
-    jtfUsuario.setText("");
-    jtfCorreo.setText("");
-    jpfContrasena.setText("");
+    // Array de componentes para limpiar
+    javax.swing.JComponent[] componentes = {
+        jtfNombre, jtfApellido, jtfUsuario, jtfCorreo, jpfContrasena
+    };    
+    // Limpiar campos de texto
+    for (javax.swing.JComponent componente : componentes) {
+        if (componente instanceof javax.swing.JTextField) {
+            ((javax.swing.JTextField) componente).setText("");
+        } else if (componente instanceof javax.swing.JPasswordField) {
+            ((javax.swing.JPasswordField) componente).setText("");
+        }
+    }    
+    // Restablecer combo box
     cmbRol.setSelectedIndex(0);
-}
+    }
+    
     private boolean validarCampos() {
-    if (jtfNombre.getText().trim().isEmpty()) {
-        JOptionPane.showMessageDialog(this, "El campo Nombre es obligatorio", "Error", JOptionPane.ERROR_MESSAGE);
-        jtfNombre.requestFocus();
-        return false;
-    }
-    if (jtfApellido.getText().trim().isEmpty()) {
-        JOptionPane.showMessageDialog(this, "El campo Apellido es obligatorio", "Error", JOptionPane.ERROR_MESSAGE);
-        jtfApellido.requestFocus();
-        return false;
-    }
-    if (jtfUsuario.getText().trim().isEmpty()) {
-        JOptionPane.showMessageDialog(this, "El campo Usuario es obligatorio", "Error", JOptionPane.ERROR_MESSAGE);
-        jtfUsuario.requestFocus();
-        return false;
-    }
-    if (jtfCorreo.getText().trim().isEmpty()) {
-        JOptionPane.showMessageDialog(this, "El campo Correo es obligatorio", "Error", JOptionPane.ERROR_MESSAGE);
-        jtfCorreo.requestFocus();
-        return false;
-    }
+    // Array de campos a validar con sus mensajes
+    javax.swing.JTextField[] campos = {
+        jtfNombre, jtfApellido, jtfUsuario, jtfCorreo
+    };    
+    String[] mensajes = {
+        "Nombre", "Apellido", "Usuario", "Correo"
+    };    
+    // Validar campos obligatorios
+    for (int i = 0; i < campos.length; i++) {
+        if (campos[i].getText().trim().isEmpty()) {
+            mostrarError("El campo " + mensajes[i] + " es obligatorio", campos[i]);
+            return false;
+        }
+    }    
+    // Validar contraseña
     if (String.valueOf(jpfContrasena.getPassword()).isEmpty()) {
-        JOptionPane.showMessageDialog(this, "El campo Contraseña es obligatorio", "Error", JOptionPane.ERROR_MESSAGE);
-        jpfContrasena.requestFocus();
-        return false;
-    }
-    // Validar formato de email básico
-    if (!jtfCorreo.getText().contains("@") || !jtfCorreo.getText().contains(".")) {
-        JOptionPane.showMessageDialog(this, "Por favor ingrese un correo electrónico válido", "Error", JOptionPane.ERROR_MESSAGE);
-        jtfCorreo.requestFocus();
+        mostrarError("El campo Contraseña es obligatorio", jpfContrasena);
         return false;
     }    
-    return true;
-}
+    // Validar formato de email
+    String correo = jtfCorreo.getText().trim();
+    if (!correo.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+        mostrarError("Por favor ingrese un correo electrónico válido", jtfCorreo);
+        return false;
+    }    
+        return true;
+    }
+    
+    private void mostrarError(String mensaje, java.awt.Component componente) {
+        JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
+        componente.requestFocus();
+    }
     
     private void agregarUsuario() {
         if (!validarCampos()) {
             return;
-        }       
-        Connection conn = null;
-        PreparedStatement pstmt = null;
+        }
+    
+    // Usar try-with-resources para manejo automático de recursos
+        String sql = "INSERT INTO usuarios (nombre, apellido, username, correo, contrasena, rol_id) VALUES (?, ?, ?, ?, ?, ?)";
+    
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
         
-        try {
-            // Obtener la conexión a la base de datos
-            conn = DatabaseConnection.getConnection();            
-            // Consulta SQL para insertar el usuario
-            String sql = "INSERT INTO usuarios (nombre, apellido, username, correo, contrasena, rol_id) VALUES (?, ?, ?, ?, ?, ?)";
-            
-            pstmt = conn.prepareStatement(sql);
+        // Establecer parámetros
             pstmt.setString(1, jtfNombre.getText().trim());
             pstmt.setString(2, jtfApellido.getText().trim());
             pstmt.setString(3, jtfUsuario.getText().trim());
             pstmt.setString(4, jtfCorreo.getText().trim());
             pstmt.setString(5, new String(jpfContrasena.getPassword()));
-            
-            // Asignar el rol_id según la selección del ComboBox
-            String rolSeleccionado = (String) cmbRol.getSelectedItem();
-            int rolId;
-            
-            switch (rolSeleccionado) {
-                case "Empleado":
-                    rolId = 3;
-                    break;
-                case "Tecnico":
-                    rolId = 2;
-                    break;
-                case "Programador":
-                    rolId = 2;
-                    break;
-                default:
-                    rolId = 3; // Por defecto empleado
-                    break;
-            }
-            
-            pstmt.setInt(6, rolId);
-            
-            // Ejecutar la inserción
-            int filasAfectadas = pstmt.executeUpdate();
-            
+            pstmt.setInt(6, obtenerRolId());
+        
+        // Ejecutar inserción
+        int filasAfectadas = pstmt.executeUpdate();
+        
             if (filasAfectadas > 0) {
                 JOptionPane.showMessageDialog(this, "Usuario agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 limpiarCampos();
             } else {
                 JOptionPane.showMessageDialog(this, "Error al agregar el usuario", "Error", JOptionPane.ERROR_MESSAGE);
-            }            
+            }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Error de base de datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
-        } finally {
-            // Cerrar recursos
-            try {
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }        
-    }   
-
+        }
+    }
+    private int obtenerRolId() {
+        String rolSeleccionado = (String) cmbRol.getSelectedItem();
+    
+        // Usar Map para mapeo más eficiente
+        java.util.Map<String, Integer> roles = new java.util.HashMap<>();
+        roles.put("Tecnico", 2);
+        roles.put("Programador", 2);
+        roles.put("Empleado", 3);
+    
+        return roles.getOrDefault(rolSeleccionado, 3); // Valor por defecto: Empleado
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

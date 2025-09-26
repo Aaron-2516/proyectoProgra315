@@ -36,12 +36,12 @@ public class gestUsuarioLista extends javax.swing.JPanel {
         modeloTabla = new DefaultTableModel(
             new Object[][]{},
             new String[]{"ID", "Nombre", "Usuario", "Rol"}
-        ) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // Hacer que la tabla no sea editable
-            }
-        };
+    ) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
         tblListaUsuarios.setModel(modeloTabla);
     }
     
@@ -97,133 +97,86 @@ public class gestUsuarioLista extends javax.swing.JPanel {
     }
 
     private void configurarSeleccionTabla() {
-        tblListaUsuarios.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                tablaUsuariosValueChanged(evt);
-            }
-        });
-    }
+        tblListaUsuarios.getSelectionModel().addListSelectionListener(evt -> {
+            if (!evt.getValueIsAdjusting()) {
+                manejarCambioSeleccion();
+        }
+    });
+}
     
-    private void tablaUsuariosValueChanged(javax.swing.event.ListSelectionEvent evt) {
-        if (!evt.getValueIsAdjusting()) {
-        configurarBotones(); // <--- aquí habilitas/deshabilitas dinámicamente
-        if (tblListaUsuarios.getSelectedRow() != -1) {
-            int filaSeleccionada = tblListaUsuarios.getSelectedRow();
-
+    private void manejarCambioSeleccion() {
+        configurarBotones();
+    
+        int filaSeleccionada = tblListaUsuarios.getSelectedRow();
+        if (filaSeleccionada != -1) {
             int id = (int) modeloTabla.getValueAt(filaSeleccionada, 0);
             String nombre = (String) modeloTabla.getValueAt(filaSeleccionada, 1);
             String usuario = (String) modeloTabla.getValueAt(filaSeleccionada, 2);
             String rol = (String) modeloTabla.getValueAt(filaSeleccionada, 3);
 
             actualizarLabelsInfo(id, nombre, usuario, rol);
-            configurarBotones();
+        } else {
+            limpiarLabelsInfo();
         }
     }
-}
+
 
     private void actualizarLabelsInfo(int id, String nombre, String usuario, String rol) {
-        // Actualizar los labels directamente en este panel
         txtID.setText(String.valueOf(id));
-        txtNombre.setText(nombre);
+        txtNombre.setText(nombre);  
         txtUsuario.setText(usuario);
         txtRol.setText(rol);
-    }
+}
     
     private void eliminarUsuario() {
         int filaSeleccionada = tblListaUsuarios.getSelectedRow();
         if (filaSeleccionada == -1) {
-            JOptionPane.showMessageDialog(this, 
-                "Por favor seleccione un usuario para eliminar", 
-                "Advertencia", 
-                JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
+            mostrarAdvertencia("Por favor seleccione un usuario para eliminar");
+        return;
+    }
+    
         int idUsuario = (int) modeloTabla.getValueAt(filaSeleccionada, 0);
         String nombreUsuario = (String) modeloTabla.getValueAt(filaSeleccionada, 1);
         
-        // Confirmación antes de eliminar
-        int confirmacion = JOptionPane.showConfirmDialog(this,
+        int confirmacion = mostrarConfirmacion(
             "¿Está seguro que desea eliminar al usuario: " + nombreUsuario + "?\n\n" +
             "Esta acción no se puede deshacer.",
-            "Confirmar Eliminación",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.WARNING_MESSAGE);
-        
+            "Confirmar Eliminación"
+        );
+    
         if (confirmacion == JOptionPane.YES_OPTION) {
-            // Eliminación lógica (cambiar activo a false)
-            String sql = "UPDATE public.usuarios SET activo = false WHERE id_usuario = ?";
-            
-            try (Connection conn = DatabaseConnection.getConnection();
-                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                
-                pstmt.setInt(1, idUsuario);
-                int filasAfectadas = pstmt.executeUpdate();
-                
-                if (filasAfectadas > 0) {
-    JOptionPane.showMessageDialog(this,
-        "Usuario eliminado correctamente",
-        "Éxito",
-        JOptionPane.INFORMATION_MESSAGE);
-
-    // Recargar tabla
-    cargarUsuarios();
-
-    // Limpiar labels
-    limpiarLabelsInfo();
-
-    // Limpiar selección y actualizar botones
-    tblListaUsuarios.clearSelection();
-    configurarBotones();
-                    
-                } else {
-                    JOptionPane.showMessageDialog(this,
-                        "Error al eliminar el usuario",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                }
-                
-            } catch (SQLException e) {
-                JOptionPane.showMessageDialog(this,
-                    "Error al eliminar usuario: " + e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
-            }
+            if (ejecutarEliminacion(idUsuario)) {
+                mostrarExito("Usuario eliminado correctamente");
+                recargarInterfaz();
+            } else {
+                mostrarError("Error al eliminar el usuario");
         }
     }
+}
     // MÉTODO PARA EDITAR USUARIO
     private void editarUsuario() {
         int filaSeleccionada = tblListaUsuarios.getSelectedRow();
         if (filaSeleccionada == -1) {
-            JOptionPane.showMessageDialog(this,
-                "Por favor seleccione un usuario para editar",
-                "Advertencia",
-                JOptionPane.WARNING_MESSAGE);
+            mostrarAdvertencia("Por favor seleccione un usuario para editar");
             return;
-        }
-        
-        int idUsuario = (int) modeloTabla.getValueAt(filaSeleccionada, 0);
-        
-        // Abrir diálogo de edición
-        abrirDialogoEdicion(idUsuario);
     }
     
+        int idUsuario = (int) modeloTabla.getValueAt(filaSeleccionada, 0);
+        abrirDialogoEdicion(idUsuario);
+}
+    
     private void abrirDialogoEdicion(int idUsuario) {
-        // Crear un diálogo personalizado para editar usuario
         javax.swing.JDialog dialogoEdicion = new javax.swing.JDialog();
         dialogoEdicion.setTitle("Editar Usuario");
         dialogoEdicion.setModal(true);
         dialogoEdicion.setSize(400, 300);
         dialogoEdicion.setLocationRelativeTo(this);
         dialogoEdicion.setLayout(new java.awt.BorderLayout());
-        
-        // Panel principal
+    
         javax.swing.JPanel panelEdicion = new javax.swing.JPanel();
         panelEdicion.setLayout(new java.awt.GridLayout(5, 2, 10, 10));
         panelEdicion.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        // Componentes del formulario
         javax.swing.JLabel lblNombre = new javax.swing.JLabel("Nombre:");
         javax.swing.JTextField txtNombreEdit = new javax.swing.JTextField();
         
@@ -235,12 +188,9 @@ public class gestUsuarioLista extends javax.swing.JPanel {
         
         javax.swing.JLabel lblRol = new javax.swing.JLabel("Rol:");
         javax.swing.JComboBox<String> cmbRol = new javax.swing.JComboBox<>(new String[]{"Administrador", "Técnico", "Usuario"});
-        
-        // Cargar datos actuales del usuario
+    
         cargarDatosUsuario(idUsuario, txtNombreEdit, txtApellidoEdit, txtUsuarioEdit, cmbRol);
-        limpiarLabelsInfo();
-        
-        // Agregar componentes al panel
+    
         panelEdicion.add(lblNombre);
         panelEdicion.add(txtNombreEdit);
         panelEdicion.add(lblApellido);
@@ -249,129 +199,137 @@ public class gestUsuarioLista extends javax.swing.JPanel {
         panelEdicion.add(txtUsuarioEdit);
         panelEdicion.add(lblRol);
         panelEdicion.add(cmbRol);
-        
-        // Panel de botones
+    
         javax.swing.JPanel panelBotones = new javax.swing.JPanel();
         javax.swing.JButton btnGuardar = new javax.swing.JButton("Guardar");
         javax.swing.JButton btnCancelar = new javax.swing.JButton("Cancelar");
-        
-        btnGuardar.addActionListener(e -> {
+    
+    btnGuardar.addActionListener(e -> {
+        if (validarCamposEdicion(txtNombreEdit.getText(), txtApellidoEdit.getText(), txtUsuarioEdit.getText())) {
             guardarCambiosUsuario(idUsuario, txtNombreEdit.getText(), txtApellidoEdit.getText(), 
                                 txtUsuarioEdit.getText(), cmbRol.getSelectedIndex() + 1);
             dialogoEdicion.dispose();
-        });
-        
+        }
+    });
+    
         btnCancelar.addActionListener(e -> dialogoEdicion.dispose());
         
         panelBotones.add(btnGuardar);
         panelBotones.add(btnCancelar);
         
-        // Agregar paneles al diálogo
         dialogoEdicion.add(panelEdicion, java.awt.BorderLayout.CENTER);
         dialogoEdicion.add(panelBotones, java.awt.BorderLayout.SOUTH);
-        
         dialogoEdicion.setVisible(true);
-    }
+}
     
-    private void cargarDatosUsuario(int idUsuario, javax.swing.JTextField txtNombre, 
-                                  javax.swing.JTextField txtApellido, javax.swing.JTextField txtUsuario, 
-                                  javax.swing.JComboBox<String> cmbRol) {
-        String sql = "SELECT nombre, apellido, username, rol_id FROM public.usuarios WHERE id_usuario = ?";
-        
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, idUsuario);
-            ResultSet rs = pstmt.executeQuery();
-            
-            if (rs.next()) {
-                txtNombre.setText(rs.getString("nombre"));
-                txtApellido.setText(rs.getString("apellido"));
-                txtUsuario.setText(rs.getString("username"));
-                cmbRol.setSelectedIndex(rs.getInt("rol_id") - 1);
-            }
-            
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this,
-                "Error al cargar datos del usuario: " + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-        }
-    }
+    private void cargarDatosUsuario(int idUsuario, javax.swing.JTextField txtNombre,javax.swing.JTextField txtApellido, 
+            javax.swing.JTextField txtUsuario, javax.swing.JComboBox<String> cmbRol) {
+    String sql = "SELECT nombre, apellido, username, rol_id FROM public.usuarios WHERE id_usuario = ?";
     
-    private void guardarCambiosUsuario(int idUsuario, String nombre, String apellido, String usuario, int rolId) {
-        if (nombre.isEmpty() || apellido.isEmpty() || usuario.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                "Todos los campos son obligatorios",
-                "Advertencia",
-                JOptionPane.WARNING_MESSAGE);
-            return;
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        
+        pstmt.setInt(1, idUsuario);
+        ResultSet rs = pstmt.executeQuery();
+        
+        if (rs.next()) {
+            txtNombre.setText(rs.getString("nombre"));
+            txtApellido.setText(rs.getString("apellido"));
+            txtUsuario.setText(rs.getString("username"));
+            cmbRol.setSelectedIndex(rs.getInt("rol_id") - 1);
         }
         
-        String sql = "UPDATE public.usuarios SET nombre = ?, apellido = ?, username = ?, rol_id = ? WHERE id_usuario = ?";
-        
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setString(1, nombre);
-            pstmt.setString(2, apellido);
-            pstmt.setString(3, usuario);
-            pstmt.setInt(4, rolId);
-            pstmt.setInt(5, idUsuario);
-            
-            int filasAfectadas = pstmt.executeUpdate();
-            
-            if (filasAfectadas > 0) {
-    JOptionPane.showMessageDialog(this,
-        "Usuario actualizado correctamente",
-        "Éxito",
-        JOptionPane.INFORMATION_MESSAGE);
-
-    // Recargar la tabla
-    cargarUsuarios();
-
-    // Limpiar selección y deshabilitar botones
-    tblListaUsuarios.clearSelection();
-    configurarBotones();
-
-                
-            } else {
-                JOptionPane.showMessageDialog(this,
-                    "Error al actualizar el usuario",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            }
-            
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this,
-                "Error al actualizar usuario: " + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
+    } catch (SQLException e) {
+        mostrarError("Error al cargar datos del usuario: " + e.getMessage());
     }
+}
+    
+private void guardarCambiosUsuario(int idUsuario, String nombre, String apellido, String usuario, int rolId) {
+    String sql = "UPDATE public.usuarios SET nombre = ?, apellido = ?, username = ?, rol_id = ? WHERE id_usuario = ?";
+    
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        
+        pstmt.setString(1, nombre);
+        pstmt.setString(2, apellido);
+        pstmt.setString(3, usuario);
+        pstmt.setInt(4, rolId);
+        pstmt.setInt(5, idUsuario);
+        
+        if (pstmt.executeUpdate() > 0) {
+            mostrarExito("Usuario actualizado correctamente");
+            recargarInterfaz();
+        } else {
+            mostrarError("Error al actualizar el usuario");
+        }
+        
+    } catch (SQLException e) {
+        mostrarError("Error al actualizar usuario: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
     
     private void limpiarLabelsInfo() {
-        txtID.setText("");
+       txtID.setText("");
         txtNombre.setText("");
         txtUsuario.setText("");
         txtRol.setText("");
-    }
+}
     // Método para recargar datos (útil para refrescar después de cambios)
     public void refrescarDatos() {
         cargarUsuarios();
     }
     
     private void actualizarDatos() {
-        // Recargar los usuarios desde la base de datos
-        cargarUsuarios();
-        // Limpiar la selección actual
-        tblListaUsuarios.clearSelection();
-        // Limpiar la información del panel lateral
-        limpiarLabelsInfo();
-        // Actualizar estado de los botones
-        configurarBotones();
+    recargarInterfaz();
 }
+    private void recargarInterfaz() {
+    cargarUsuarios();
+    tblListaUsuarios.clearSelection();
+    limpiarLabelsInfo();
+    configurarBotones();
+}
+    private boolean ejecutarEliminacion(int idUsuario) {
+    String sql = "UPDATE public.usuarios SET activo = false WHERE id_usuario = ?";
+    
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        
+        pstmt.setInt(1, idUsuario);
+        return pstmt.executeUpdate() > 0;
+        
+    } catch (SQLException e) {
+        mostrarError("Error al eliminar usuario: " + e.getMessage());
+        e.printStackTrace();
+        return false;
+    }
+}
+
+    private boolean validarCamposEdicion(String nombre, String apellido, String usuario) {
+        if (nombre.isEmpty() || apellido.isEmpty() || usuario.isEmpty()) {
+            mostrarAdvertencia("Todos los campos son obligatorios");
+            return false;
+        }
+        return true;
+    }
+
+    // MÉTODOS DE MENSAJES REUTILIZABLES
+    private void mostrarError(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void mostrarAdvertencia(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Advertencia", JOptionPane.WARNING_MESSAGE);
+    }
+
+    private void mostrarExito(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Éxito", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private int mostrarConfirmacion(String mensaje, String titulo) {
+        return JOptionPane.showConfirmDialog(this, mensaje, titulo,
+                JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

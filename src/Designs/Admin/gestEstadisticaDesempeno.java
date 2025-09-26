@@ -23,6 +23,22 @@ public class gestEstadisticaDesempeno extends javax.swing.JPanel {
     public gestEstadisticaDesempeno() {
         initComponents();
     }
+   
+    private void cargarEmpleados() {
+    if (jComboBox1.getItemCount() > 0) return;
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(
+             "SELECT username FROM usuarios WHERE activo = true AND rol_id = 2 ORDER BY username");
+         ResultSet rs = stmt.executeQuery()) {
+        jComboBox1.removeAllItems();
+        while (rs.next()) {
+            jComboBox1.addItem(rs.getString("username"));
+        }        
+    } catch (SQLException e) {
+        System.err.println("Error al cargar empleados: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -118,27 +134,6 @@ public class gestEstadisticaDesempeno extends javax.swing.JPanel {
     private void jComboBox1PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_jComboBox1PopupMenuWillBecomeVisible
         cargarEmpleados();
     }//GEN-LAST:event_jComboBox1PopupMenuWillBecomeVisible
-
-    private void cargarEmpleados() {
-    if (jComboBox1.getItemCount() > 0) return;
-    
-    try (Connection conn = DatabaseConnection.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(
-             "SELECT username FROM usuarios WHERE activo = true ORDER BY username");
-         ResultSet rs = stmt.executeQuery()) {
-        
-        jComboBox1.removeAllItems();
-        
-        
-        while (rs.next()) {
-            jComboBox1.addItem(rs.getString("username"));
-        }
-        
-    } catch (SQLException e) {
-        System.err.println("Error al cargar empleados: " + e.getMessage());
-        e.printStackTrace();
-    }
-}
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
