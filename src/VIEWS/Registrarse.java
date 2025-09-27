@@ -1,6 +1,9 @@
 
-package Designs;
+package VIEWS;
 
+import VIEWS.Login;
+import MODELS.DatabaseConnection;
+import MODELS.DatabaseConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

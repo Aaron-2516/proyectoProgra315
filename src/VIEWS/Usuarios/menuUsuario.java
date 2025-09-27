@@ -1,5 +1,5 @@
 
-package Designs.User;
+package VIEWS.Usuarios;
 
 
 public class menuUsuario extends javax.swing.JPanel {

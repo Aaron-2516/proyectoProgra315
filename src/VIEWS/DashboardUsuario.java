@@ -1,16 +1,16 @@
-package Designs;
+package VIEWS;
 
-import Designs.auth.Role;
-import Designs.auth.User;
-import Designs.User.menuUsuario;
-import Designs.Admin.menuAdmin;
-import Designs.User.Principal;
-import Designs.User.Crear;
-import Designs.User.Consultar;
-import Designs.User.Actualizar;
-import Designs.Admin.verSolicitudes;
-import Designs.Admin.asignarSolicitudes;
-import Designs.Admin.gestionUsuarios;
+import MODELS.Role;
+import MODELS.User;
+import VIEWS.Usuarios.menuUsuario;
+import VIEWS.Admin.menuAdmin;
+import VIEWS.Usuarios.Principal;
+import VIEWS.Usuarios.Crear;
+import VIEWS.Usuarios.Consultar;
+import VIEWS.Usuarios.Actualizar;
+import VIEWS.Admin.verSolicitudes;
+import VIEWS.Admin.asignarSolicitudes;
+import VIEWS.Admin.gestionUsuarios;
 
 import javax.swing.*;
 import java.awt.*;
@@ -110,7 +110,7 @@ public class DashboardUsuario extends javax.swing.JFrame {
         Menu.setVisible(false);
         Menu.getParent().revalidate();
 
-        content.add(new Designs.Soporte.verSolicitudes(), R_VER_SOLICITUDES);
+        content.add(new VIEWS.Soporte.verSolicitudes(), R_VER_SOLICITUDES);
         showView(R_VER_SOLICITUDES);
     }
 

@@ -1,5 +1,5 @@
 
-package Designs.Admin;
+package VIEWS.Admin;
 
    
 public class menuAdmin extends javax.swing.JPanel {

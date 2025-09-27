@@ -1,109 +1,31 @@
-package Designs;
+package VIEWS;
 
-import Designs.DashboardUsuario;
-import Designs.DatabaseConnection;
-import Designs.auth.Role;
-import Designs.auth.User;
+import CONTROLLER.LoginController;
+import MODELS.User;
 import java.awt.Frame;
 import javax.swing.*;
-import java.awt.event.*;
-import java.sql.*;
+
 
 public class Login extends javax.swing.JFrame {
 
-    public static Registrarse fr;
-    
-    public Login() {
+    private LoginController controller;
+   public Login() {
         initComponents();
-        
-        // Acción al hacer clic en el botón "Acceder"
-        btnAcceder.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String usuario = UsuarioTxt.getText();
-                String contrasena = new String(contrasenaTxt.getPassword());
+        controller = new LoginController(this);
 
-                // Validar login
-                if (validarLogin(usuario, contrasena)) {
-                    // Obtener el rol
-                    Role rol = obtenerRol(usuario);
-
-                    if (rol != null) {
-                        // Si el rol es válido, abrir el Dashboard correspondiente
-                        new DashboardUsuario(new User(usuario, rol)).setVisible(true);
-                        dispose(); // Cierra la ventana de login
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Rol del usuario no encontrado.");
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Usuario o Contraseña incorrectos.");
-                }
-            }
-        });
+        btnAcceder.addActionListener(e -> controller.iniciarSesion(UsuarioTxt.getText(), new String(contrasenaTxt.getPassword())));
     }
     
-    // Método para validar el login (sin cifrado de contraseñas)
-    public boolean validarLogin(String usuario, String contrasena) {
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            // Consulta para obtener la contraseña del usuario
-            String query = "SELECT contrasena FROM usuarios WHERE username = ?";
-            PreparedStatement stmt = connection.prepareStatement(query);
-            stmt.setString(1, usuario);
+   public String getUsername() { return UsuarioTxt.getText(); }
+    public String getPassword() { return new String(contrasenaTxt.getPassword()); }
 
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                String storedPassword = rs.getString("contrasena"); // Obtener la contraseña almacenada
-                return contrasena.equals(storedPassword);  // Comparar la contraseña ingresada con la almacenada
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;  // Si no se encuentra el usuario o la contraseña no coincide
+    public void mostrarError(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje);
     }
 
-    // Método para obtener el rol del usuario
-public Role obtenerRol(String usuario) {
-    try (Connection connection = DatabaseConnection.getConnection()) {
-        // Realizamos el JOIN entre usuarios y roles usando rol_id
-        String query = "SELECT r.rol FROM usuarios u "
-                     + "JOIN roles r ON u.rol_id = r.id_rol "
-                     + "WHERE u.username = ?";  // Obtener el rol de la tabla roles usando rol_id
-        PreparedStatement stmt = connection.prepareStatement(query);
-        stmt.setString(1, usuario);  // Establecer el username en la consulta
-
-        ResultSet rs = stmt.executeQuery();
-        if (rs.next()) {
-            // Obtener el nombre del rol desde la tabla roles
-            String rol = rs.getString("rol").toUpperCase(); // Aseguramos que el nombre del rol esté en mayúsculas
-            return Role.valueOf(rol);  // Convertir el nombre del rol a un valor de enum Role
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    return null;  // Si no se encuentra el usuario o rol, retornamos null
-}
-
-
-    // Método principal para ejecutar el login
-    public static void main(String args[]) {
-        // Establecer el look and feel de Nimbus
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
-        // Crear y mostrar la ventana de login
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Login().setVisible(true);
-            }
-        });
+    public void abrirDashboard(User user) {
+        new DashboardUsuario(user).setVisible(true);
+        this.dispose();
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

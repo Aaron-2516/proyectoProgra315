@@ -2,18 +2,18 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
-package Designs.Admin;
+package VIEWS.Usuarios;
 
 /**
  *
- * @author CastellaSagarra
+ * @author Camara
  */
-public class gestReporteTiempo extends javax.swing.JPanel {
+public class Principal extends javax.swing.JPanel {
 
     /**
-     * Creates new form gestReporteTiempo
+     * Creates new form Principal
      */
-    public gestReporteTiempo() {
+    public Principal() {
         initComponents();
     }
 
@@ -27,39 +27,32 @@ public class gestReporteTiempo extends javax.swing.JPanel {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jToggleButton1 = new javax.swing.JToggleButton();
 
-        jLabel1.setFont(new java.awt.Font("Arial Black", 0, 24)); // NOI18N
-        jLabel1.setText("Reporte de tiempo de procesamiento de solicitudes");
+        setBackground(new java.awt.Color(0, 0, 0));
 
-        jToggleButton1.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        jToggleButton1.setText("Generar Reporte");
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("PRINCIPAL");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(75, 75, 75)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jToggleButton1)
-                    .addComponent(jLabel1))
-                .addContainerGap(146, Short.MAX_VALUE))
+                .addGap(282, 282, 282)
+                .addComponent(jLabel1)
+                .addContainerGap(93, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(49, 49, 49)
+                .addGap(179, 179, 179)
                 .addComponent(jLabel1)
-                .addGap(62, 62, 62)
-                .addComponent(jToggleButton1)
-                .addContainerGap(421, Short.MAX_VALUE))
+                .addContainerGap(124, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JToggleButton jToggleButton1;
     // End of variables declaration//GEN-END:variables
 }

@@ -1,4 +1,4 @@
-package Designs.auth;
+package MODELS;
 
 public enum Role {
     USUARIO,

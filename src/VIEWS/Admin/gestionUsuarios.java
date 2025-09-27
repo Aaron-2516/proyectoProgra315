@@ -1,4 +1,4 @@
-package Designs.Admin;
+package VIEWS.Admin;
 
 import javax.swing.*;
 import java.awt.*;
