@@ -11,6 +11,7 @@ import VIEWS.Usuarios.Actualizar;
 import VIEWS.Admin.verSolicitudes;
 import VIEWS.Admin.asignarSolicitudes;
 import VIEWS.Admin.gestionUsuarios;
+import VIEWS.Admin.verSolicitud;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,6 +27,7 @@ public class DashboardUsuario extends javax.swing.JFrame {
     private static final String R_VER_SOLICITUDES = "verSolicitudes";
     private static final String R_ASIGNAR = "asignarSolicitudes";
     private static final String R_GESTION_USUARIOS = "gestionUsuarios";
+    private static final String R_VER_SOLICITUD = "verSolicitud";
 
     private final Color COLOR_BASE = new Color(18, 90, 173);
     private final Color COLOR_HOVER = new Color(25, 110, 200);
@@ -35,7 +37,7 @@ public class DashboardUsuario extends javax.swing.JFrame {
     private final User currentUser;
     private CardLayout card;
     private JPanel selectedMenu;
-    private JPanel menuHolder;
+    private JPanel menuHolder; // si lo necesitas más adelante
 
     public DashboardUsuario(User user) {
         this.currentUser = user;
@@ -50,8 +52,8 @@ public class DashboardUsuario extends javax.swing.JFrame {
 
     private void setup() {
         card = new CardLayout();
-        content.setLayout(card);
-        Menu.setLayout(new BorderLayout());
+        content.setLayout(card);               // content ya tiene CardLayout; esto lo refuerza
+        Menu.setLayout(new BorderLayout());    // para insertar el panel menuAdmin completo
     }
 
     private void buildForRole(Role role) {
@@ -92,15 +94,20 @@ public class DashboardUsuario extends javax.swing.JFrame {
         menuAdmin m = new menuAdmin();
         Menu.add(m, BorderLayout.CENTER);
 
-        content.add(new verSolicitudes(), R_VER_SOLICITUDES);
-        content.add(new asignarSolicitudes(), R_ASIGNAR);
-        content.add(new gestionUsuarios(), R_GESTION_USUARIOS);
+        // Registrar vistas
+        content.add(new verSolicitudes(), R_VER_SOLICITUDES);   // btnReportes
+        content.add(new asignarSolicitudes(), R_ASIGNAR);       // btnAsignar
+        content.add(new gestionUsuarios(), R_GESTION_USUARIOS); // btnGestionarUsuarios
+        content.add(new verSolicitud(), R_VER_SOLICITUD);       // btnVer
 
-        makePanelButton(m.getBtnVer(), () -> showView(R_VER_SOLICITUDES));
+        // Enlaces de menú -> vistas
+        makePanelButton(m.getBtnReportes(), () -> showView(R_VER_SOLICITUDES));
         makePanelButton(m.getBtnAsignar(), () -> showView(R_ASIGNAR));
         makePanelButton(m.getBtnGestionarUsuarios(), () -> showView(R_GESTION_USUARIOS));
+        makePanelButton(m.getBtnVer(), () -> showView(R_VER_SOLICITUD)); // verSolicitud (singular)
 
-        selectMenu(m.getBtnVer());
+        // Estado inicial
+        selectMenu(m.getBtnReportes());
         showView(R_VER_SOLICITUDES);
     }
 
@@ -133,12 +140,14 @@ public class DashboardUsuario extends javax.swing.JFrame {
         }
     }
 
+    // Listener recursivo para que el click funcione aunque sea sobre labels hijos
     private void makePanelButton(JPanel panel, Runnable onClick) {
+        panel.setOpaque(true);
         panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         if (panel != selectedMenu) panel.setBackground(COLOR_BASE);
         panel.setFocusable(true);
 
-        panel.addMouseListener(new MouseAdapter() {
+        MouseAdapter handler = new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
                 if (panel != selectedMenu) panel.setBackground(COLOR_HOVER);
@@ -146,22 +155,35 @@ public class DashboardUsuario extends javax.swing.JFrame {
 
             @Override
             public void mouseExited(MouseEvent e) {
+                if (panel.getMousePosition() != null) return; // aún dentro del panel
                 if (panel != selectedMenu) panel.setBackground(COLOR_BASE);
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
-                panel.setBackground(COLOR_PRESSED);
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    panel.setBackground(COLOR_PRESSED);
+                }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                boolean inside = panel.getMousePosition() != null;
-                if (inside) selectMenu(panel);
-                else if (panel != selectedMenu) panel.setBackground(COLOR_BASE);
-                if (inside && onClick != null && e.getButton() == MouseEvent.BUTTON1) onClick.run();
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    selectMenu(panel);
+                    if (onClick != null) onClick.run();
+                }
             }
-        });
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    selectMenu(panel);
+                    if (onClick != null) onClick.run();
+                }
+            }
+        };
+
+        attachMouseRecursively(panel, handler);
 
         panel.addKeyListener(new KeyAdapter() {
             @Override
@@ -173,6 +195,18 @@ public class DashboardUsuario extends javax.swing.JFrame {
             }
         });
     }
+
+    private void attachMouseRecursively(Component comp, MouseAdapter handler) {
+        comp.addMouseListener(handler);
+        comp.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        if (comp instanceof Container cont) {
+            for (Component child : cont.getComponents()) {
+                attachMouseRecursively(child, handler);
+            }
+        }
+    }
+
+
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
