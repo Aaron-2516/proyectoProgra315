@@ -1,7 +1,7 @@
 package CONTROLLER;
 
 import MODELS.Solicitud;
-import MODELS.SolicitudModel;
+import MODELS.Asignacion;
 import VIEWS.Admin.asignarSolicitudes;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.event.ListSelectionEvent;
@@ -19,7 +19,7 @@ public class AsignarSolicitudesController {
     }
 
     public void cargarSolicitudes() {
-        List<Solicitud> lista = SolicitudModel.getSolicitudesPendientes();
+        List<Solicitud> lista = Asignacion.getSolicitudesPendientes();
         DefaultTableModel model = (DefaultTableModel) view.getTabla().getModel();
         model.setRowCount(0);
 

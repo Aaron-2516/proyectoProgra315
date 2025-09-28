@@ -18,7 +18,6 @@ public class Solicitud {
         this.estadoId = estadoId;
     }
 
-    // Getters
     public int getId() { return id; }
     public String getDescripcion() { return descripcion; }
     public String getClienteNombre() { return clienteNombre; }
@@ -26,7 +25,6 @@ public class Solicitud {
     public int getPrioridadId() { return prioridadId; }
     public int getEstadoId() { return estadoId; }
 
-    // Setters
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
     public void setClienteNombre(String clienteNombre) { this.clienteNombre = clienteNombre; }
     public void setCategoriaId(int categoriaId) { this.categoriaId = categoriaId; }

@@ -52,8 +52,8 @@ public class DashboardUsuario extends javax.swing.JFrame {
 
     private void setup() {
         card = new CardLayout();
-        content.setLayout(card);               // content ya tiene CardLayout; esto lo refuerza
-        Menu.setLayout(new BorderLayout());    // para insertar el panel menuAdmin completo
+        content.setLayout(card);               
+        Menu.setLayout(new BorderLayout());    
     }
 
     private void buildForRole(Role role) {
@@ -94,19 +94,16 @@ public class DashboardUsuario extends javax.swing.JFrame {
         menuAdmin m = new menuAdmin();
         Menu.add(m, BorderLayout.CENTER);
 
-        // Registrar vistas
-        content.add(new verSolicitudes(), R_VER_SOLICITUDES);   // btnReportes
-        content.add(new asignarSolicitudes(), R_ASIGNAR);       // btnAsignar
-        content.add(new gestionUsuarios(), R_GESTION_USUARIOS); // btnGestionarUsuarios
-        content.add(new verSolicitud(), R_VER_SOLICITUD);       // btnVer
+        content.add(new verSolicitudes(), R_VER_SOLICITUDES);   
+        content.add(new asignarSolicitudes(), R_ASIGNAR);       
+        content.add(new gestionUsuarios(), R_GESTION_USUARIOS); 
+        content.add(new verSolicitud(), R_VER_SOLICITUD);       
 
-        // Enlaces de menú -> vistas
         makePanelButton(m.getBtnReportes(), () -> showView(R_VER_SOLICITUDES));
         makePanelButton(m.getBtnAsignar(), () -> showView(R_ASIGNAR));
         makePanelButton(m.getBtnGestionarUsuarios(), () -> showView(R_GESTION_USUARIOS));
-        makePanelButton(m.getBtnVer(), () -> showView(R_VER_SOLICITUD)); // verSolicitud (singular)
+        makePanelButton(m.getBtnVer(), () -> showView(R_VER_SOLICITUD)); 
 
-        // Estado inicial
         selectMenu(m.getBtnReportes());
         showView(R_VER_SOLICITUDES);
     }
@@ -140,7 +137,6 @@ public class DashboardUsuario extends javax.swing.JFrame {
         }
     }
 
-    // Listener recursivo para que el click funcione aunque sea sobre labels hijos
     private void makePanelButton(JPanel panel, Runnable onClick) {
         panel.setOpaque(true);
         panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
