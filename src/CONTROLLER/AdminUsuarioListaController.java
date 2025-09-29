@@ -38,9 +38,6 @@ public class AdminUsuarioListaController {
             view.getBtnEliminarUsuario().addActionListener(e -> eliminarUsuario());
         }
         
-        if (view.getBtnActualizar() != null) {
-            view.getBtnActualizar().addActionListener(e -> cargarUsuarios());
-        }
     }
     
     public void setModeloTabla(DefaultTableModel modeloTabla) {

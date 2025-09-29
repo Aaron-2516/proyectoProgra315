@@ -141,23 +141,5 @@
         </Constraint>
       </Constraints>
     </Component>
-    <Component class="javax.swing.JButton" name="btnActualizar">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Arial" size="18" style="0"/>
-        </Property>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnActualizarActionPerformed"/>
-      </Events>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="btnActualizar.setIcon(new javax.swing.ImageIcon(getClass().getResource(&quot;/imagenes/reload_refresh_update_icon_134497.png&quot;)));&#xa;btnActualizar.setText(&quot;&quot;);&#xa;btnActualizar.setToolTipText(&quot;Actualizar datos&quot;);&#xa;btnActualizar.addActionListener(new java.awt.event.ActionListener() {&#xa;    public void actionPerformed(java.awt.event.ActionEvent evt) {&#xa;        btnActualizarActionPerformed(evt);&#xa;    }&#xa;});"/>
-      </AuxValues>
-      <Constraints>
-        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="770" y="20" width="70" height="40"/>
-        </Constraint>
-      </Constraints>
-    </Component>
   </SubComponents>
 </Form>

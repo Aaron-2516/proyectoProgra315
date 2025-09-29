@@ -5,11 +5,7 @@
 package VIEWS.Admin;
 
 
-import MODELS.DatabaseConnection;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import javax.swing.JOptionPane;
+import CONTROLLER.AdminUsuarioAgregarController;
 
 /**
  *
@@ -20,106 +16,42 @@ public class gestUsuarioAgregar extends javax.swing.JPanel {
     /**
      * Creates new form gestUsuarioEditar
      */
+    private AdminUsuarioAgregarController controller;
+    
     public gestUsuarioAgregar() {
         initComponents();
-        limpiarCampos();
+        controller = new AdminUsuarioAgregarController(this);
     }
     
-    private void limpiarCampos() {
-    // Array de componentes para limpiar
-    javax.swing.JComponent[] componentes = {
-        jtfNombre, jtfApellido, jtfUsuario, jtfCorreo, jpfContrasena
-    };    
-    // Limpiar campos de texto
-    for (javax.swing.JComponent componente : componentes) {
-        if (componente instanceof javax.swing.JTextField) {
-            ((javax.swing.JTextField) componente).setText("");
-        } else if (componente instanceof javax.swing.JPasswordField) {
-            ((javax.swing.JPasswordField) componente).setText("");
-        }
-    }    
-    // Restablecer combo box
-    cmbRol.setSelectedIndex(0);
+    public javax.swing.JButton getBtnAgregarUsuario() {
+        return btnAgregarUsuario;
     }
     
-    private boolean validarCampos() {
-    // Array de campos a validar con sus mensajes
-    javax.swing.JTextField[] campos = {
-        jtfNombre, jtfApellido, jtfUsuario, jtfCorreo
-    };    
-    String[] mensajes = {
-        "Nombre", "Apellido", "Usuario", "Correo"
-    };    
-    // Validar campos obligatorios
-    for (int i = 0; i < campos.length; i++) {
-        if (campos[i].getText().trim().isEmpty()) {
-            mostrarError("El campo " + mensajes[i] + " es obligatorio", campos[i]);
-            return false;
-        }
-    }    
-    // Validar contraseña
-    if (String.valueOf(jpfContrasena.getPassword()).isEmpty()) {
-        mostrarError("El campo Contraseña es obligatorio", jpfContrasena);
-        return false;
-    }    
-    // Validar formato de email
-    String correo = jtfCorreo.getText().trim();
-    if (!correo.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
-        mostrarError("Por favor ingrese un correo electrónico válido", jtfCorreo);
-        return false;
-    }    
-        return true;
+    public javax.swing.JComboBox<String> getCmbRol() {
+        return cmbRol;
     }
     
-    private void mostrarError(String mensaje, java.awt.Component componente) {
-        JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
-        componente.requestFocus();
+    public javax.swing.JPasswordField getJpfContrasena() {
+        return jpfContrasena;
     }
     
-    private void agregarUsuario() {
-        if (!validarCampos()) {
-            return;
-        }
-    
-    // Usar try-with-resources para manejo automático de recursos
-        String sql = "INSERT INTO usuarios (nombre, apellido, username, correo, contrasena, rol_id) VALUES (?, ?, ?, ?, ?, ?)";
-    
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        
-        // Establecer parámetros
-            pstmt.setString(1, jtfNombre.getText().trim());
-            pstmt.setString(2, jtfApellido.getText().trim());
-            pstmt.setString(3, jtfUsuario.getText().trim());
-            pstmt.setString(4, jtfCorreo.getText().trim());
-            pstmt.setString(5, new String(jpfContrasena.getPassword()));
-            pstmt.setInt(6, obtenerRolId());
-        
-        // Ejecutar inserción
-        int filasAfectadas = pstmt.executeUpdate();
-        
-            if (filasAfectadas > 0) {
-                JOptionPane.showMessageDialog(this, "Usuario agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                limpiarCampos();
-            } else {
-                JOptionPane.showMessageDialog(this, "Error al agregar el usuario", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error de base de datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
+    public javax.swing.JTextField getJtfNombre() {
+        return jtfNombre;
     }
-    private int obtenerRolId() {
-        String rolSeleccionado = (String) cmbRol.getSelectedItem();
     
-        // Usar Map para mapeo más eficiente
-        java.util.Map<String, Integer> roles = new java.util.HashMap<>();
-        roles.put("Tecnico", 2);
-        roles.put("Programador", 2);
-        roles.put("Empleado", 3);
-    
-        return roles.getOrDefault(rolSeleccionado, 3); // Valor por defecto: Empleado
+    public javax.swing.JTextField getJtfApellido() {
+        return jtfApellido;
     }
+    
+    public javax.swing.JTextField getJtfCorreo() {
+        return jtfCorreo;
+    }
+    
+    public javax.swing.JTextField getJtfUsuario() {
+        return jtfUsuario;
+    }
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -184,7 +116,6 @@ public class gestUsuarioAgregar extends javax.swing.JPanel {
         });
 
         jtfNombre.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jtfNombre.setText("jTextField1");
         jtfNombre.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jtfNombreActionPerformed(evt);
@@ -192,13 +123,10 @@ public class gestUsuarioAgregar extends javax.swing.JPanel {
         });
 
         jtfApellido.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jtfApellido.setText("jTextField2");
 
         jtfCorreo.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jtfCorreo.setText("jTextField3");
 
         jtfUsuario.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jtfUsuario.setText("jTextField4");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -276,7 +204,6 @@ public class gestUsuarioAgregar extends javax.swing.JPanel {
     }//GEN-LAST:event_cmbRolActionPerformed
 
     private void btnAgregarUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarUsuarioActionPerformed
-       agregarUsuario();
     }//GEN-LAST:event_btnAgregarUsuarioActionPerformed
 
     private void jtfNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtfNombreActionPerformed

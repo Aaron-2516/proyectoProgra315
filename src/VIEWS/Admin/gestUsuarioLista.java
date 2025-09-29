@@ -7,6 +7,8 @@ package VIEWS.Admin;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import CONTROLLER.AdminUsuarioListaController;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 /**
  *
@@ -29,6 +31,27 @@ public class gestUsuarioLista extends javax.swing.JPanel {
         controller = new AdminUsuarioListaController(this);
         controller.setModeloTabla(modeloTabla);
         controller.cargarUsuarios();
+        configurarAncestorListener();
+    }
+    
+    private void configurarAncestorListener() {
+        this.addAncestorListener(new AncestorListener() {
+            @Override
+            public void ancestorAdded(AncestorEvent event) {
+                System.out.println("🔍 Panel agregado a la jerarquía - Actualizando tabla...");
+                controller.cargarUsuarios();
+            }
+            
+            @Override
+            public void ancestorRemoved(AncestorEvent event) {
+                // No necesitamos hacer nada aquí
+            }
+            
+            @Override
+            public void ancestorMoved(AncestorEvent event) {
+                // No necesitamos hacer nada aquí
+            }
+        });
     }
     
     private void configurarTabla() {
@@ -53,10 +76,6 @@ public class gestUsuarioLista extends javax.swing.JPanel {
         return btnEliminarUsuario;
     }
     
-    public javax.swing.JButton getBtnActualizar() {
-        return btnActualizar;
-    }
-    
     public javax.swing.JTable getTblListaUsuarios() {
         return tblListaUsuarios;
     }
@@ -76,7 +95,6 @@ public class gestUsuarioLista extends javax.swing.JPanel {
         tblListaUsuarios = new javax.swing.JTable();
         btnEliminarUsuario = new javax.swing.JButton();
         btnEditarUsuario = new javax.swing.JButton();
-        btnActualizar = new javax.swing.JButton();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -143,22 +161,6 @@ public class gestUsuarioLista extends javax.swing.JPanel {
             }
         });
         add(btnEditarUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 200, 100, 40));
-
-        btnActualizar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/reload_refresh_update_icon_134497.png")));
-        btnActualizar.setText("");
-        btnActualizar.setToolTipText("Actualizar datos");
-        btnActualizar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnActualizarActionPerformed(evt);
-            }
-        });
-        btnActualizar.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        btnActualizar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnActualizarActionPerformed(evt);
-            }
-        });
-        add(btnActualizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 20, 70, 40));
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEditarUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarUsuarioActionPerformed
@@ -167,12 +169,8 @@ public class gestUsuarioLista extends javax.swing.JPanel {
     private void btnEliminarUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarUsuarioActionPerformed
     }//GEN-LAST:event_btnEliminarUsuarioActionPerformed
 
-    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
-    }//GEN-LAST:event_btnActualizarActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnActualizar;
     private javax.swing.JButton btnEditarUsuario;
     private javax.swing.JButton btnEliminarUsuario;
     private javax.swing.JLabel jLabel1;
