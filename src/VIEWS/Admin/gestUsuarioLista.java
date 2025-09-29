@@ -6,11 +6,7 @@ package VIEWS.Admin;
 
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import MODELS.DatabaseConnection;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import CONTROLLER.AdminUsuarioListaController;
 
 /**
  *
@@ -24,70 +20,46 @@ public class gestUsuarioLista extends javax.swing.JPanel {
     
     private DefaultTableModel modeloTabla;
     
+    private AdminUsuarioListaController controller;
+    
     public gestUsuarioLista() {
         initComponents();
         configurarTabla();
-        cargarUsuarios();
+        // Inicializar el controller después de que los componentes estén creados
+        controller = new AdminUsuarioListaController(this);
+        controller.setModeloTabla(modeloTabla);
+        controller.cargarUsuarios();
     }
     
     private void configurarTabla() {
         modeloTabla = new DefaultTableModel(
             new Object[][]{},
             new String[]{"ID", "Nombre", "Usuario", "Rol"}
-    ) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-    };
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         tblListaUsuarios.setModel(modeloTabla);
     }
     
-    public void cargarUsuarios() {
-        // Limpiar tabla antes de cargar nuevos datos
-        modeloTabla.setRowCount(0);
-
-        String sql = "SELECT id_usuario, nombre, apellido, username, rol_id FROM public.usuarios WHERE activo = true ORDER BY id_usuario";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-
-            while (rs.next()) {
-                int id = rs.getInt("id_usuario");
-                String nombre = rs.getString("nombre");
-                //String apellido = rs.getString("apellido");
-                String usuario = rs.getString("username");
-                int rolId = rs.getInt("rol_id");
-
-                // Convertir rol_id a nombre de rol
-                String nombreRol = convertirRol(rolId);
-
-                // Combinar nombre y apellido
-                String nombreCompleto = nombre + " " ;
-
-                // Agregar fila a la tabla
-                modeloTabla.addRow(new Object[]{id, nombreCompleto, usuario, nombreRol});
-            }
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, 
-                "Error al cargar usuarios: " + e.getMessage(), 
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace(); // Para debugging
-        }
+    // Getters para que el controller pueda acceder a los componentes
+    public javax.swing.JButton getBtnEditarUsuario() {
+        return btnEditarUsuario;
     }
     
-    private String convertirRol(int rolId) {
-        switch (rolId) {
-            case 1: return "Administrador";
-            case 2: return "Técnico";
-            case 3: return "Usuario";
-            default: return "Desconocido";
-        }
+    public javax.swing.JButton getBtnEliminarUsuario() {
+        return btnEliminarUsuario;
     }
-
+    
+    public javax.swing.JButton getBtnActualizar() {
+        return btnActualizar;
+    }
+    
+    public javax.swing.JTable getTblListaUsuarios() {
+        return tblListaUsuarios;
+    }
         
     
     /**
@@ -131,7 +103,7 @@ public class gestUsuarioLista extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(tblListaUsuarios);
 
-        add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 80, 410, 270));
+        add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 80, 530, 370));
 
         btnEliminarUsuario.setBackground(new java.awt.Color(204, 0, 0));
         btnEliminarUsuario.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
@@ -149,7 +121,7 @@ public class gestUsuarioLista extends javax.swing.JPanel {
                 btnEliminarUsuarioActionPerformed(evt);
             }
         });
-        add(btnEliminarUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 200, 100, 40));
+        add(btnEliminarUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 280, 100, 40));
 
         btnEditarUsuario.setBackground(new java.awt.Color(0, 153, 0));
         btnEditarUsuario.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
@@ -170,7 +142,7 @@ public class gestUsuarioLista extends javax.swing.JPanel {
                 btnEditarUsuarioActionPerformed(evt);
             }
         });
-        add(btnEditarUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 120, 100, 40));
+        add(btnEditarUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 200, 100, 40));
 
         btnActualizar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/reload_refresh_update_icon_134497.png")));
         btnActualizar.setText("");
