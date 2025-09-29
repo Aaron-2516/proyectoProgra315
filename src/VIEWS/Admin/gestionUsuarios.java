@@ -44,7 +44,7 @@ public class gestionUsuarios extends javax.swing.JPanel {
         cards = (CardLayout) conten.getLayout();
 
         conten.add(new gestUsuarioLista(),     R_LISTAS);
-        conten.add(new gestUsuarioEditar(),     R_EDITAR);
+        conten.add(new gestUsuarioAgregar(),     R_EDITAR);
         conten.add(new gestUsuariosActualizar(), R_ACTUALIZAR);
 
         

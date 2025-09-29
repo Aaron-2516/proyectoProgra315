@@ -15,12 +15,12 @@ import javax.swing.JOptionPane;
  *
  * @author Camara
  */
-public class gestUsuarioEditar extends javax.swing.JPanel {
+public class gestUsuarioAgregar extends javax.swing.JPanel {
 
     /**
      * Creates new form gestUsuarioEditar
      */
-    public gestUsuarioEditar() {
+    public gestUsuarioAgregar() {
         initComponents();
         limpiarCampos();
     }
