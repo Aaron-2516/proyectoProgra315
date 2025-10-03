@@ -11,6 +11,7 @@ public class Login extends javax.swing.JFrame {
     private LoginController controller;
    public Login() {
         initComponents();
+        getRootPane().setDefaultButton(btnAcceder);
         controller = new LoginController(this);
 
         btnAcceder.addActionListener(e -> controller.iniciarSesion(UsuarioTxt.getText(), new String(contrasenaTxt.getPassword())));
@@ -27,6 +28,7 @@ public class Login extends javax.swing.JFrame {
         new DashboardUsuario(user).setVisible(true);
         this.dispose();
     }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
