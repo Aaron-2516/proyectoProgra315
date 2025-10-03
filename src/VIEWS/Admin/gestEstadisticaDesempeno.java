@@ -4,12 +4,10 @@
  */
 package VIEWS.Admin;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import MODELS.DatabaseConnection;
+import CONTROLLER.AdminReporteDesempenoController;
+import java.util.List;
+import javax.swing.DefaultComboBoxModel;
+
 
 /**
  *
@@ -17,29 +15,37 @@ import MODELS.DatabaseConnection;
  */
 public class gestEstadisticaDesempeno extends javax.swing.JPanel {
 
+    private AdminReporteDesempenoController controller;
+    
     /**
      * Creates new form gestEstadisticaDesempeno
      */
     public gestEstadisticaDesempeno() {
         initComponents();
+        controller = new AdminReporteDesempenoController(this);
     }
-   
-    private void cargarEmpleados() {
-    if (jComboBox1.getItemCount() > 0) return;
-    try (Connection conn = DatabaseConnection.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(
-             "SELECT username FROM usuarios WHERE activo = true AND rol_id = 2 ORDER BY username");
-         ResultSet rs = stmt.executeQuery()) {
-        jComboBox1.removeAllItems();
-        while (rs.next()) {
-            jComboBox1.addItem(rs.getString("username"));
-        }        
-    } catch (SQLException e) {
-        System.err.println("Error al cargar empleados: " + e.getMessage());
-        e.printStackTrace();
+    
+    // Getters para que el controller acceda
+    public javax.swing.JComboBox<String> getJComboBox1() {
+        return jComboBox1;
     }
-}
-
+    
+    public javax.swing.JButton getBtnGenerarEstadisticas() {
+        return btnGenerarEstadisticas;
+    }
+    
+    public javax.swing.JPanel getJPanelGrafico() {
+        return jPanelGrafico;
+    }
+    
+    // Método para cargar técnicos en el combo
+    public void cargarTecnicosEnComboBox(List<String> tecnicos) {
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        for (String tecnico : tecnicos) {
+            model.addElement(tecnico);
+        }
+        jComboBox1.setModel(model);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -51,19 +57,15 @@ public class gestEstadisticaDesempeno extends javax.swing.JPanel {
 
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
-        jComboBox2 = new javax.swing.JComboBox<>();
-        jButton1 = new javax.swing.JButton();
+        btnGenerarEstadisticas = new javax.swing.JButton();
+        jPanelGrafico = new javax.swing.JPanel();
 
         jLabel1.setFont(new java.awt.Font("Arial Black", 0, 24)); // NOI18N
         jLabel1.setText("Estadistica de Desempeño");
 
         jLabel2.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         jLabel2.setText("Seleccione un Empleado:");
-
-        jLabel3.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        jLabel3.setText("Metricas de Desempeño:");
 
         jComboBox1.setEditable(true);
         jComboBox1.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
@@ -82,16 +84,15 @@ public class gestEstadisticaDesempeno extends javax.swing.JPanel {
             }
         });
 
-        jComboBox2.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Productividad", "Eficiencia", "Calidad", "Todos los indicadores" }));
-
-        jButton1.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        jButton1.setText("Generar Estadisticas");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnGenerarEstadisticas.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        btnGenerarEstadisticas.setText("Generar Estadisticas");
+        btnGenerarEstadisticas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnGenerarEstadisticasActionPerformed(evt);
             }
         });
+
+        jPanelGrafico.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -100,13 +101,17 @@ public class gestEstadisticaDesempeno extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(198, 198, 198)
+                        .addComponent(btnGenerarEstadisticas))
                     .addComponent(jLabel2)
                     .addComponent(jLabel1))
-                .addContainerGap(525, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(58, Short.MAX_VALUE)
+                .addComponent(jPanelGrafico, javax.swing.GroupLayout.PREFERRED_SIZE, 786, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(56, 56, 56))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -116,14 +121,12 @@ public class gestEstadisticaDesempeno extends javax.swing.JPanel {
                 .addGap(33, 33, 33)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton1)
-                .addContainerGap(324, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnGenerarEstadisticas))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
+                .addComponent(jPanelGrafico, javax.swing.GroupLayout.PREFERRED_SIZE, 321, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(39, 39, 39))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -132,21 +135,21 @@ public class gestEstadisticaDesempeno extends javax.swing.JPanel {
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
     private void jComboBox1PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_jComboBox1PopupMenuWillBecomeVisible
-        cargarEmpleados();
+        List<String> tecnicos = controller.cargarTecnicos();
+        cargarTecnicosEnComboBox(tecnicos);
     }//GEN-LAST:event_jComboBox1PopupMenuWillBecomeVisible
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnGenerarEstadisticasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarEstadisticasActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnGenerarEstadisticasActionPerformed
 
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnGenerarEstadisticas;
     private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanelGrafico;
     // End of variables declaration//GEN-END:variables
 
 }

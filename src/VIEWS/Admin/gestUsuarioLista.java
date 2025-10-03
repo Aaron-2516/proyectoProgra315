@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
+
 package VIEWS.Admin;
 
 import javax.swing.JOptionPane;
@@ -10,16 +7,9 @@ import CONTROLLER.AdminUsuarioListaController;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
-/**
- *
- * @author Camara
- */
+
 public class gestUsuarioLista extends javax.swing.JPanel {
 
-    /**
-     * Creates new form gestUsuarioListas
-     */
-    
     private DefaultTableModel modeloTabla;
     
     private AdminUsuarioListaController controller;
@@ -27,7 +17,6 @@ public class gestUsuarioLista extends javax.swing.JPanel {
     public gestUsuarioLista() {
         initComponents();
         configurarTabla();
-        // Inicializar el controller después de que los componentes estén creados
         controller = new AdminUsuarioListaController(this);
         controller.setModeloTabla(modeloTabla);
         controller.cargarUsuarios();
@@ -44,30 +33,25 @@ public class gestUsuarioLista extends javax.swing.JPanel {
             
             @Override
             public void ancestorRemoved(AncestorEvent event) {
-                // No necesitamos hacer nada aquí
             }
             
             @Override
             public void ancestorMoved(AncestorEvent event) {
-                // No necesitamos hacer nada aquí
             }
         });
     }
     
     private void configurarTabla() {
-        modeloTabla = new DefaultTableModel(
-            new Object[][]{},
-            new String[]{"ID", "Nombre", "Usuario", "Rol"}
-        ) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        tblListaUsuarios.setModel(modeloTabla);
+    modeloTabla = new DefaultTableModel(
+    new Object[][]{},
+    new String[]{"ID", "Nombre", "Usuario", "Rol"}
+    ) {
+    @Override public boolean isCellEditable(int row, int column) { return false; }
+    };
+    tblListaUsuarios.setModel(modeloTabla);
+
     }
     
-    // Getters para que el controller pueda acceder a los componentes
     public javax.swing.JButton getBtnEditarUsuario() {
         return btnEditarUsuario;
     }

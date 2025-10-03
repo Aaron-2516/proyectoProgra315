@@ -1,21 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
+
 package VIEWS.Admin;
 
 
 import CONTROLLER.AdminUsuarioAgregarController;
 
-/**
- *
- * @author Camara
- */
+
 public class gestUsuarioAgregar extends javax.swing.JPanel {
 
-    /**
-     * Creates new form gestUsuarioEditar
-     */
+  
     private AdminUsuarioAgregarController controller;
     
     public gestUsuarioAgregar() {
@@ -51,6 +43,12 @@ public class gestUsuarioAgregar extends javax.swing.JPanel {
         return jtfUsuario;
     }
     
+    // en VIEWS.Admin.gestUsuarioAgregar
+public javax.swing.JComboBox<String> getCmbSubtipoSoporte() {
+    return cmbSubtipoSoporte;
+}
+
+    
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -75,6 +73,8 @@ public class gestUsuarioAgregar extends javax.swing.JPanel {
         jtfApellido = new javax.swing.JTextField();
         jtfCorreo = new javax.swing.JTextField();
         jtfUsuario = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        cmbSubtipoSoporte = new javax.swing.JComboBox<>();
 
         lblTitulo.setFont(new java.awt.Font("Arial Black", 1, 24)); // NOI18N
         lblTitulo.setText("Agregar Usuario");
@@ -128,11 +128,15 @@ public class gestUsuarioAgregar extends javax.swing.JPanel {
 
         jtfUsuario.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
 
+        jLabel1.setText("Subtipo Soporte:");
+
+        cmbSubtipoSoporte.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(67, 67, 67)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(lblNombre)
@@ -143,12 +147,16 @@ public class gestUsuarioAgregar extends javax.swing.JPanel {
                     .addComponent(jpfContrasena))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(jLabel1))
                     .addComponent(lblRol)
                     .addComponent(lblApellido)
                     .addComponent(jtfApellido)
                     .addComponent(lblCorreo)
                     .addComponent(jtfCorreo)
-                    .addComponent(cmbRol, 0, 261, Short.MAX_VALUE))
+                    .addComponent(cmbRol, 0, 261, Short.MAX_VALUE)
+                    .addComponent(cmbSubtipoSoporte, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(236, 236, 236))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -156,7 +164,7 @@ public class gestUsuarioAgregar extends javax.swing.JPanel {
                         .addGap(39, 39, 39)
                         .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 379, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(309, 309, 309)
+                        .addGap(305, 305, 305)
                         .addComponent(btnAgregarUsuario)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -193,9 +201,13 @@ public class gestUsuarioAgregar extends javax.swing.JPanel {
                         .addComponent(lblContrasena)
                         .addGap(17, 17, 17)
                         .addComponent(jpfContrasena, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(88, 88, 88)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel1)
+                .addGap(20, 20, 20)
+                .addComponent(cmbSubtipoSoporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(47, 47, 47)
                 .addComponent(btnAgregarUsuario)
-                .addContainerGap(137, Short.MAX_VALUE))
+                .addContainerGap(108, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -214,6 +226,8 @@ public class gestUsuarioAgregar extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregarUsuario;
     private javax.swing.JComboBox<String> cmbRol;
+    private javax.swing.JComboBox<String> cmbSubtipoSoporte;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPasswordField jpfContrasena;
     private javax.swing.JTextField jtfApellido;
     private javax.swing.JTextField jtfCorreo;

@@ -1,29 +1,40 @@
-package VIEWS.Admin;
+
+    package VIEWS.Admin;
 
 import CONTROLLER.AsignarSolicitudesController;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class asignarSolicitudes extends javax.swing.JPanel {
 
     private AsignarSolicitudesController controller;
+    private ButtonGroup soporteGroup; // agrupa los radios
 
     public asignarSolicitudes() {
         initComponents();
+        solicitudesPendientesTable.setModel(new DefaultTableModel(
+            new Object[]{"ID", "Fecha", "Descripción", "Creada por", "Categoría"}, 0
+        ));
+        combobox.setModel(new DefaultComboBoxModel<>());
+        soporteGroup = new ButtonGroup();
+        soporteGroup.add(tecnicoRadioBtn);
+        soporteGroup.add(desarrolladorRadioBtn);
+
         controller = new AsignarSolicitudesController(this);
-        controller.cargarSolicitudes();
     }
 
-    public JTable getTabla() {
-        return solicitudesPendientesTable;
-    }
+    public JTable getTabla() { return solicitudesPendientesTable; }
+    public JButton getAsignarBtn() { return asignarBtn; }
 
-    public void setIdSolicitudTxt(String id) {
-        idSolicitudTxt.setText(id);
-    }
+    public JComboBox<Object> getCombobox() { return (JComboBox<Object>) (JComboBox<?>) combobox; }
 
-    public String getIdSolicitudTxt() {
-        return idSolicitudTxt.getText();
-    }
+    public JRadioButton getTecnicoRadioBtn() { return tecnicoRadioBtn; }
+    public JRadioButton getDesarrolladorRadioBtn() { return desarrolladorRadioBtn; }
+
+    public void setIdSolicitudTxt(String id) { idSolicitudTxt.setText(id); }
+    public String getIdSolicitudTxt() { return idSolicitudTxt.getText(); }
+    
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -40,6 +51,8 @@ public class asignarSolicitudes extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         solicitudesPendientesTable = new javax.swing.JTable();
 
+        setPreferredSize(new java.awt.Dimension(900, 600));
+
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Arial Black", 3, 24)); // NOI18N
@@ -53,6 +66,8 @@ public class asignarSolicitudes extends javax.swing.JPanel {
 
         jLabel3.setText("ID de solicitud:");
         jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 40, 90, -1));
+
+        idSolicitudTxt.setEditable(false);
         jPanel2.add(idSolicitudTxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 40, 110, -1));
 
         tecnicoRadioBtn.setText("Técnico");
@@ -65,9 +80,9 @@ public class asignarSolicitudes extends javax.swing.JPanel {
         jPanel2.add(combobox, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 30, 140, -1));
 
         asignarBtn.setText("Asignar");
-        jPanel2.add(asignarBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 30, -1, -1));
+        jPanel2.add(asignarBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 30, 90, -1));
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 520, 710, 90));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 480, 710, 90));
 
         solicitudesPendientesTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -98,6 +113,7 @@ public class asignarSolicitudes extends javax.swing.JPanel {
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
+
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

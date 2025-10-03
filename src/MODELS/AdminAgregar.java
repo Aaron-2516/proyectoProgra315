@@ -1,110 +1,142 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package MODELS;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
-/**
- *
- * @author ADMIN
- */
 public class AdminAgregar {
+
+   
     
-    public boolean agregarUsuario(String nombre, String apellido, String username, 
-                                String contrasena, String correo, int rolId) {
-        String sql = "INSERT INTO public.usuarios (nombre, apellido, username, contrasena, correo, rol_id, activo) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, true)";
-        
+    public boolean agregarUsuarioConSubtipo(String nombre, String apellido, String usuario,
+                                            String contrasena, String correo, int rolId,
+                                            String subtipoSoporte) throws SQLException {
+
+      
+        final String rolTxt = String.valueOf(rolId);
+
+        if ("2".equals(rolTxt)) {
+            if (subtipoSoporte == null ||
+                !(subtipoSoporte.equals("DESARROLLADOR") || subtipoSoporte.equals("TECNICO"))) {
+                throw new IllegalArgumentException("Subtipo de soporte inválido o vacío.");
+            }
+        } else {
+            subtipoSoporte = null;
+        }
+
+        final String sqlInsert =
+            "INSERT INTO public.usuarios " +
+            "(id, nombre, apellidos, correo, usuario, contrasena, creado_en, id_rol, subtipo_soporte) " +
+            "VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?)";
+
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setString(1, nombre);
-            pstmt.setString(2, apellido);
-            pstmt.setString(3, username);
-            pstmt.setString(4, contrasena);
-            pstmt.setString(5, correo);
-            pstmt.setInt(6, rolId);
-            
-            int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Error al agregar usuario: " + e.getMessage(), e);
+             PreparedStatement ps = conn.prepareStatement(sqlInsert)) {
+
+            String id = generarNuevoIdUsuario(conn);  
+
+            ps.setString(1, id);
+            ps.setString(2, nombre);
+            ps.setString(3, apellido);
+            ps.setString(4, correo);
+            ps.setString(5, usuario);
+            ps.setString(6, contrasena);     
+            ps.setString(7, rolTxt);         
+            if (subtipoSoporte == null) ps.setNull(8, java.sql.Types.VARCHAR);
+            else ps.setString(8, subtipoSoporte);
+
+            int n = ps.executeUpdate();
+            return n == 1;
         }
     }
-    
-    public boolean validarCampos(String nombre, String apellido, String username, 
-                               String contrasena, String correo) {
-        return nombre != null && !nombre.trim().isEmpty() &&
-               apellido != null && !apellido.trim().isEmpty() &&
-               username != null && !username.trim().isEmpty() &&
-               contrasena != null && !contrasena.trim().isEmpty() &&
-               correo != null && !correo.trim().isEmpty() &&
-               correo.contains("@"); // Validación básica de email
+
+  
+    private String generarNuevoIdUsuario(Connection conn) throws SQLException {
+        final String sqlMax =
+            "SELECT COALESCE(MAX(CAST(regexp_replace(id, '[^0-9]', '', 'g') AS INTEGER)), 0) " +
+            "FROM public.usuarios " +
+            "WHERE id ~ '^USR[0-9]+$'";
+
+        int max = 0;
+        try (PreparedStatement ps = conn.prepareStatement(sqlMax);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) max = rs.getInt(1);
+        }
+
+        int next = max + 1;
+        for (int i = 0; i < 10000; i++) {
+            String candidate = String.format("USR%03d", next);
+            if (!idExiste(conn, candidate)) {
+                return candidate;
+            }
+            next++;
+        }
+        throw new SQLException("No se pudo generar un nuevo ID USR### único.");
     }
-    
+
+    private boolean idExiste(Connection conn, String id) throws SQLException {
+        final String sql = "SELECT 1 FROM public.usuarios WHERE id = ? LIMIT 1";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+
+        public boolean validarCampos(String nombre, String apellido, String username,
+                                 String contrasena, String correo) {
+            return nombre != null && !nombre.trim().isEmpty() &&
+       apellido != null && !apellido.trim().isEmpty() &&
+       username != null && !username.trim().isEmpty() &&
+       contrasena != null && !contrasena.trim().isEmpty() &&
+       correo != null && !correo.trim().isEmpty() &&
+       correo.contains("@");
+
+    }
+
     public boolean validarUsuarioExistente(String username) {
-        String sql = "SELECT COUNT(*) FROM public.usuarios WHERE username = ? AND activo = true";
-        
+        final String sql = "SELECT 1 FROM public.usuarios WHERE LOWER(usuario) = LOWER(?) LIMIT 1";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
             pstmt.setString(1, username);
-            var rs = pstmt.executeQuery();
-            
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
             }
-            
         } catch (SQLException e) {
             throw new RuntimeException("Error al validar usuario existente: " + e.getMessage(), e);
         }
-        
-        return false;
     }
+
     
     public int convertirRol(String rolSeleccionado) {
-        switch (rolSeleccionado) {
-            case "Empleado": return 3; // Usuario
-            case "Tecnico": return 2;  // Técnico
-            case "Programador": return 1; // Administrador
-            default: return 3; // Por defecto Usuario
+        if (rolSeleccionado == null) return 3;
+        String r = rolSeleccionado.trim().toUpperCase();
+        switch (r) {
+            case "ADMIN":
+            case "ADMINISTRADOR":
+            case "PROGRAMADOR": 
+                return 1;
+            case "SOPORTE":
+            case "TECNICO":     
+                return 2;
+            case "USUARIO":
+            case "EMPLEADO":   
+            default:
+                return 3;
         }
     }
-    
-//    private String hashContrasena(String contrasena) {
-//        try {
-//            MessageDigest md = MessageDigest.getInstance("SHA-256");
-//            byte[] hash = md.digest(contrasena.getBytes());
-//            StringBuilder hexString = new StringBuilder();
-//            
-//            for (byte b : hash) {
-//                String hex = Integer.toHexString(0xff & b);
-//                if (hex.length() == 1) hexString.append('0');
-//                hexString.append(hex);
-//            }
-//            
-//            return hexString.toString();
-//            
-//        } catch (NoSuchAlgorithmException e) {
-//            throw new RuntimeException("Error al encriptar contraseña", e);
-//        }
-//    }
-    
+
     public void limpiarCampos(javax.swing.JTextField... campos) {
         for (javax.swing.JTextField campo : campos) {
             campo.setText("");
         }
     }
-    
+
     public void limpiarContrasena(javax.swing.JPasswordField campoContrasena) {
         campoContrasena.setText("");
     }
-    
 }
+
+

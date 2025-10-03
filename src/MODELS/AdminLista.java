@@ -1,154 +1,160 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package MODELS;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author ADMIN
- */
 public class AdminLista {
-    
-     public static class Usuario {
-    private int id;
+
+    public static class Usuario {
+        private String id;           
         private String nombre;
-        private String apellido;
-        private String username;
-        private int rolId;
-        private String nombreRol;
-        
-        public Usuario(int id, String nombre, String apellido, String username, int rolId) {
+        private String apellidos;
+        private String usuario;      
+        private String rolId;       
+        private String rolNombre;   
+        private String subtipo;      
+
+        public Usuario(String id, String nombre, String apellidos, String usuario, String rolId, String subtipo) {
             this.id = id;
             this.nombre = nombre;
-            this.apellido = apellido;
-            this.username = username;
+            this.apellidos = apellidos;
+            this.usuario = usuario;
             this.rolId = rolId;
-            this.nombreRol = convertirRol(rolId);
+            this.subtipo = subtipo;
+            this.rolNombre = mapRolNombre(rolId);
         }
-        
-        // Getters y Setters
-        public int getId() { return id; }
-        public String getNombre() { return nombre; }
-        public void setNombre(String nombre) { this.nombre = nombre; }
-        public String getApellido() { return apellido; }
-        public void setApellido(String apellido) { this.apellido = apellido; }
-        public String getUsername() { return username; }
-        public void setUsername(String username) { this.username = username; }
-        public int getRolId() { return rolId; }
-        public void setRolId(int rolId) { 
-            this.rolId = rolId; 
-            this.nombreRol = convertirRol(rolId);
-        }
-        public String getNombreRol() { return nombreRol; }
-        public String getNombreCompleto() { return nombre + " " + apellido; }
-        
-        private String convertirRol(int rolId) {
-            switch (rolId) {
-                case 1: return "Administrador";
-                case 2: return "Técnico";
-                case 3: return "Usuario";
-                default: return "Desconocido";
+
+        private String mapRolNombre(String id) {
+            if (id == null) return "USUARIO";
+            switch (id) {
+                case "1": return "ADMIN";
+                case "2": return "SOPORTE";
+                case "3":
+                default:  return "USUARIO";
             }
         }
+
+        public String getId() { return id; }
+        public String getNombre() { return nombre; }
+        public void setNombre(String nombre) { this.nombre = nombre; }
+        public String getApellidos() { return apellidos; }
+        public void setApellidos(String apellidos) { this.apellidos = apellidos; }
+        public String getUsuario() { return usuario; }
+        public void setUsuario(String usuario) { this.usuario = usuario; }
+        public String getRolId() { return rolId; }
+        public void setRolId(String rolId) { this.rolId = rolId; this.rolNombre = mapRolNombre(rolId); }
+        public String getRolNombre() { return rolNombre; }
+        public String getNombreCompleto() { return (nombre == null ? "" : nombre) + " " + (apellidos == null ? "" : apellidos); }
+        public String getSubtipo() { return subtipo; }
+        public void setSubtipo(String subtipo) { this.subtipo = subtipo; }
     }
-    
+
     public List<Usuario> cargarUsuarios() {
         List<Usuario> usuarios = new ArrayList<>();
-        String sql = "SELECT id_usuario, nombre, apellido, username, rol_id FROM public.usuarios WHERE activo = true ORDER BY id_usuario";
+        final String sql =
+            "SELECT id, nombre, apellidos, usuario, id_rol, subtipo_soporte " +
+            "FROM public.usuarios " +
+            "ORDER BY id";
 
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                int id = rs.getInt("id_usuario");
-                String nombre = rs.getString("nombre");
-                String apellido = rs.getString("apellido");
-                String username = rs.getString("username");
-                int rolId = rs.getInt("rol_id");
-
-                usuarios.add(new Usuario(id, nombre, apellido, username, rolId));
+                usuarios.add(new Usuario(
+                    rs.getString("id"),
+                    rs.getString("nombre"),
+                    rs.getString("apellidos"),
+                    rs.getString("usuario"),
+                    rs.getString("id_rol"),           
+                    rs.getString("subtipo_soporte")   
+                ));
             }
 
         } catch (SQLException e) {
             throw new RuntimeException("Error al cargar usuarios: " + e.getMessage(), e);
         }
-        
         return usuarios;
     }
-    
-    public Usuario obtenerUsuarioPorId(int idUsuario) {
-        String sql = "SELECT id_usuario, nombre, apellido, username, rol_id FROM public.usuarios WHERE id_usuario = ? AND activo = true";
-        
+
+    public Usuario obtenerUsuarioPorId(String idUsuario) {
+        final String sql =
+            "SELECT id, nombre, apellidos, usuario, id_rol, subtipo_soporte " +
+            "FROM public.usuarios WHERE id = ?";
+
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, idUsuario);
-            ResultSet rs = pstmt.executeQuery();
-            
-            if (rs.next()) {
-                return new Usuario(
-                    rs.getInt("id_usuario"),
-                    rs.getString("nombre"),
-                    rs.getString("apellido"),
-                    rs.getString("username"),
-                    rs.getInt("rol_id")
-                );
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, idUsuario);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Usuario(
+                        rs.getString("id"),
+                        rs.getString("nombre"),
+                        rs.getString("apellidos"),
+                        rs.getString("usuario"),
+                        rs.getString("id_rol"),
+                        rs.getString("subtipo_soporte")
+                    );
+                }
             }
-            
         } catch (SQLException e) {
             throw new RuntimeException("Error al obtener usuario: " + e.getMessage(), e);
         }
-        
         return null;
     }
-    
-    public boolean actualizarUsuario(int idUsuario, String nombre, String apellido, String username, int rolId) {
-        String sql = "UPDATE public.usuarios SET nombre = ?, apellido = ?, username = ?, rol_id = ? WHERE id_usuario = ?";
-        
+
+    public boolean actualizarUsuario(String idUsuario, String nombre, String apellidos,
+                                     String usuario, String rolIdTxt, String subtipoSoporte) {
+        if (!"2".equals(rolIdTxt)) subtipoSoporte = null;
+
+        final String sql =
+            "UPDATE public.usuarios " +
+            "SET nombre = ?, apellidos = ?, usuario = ?, id_rol = ?, subtipo_soporte = ? " +
+            "WHERE id = ?";
+
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setString(1, nombre);
-            pstmt.setString(2, apellido);
-            pstmt.setString(3, username);
-            pstmt.setInt(4, rolId);
-            pstmt.setInt(5, idUsuario);
-            
-            int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
-            
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, nombre);
+            ps.setString(2, apellidos);
+            ps.setString(3, usuario);
+            ps.setString(4, rolIdTxt); 
+            if (subtipoSoporte == null) ps.setNull(5, Types.VARCHAR);
+            else ps.setString(5, subtipoSoporte);
+            ps.setString(6, idUsuario);
+
+            return ps.executeUpdate() == 1;
+
         } catch (SQLException e) {
             throw new RuntimeException("Error al actualizar usuario: " + e.getMessage(), e);
         }
     }
-    
-    public boolean eliminarUsuario(int idUsuario) {
-        String sql = "UPDATE public.usuarios SET activo = false WHERE id_usuario = ?";
-        
+
+    public boolean eliminarUsuario(String idUsuario) {
+        final String sql = "DELETE FROM public.usuarios WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, idUsuario);
-            int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
-            
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, idUsuario);
+            return ps.executeUpdate() == 1;
         } catch (SQLException e) {
             throw new RuntimeException("Error al eliminar usuario: " + e.getMessage(), e);
         }
     }
-    
-    public boolean validarCampos(String nombre, String apellido, String username) {
+
+    public boolean validarCampos(String nombre, String apellidos, String username) {
         return nombre != null && !nombre.trim().isEmpty() &&
-               apellido != null && !apellido.trim().isEmpty() &&
+               apellidos != null && !apellidos.trim().isEmpty() &&
                username != null && !username.trim().isEmpty();
+    }
+
+    public String convertirRolLabelAId(String etiqueta) {
+        if (etiqueta == null) return "3";
+        String r = etiqueta.trim().toUpperCase();
+        if ("ADMIN".equals(r) || "ADMINISTRADOR".equals(r)) return "1";
+        if ("SOPORTE".equals(r)) return "2";
+        if ("USUARIO".equals(r) || "EMPLEADO".equals(r)) return "3";
+        return "3";
     }
 }
