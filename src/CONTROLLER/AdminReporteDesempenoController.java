@@ -74,76 +74,147 @@ public class AdminReporteDesempenoController {
     }
     
     private void crearGraficos(AdminReporteDesempeno.EstadisticasTecnico estadisticas, String tecnico) {
-        try {
-            // Crear panel para los gráficos
-            javax.swing.JPanel panelGraficos = new javax.swing.JPanel();
-            panelGraficos.setLayout(new java.awt.GridLayout(2, 2, 10, 10));
-            
-            // Gráfico 1: Estado de tickets (Pie Chart)
-            ChartPanel chartEstado = crearGraficoEstado(estadisticas, tecnico);
-            panelGraficos.add(chartEstado);
-            
-            // Gráfico 2: Tasa de resolución (Bar Chart)
-            ChartPanel chartTasa = crearGraficoTasaResolucion(estadisticas, tecnico);
-            panelGraficos.add(chartTasa);
-            
-            // Gráfico 3: Tickets por categoría (Bar Chart)
-            ChartPanel chartCategorias = crearGraficoCategorias(estadisticas, tecnico);
-            panelGraficos.add(chartCategorias);
-            
-            // Gráfico 4: Resumen general (Bar Chart)
-            ChartPanel chartResumen = crearGraficoResumen(estadisticas, tecnico);
-            panelGraficos.add(chartResumen);
-            
-            // Mostrar gráficos en la vista
-            mostrarGraficosEnVista(panelGraficos);
-            
-        } catch (Exception e) {
-            System.err.println("Error creando gráficos: " + e.getMessage());
-            throw new RuntimeException("Error al crear gráficos: " + e.getMessage(), e);
-        }
+    try {
+        // Limpiar el panel anterior completamente
+        javax.swing.JPanel contenedor = view.getJPanelGrafico();
+        contenedor.removeAll();
+        
+        // Crear un panel con GridLayout para los 4 gráficos
+        javax.swing.JPanel panelGraficos = new javax.swing.JPanel();
+        panelGraficos.setLayout(new java.awt.GridLayout(2, 2, 15, 15));
+        panelGraficos.setBackground(java.awt.Color.WHITE);
+        
+        // Crear cada gráfico
+        ChartPanel chart1 = crearGraficoEstado(estadisticas, tecnico);
+        ChartPanel chart2 = crearGraficoTasaResolucion(estadisticas, tecnico);
+        ChartPanel chart3 = crearGraficoCategorias(estadisticas, tecnico);
+        ChartPanel chart4 = crearGraficoResumen(estadisticas, tecnico);
+        
+        // Agregar los gráficos al panel
+        panelGraficos.add(chart1);
+        panelGraficos.add(chart2);
+        panelGraficos.add(chart3);
+        panelGraficos.add(chart4);
+        
+        // Crear un JScrollPane para contener los gráficos
+        javax.swing.JScrollPane scrollPane = new javax.swing.JScrollPane(panelGraficos);
+        scrollPane.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        
+        // Configurar el contenedor principal
+        contenedor.setLayout(new java.awt.BorderLayout());
+        contenedor.add(scrollPane, java.awt.BorderLayout.CENTER);
+        
+        // Forzar actualización
+        contenedor.revalidate();
+        contenedor.repaint();
+        
+        System.out.println("Todos los gráficos creados y mostrados exitosamente");
+        
+    } catch (Exception e) {
+        System.err.println("Error crítico creando gráficos: " + e.getMessage());
+        e.printStackTrace();
+        mostrarError("Error al crear los gráficos: " + e.getMessage());
     }
+}
     
     private ChartPanel crearGraficoEstado(AdminReporteDesempeno.EstadisticasTecnico estadisticas, String tecnico) {
-        DefaultPieDataset dataset = new DefaultPieDataset();
-        dataset.setValue("Resueltos", estadisticas.getTicketsResueltos());
-        dataset.setValue("Pendientes", estadisticas.getTicketsPendientes());
-        
-        JFreeChart chart = ChartFactory.createPieChart(
-            "Estado de Tickets - " + tecnico,
-            dataset,
-            true, true, false
-        );
-        
-        ChartPanel chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new java.awt.Dimension(300, 300));
-        return chartPanel;
+    DefaultPieDataset dataset = new DefaultPieDataset();
+    
+    int resueltos = estadisticas.getTicketsResueltos();
+    int pendientes = estadisticas.getTicketsPendientes();
+    int asignados = estadisticas.getTicketsAsignados();
+    
+    System.out.println("Datos para gráfico de estado - Resueltos: " + resueltos + 
+                     ", Pendientes: " + pendientes + ", Asignados: " + asignados);
+    
+    // Solo agregar categorías que tengan datos
+    if (resueltos > 0) {
+        dataset.setValue("Resueltos", resueltos);
     }
     
-    private ChartPanel crearGraficoTasaResolucion(AdminReporteDesempeno.EstadisticasTecnico estadisticas, String tecnico) {
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        double tasaResolucion = estadisticas.getTasaResolucion();
-        
-        dataset.addValue(tasaResolucion, "Tasa", "Resolución");
-        
-        JFreeChart chart = ChartFactory.createBarChart(
-            "Tasa de Resolución - " + tecnico,
-            "",
-            "Porcentaje (%)",
-            dataset
-        );
-        
-        ChartPanel chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new java.awt.Dimension(300, 300)); // Tamaño óptimo
-    chartPanel.setMinimumSize(new java.awt.Dimension(300, 300));
-        return chartPanel;
+    if (pendientes > 0) {
+        dataset.setValue("Pendientes", pendientes);
     }
+    
+    // Si no hay datos en resueltos ni pendientes, pero hay asignados
+    if (resueltos == 0 && pendientes == 0 && asignados > 0) {
+        dataset.setValue("Asignados", asignados);
+    }
+    
+    // Si no hay ningún dato
+    if (dataset.getItemCount() == 0) {
+        dataset.setValue("Sin tickets asignados", 1);
+    }
+    
+    JFreeChart chart = ChartFactory.createPieChart(
+        "Estado de Tickets - " + tecnico,
+        dataset,
+        true,  // leyenda
+        true,  // tooltips
+        false  // URLs
+    );
+    
+    ChartPanel chartPanel = new ChartPanel(chart);
+    chartPanel.setPreferredSize(new java.awt.Dimension(400, 300));
+    chartPanel.setMinimumSize(new java.awt.Dimension(400, 300));
+    
+    return chartPanel;
+}
+    
+    private ChartPanel crearGraficoTasaResolucion(AdminReporteDesempeno.EstadisticasTecnico estadisticas, String tecnico) {
+    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+    double tasaResolucion = estadisticas.getTasaResolucion();
+    
+    System.out.println("Tasa de resolución calculada: " + tasaResolucion + "%");
+    
+    // Usar un nombre de serie diferente y categoría específica
+    dataset.addValue(tasaResolucion, "Eficiencia", "Tasa de Resolución");
+    
+    JFreeChart chart = ChartFactory.createBarChart(
+        "Tasa de Resolución - " + tecnico,  // título
+        "",                                  // etiqueta eje X (vacío)
+        "Porcentaje (%)",                   // etiqueta eje Y
+        dataset
+    );
+    
+    // Personalizar el gráfico
+    org.jfree.chart.plot.CategoryPlot plot = chart.getCategoryPlot();
+    plot.getRangeAxis().setRange(0, 100); // Rango fijo de 0% a 100%
+    
+    // Personalizar la barra
+    org.jfree.chart.renderer.category.BarRenderer renderer = 
+        (org.jfree.chart.renderer.category.BarRenderer) plot.getRenderer();
+    
+    // Color condicional basado en la tasa
+    if (tasaResolucion >= 70) {
+        renderer.setSeriesPaint(0, java.awt.Color.GREEN);
+    } else if (tasaResolucion >= 40) {
+        renderer.setSeriesPaint(0, java.awt.Color.ORANGE);
+    } else {
+        renderer.setSeriesPaint(0, java.awt.Color.RED);
+    }
+    
+    ChartPanel chartPanel = new ChartPanel(chart);
+    chartPanel.setPreferredSize(new java.awt.Dimension(400, 300));
+    chartPanel.setMinimumSize(new java.awt.Dimension(400, 300));
+    
+    return chartPanel;
+}
     
     private ChartPanel crearGraficoCategorias(AdminReporteDesempeno.EstadisticasTecnico estadisticas, String tecnico) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         
-        for (Map.Entry<String, Integer> entry : estadisticas.getTicketsPorCategoria().entrySet()) {
-            dataset.addValue(entry.getValue(), "Tickets", entry.getKey());
+        Map<String, Integer> ticketsPorCategoria = estadisticas.getTicketsPorCategoria();
+        System.out.println("Categorías encontradas: " + ticketsPorCategoria.size());
+        
+        if (ticketsPorCategoria.isEmpty()) {
+            dataset.addValue(0, "Tickets", "Sin categorías");
+        } else {
+            for (Map.Entry<String, Integer> entry : ticketsPorCategoria.entrySet()) {
+                System.out.println("Categoría: " + entry.getKey() + " - Tickets: " + entry.getValue());
+                dataset.addValue(entry.getValue(), "Tickets", entry.getKey());
+            }
         }
         
         JFreeChart chart = ChartFactory.createBarChart(
@@ -154,39 +225,49 @@ public class AdminReporteDesempenoController {
         );
         
         ChartPanel chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new java.awt.Dimension(300, 300));
+        chartPanel.setPreferredSize(new java.awt.Dimension(400, 300));
+        chartPanel.setMinimumSize(new java.awt.Dimension(400, 300));
+        
         return chartPanel;
     }
     
     private ChartPanel crearGraficoResumen(AdminReporteDesempeno.EstadisticasTecnico estadisticas, String tecnico) {
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        
-        dataset.addValue(estadisticas.getTicketsAsignados(), "Cantidad", "Asignados");
-        dataset.addValue(estadisticas.getTicketsResueltos(), "Cantidad", "Resueltos");
-        dataset.addValue(estadisticas.getTicketsPendientes(), "Cantidad", "Pendientes");
+    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+    
+    System.out.println("Datos para resumen - Asignados: " + estadisticas.getTicketsAsignados() + 
+                     ", Resueltos: " + estadisticas.getTicketsResueltos() + 
+                     ", Pendientes: " + estadisticas.getTicketsPendientes());
+    
+    // Usar nombres de serie más descriptivos
+    dataset.addValue(estadisticas.getTicketsAsignados(), "Cantidad", "Asignados");
+    dataset.addValue(estadisticas.getTicketsResueltos(), "Cantidad", "Resueltos");
+    dataset.addValue(estadisticas.getTicketsPendientes(), "Cantidad", "Pendientes");
+    
+    // Solo agregar total si es diferente de la suma
+    int totalCalculado = estadisticas.getTicketsResueltos() + estadisticas.getTicketsPendientes();
+    if (estadisticas.getTotalTickets() != totalCalculado) {
         dataset.addValue(estadisticas.getTotalTickets(), "Cantidad", "Total");
-        
-        JFreeChart chart = ChartFactory.createBarChart(
-            "Resumen General - " + tecnico,
-            "Estadísticas",
-            "Cantidad",
-            dataset
-        );
-        
-        ChartPanel chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new java.awt.Dimension(300, 300)); // Tamaño óptimo
-    chartPanel.setMinimumSize(new java.awt.Dimension(300, 300));
-        return chartPanel;
     }
     
-    private void mostrarGraficosEnVista(javax.swing.JPanel panelGraficos) {
-    javax.swing.JPanel contenedor = view.getJPanelGrafico();
-    contenedor.removeAll(); // Limpia gráficos anteriores
-    contenedor.setLayout(new java.awt.GridLayout(1, 1, 40, 40));
-    contenedor.add(panelGraficos);
-
-    contenedor.revalidate(); // Refresca
-    contenedor.repaint();
+    JFreeChart chart = ChartFactory.createBarChart(
+        "Resumen General - " + tecnico,
+        "Tipos de Ticket",
+        "Cantidad",
+        dataset
+    );
+    
+    // Personalizar colores de las barras
+    org.jfree.chart.plot.CategoryPlot plot = chart.getCategoryPlot();
+    org.jfree.chart.renderer.category.BarRenderer renderer = 
+        (org.jfree.chart.renderer.category.BarRenderer) plot.getRenderer();
+    
+    renderer.setSeriesPaint(0, java.awt.Color.BLUE);
+    
+    ChartPanel chartPanel = new ChartPanel(chart);
+    chartPanel.setPreferredSize(new java.awt.Dimension(400, 300));
+    chartPanel.setMinimumSize(new java.awt.Dimension(400, 300));
+    
+    return chartPanel;
 }
     
     private void mostrarError(String mensaje) {
@@ -196,5 +277,4 @@ public class AdminReporteDesempenoController {
     private void mostrarExito(String mensaje) {
         JOptionPane.showMessageDialog(view, mensaje, "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }
-    
 }

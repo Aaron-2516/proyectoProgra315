@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class AdminReporteDesempeno {
     
-    public static class EstadisticasTecnico {
+     public static class EstadisticasTecnico {
         private int ticketsResueltos;
         private int ticketsPendientes;
         private int ticketsAsignados;
@@ -51,25 +51,25 @@ public class AdminReporteDesempeno {
     }
     
     public List<String> obtenerTecnicos() {
-        List<String> tecnicos = new ArrayList<>();
-        // Consulta por nombre completo (nombre + apellidos)
-        String sql = "SELECT nombre, apellidos FROM public.usuarios WHERE id_rol = '2' ORDER BY nombre, apellidos";
+    List<String> tecnicos = new ArrayList<>();
+    // Consulta ORIGINAL corregida - obtener todos los usuarios con rol 2
+    String sql = "SELECT id, nombre, apellidos FROM public.usuarios WHERE id_rol = '2' ORDER BY nombre, apellidos";
+    
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql);
+         ResultSet rs = pstmt.executeQuery()) {
         
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-            
-            while (rs.next()) {
-                String nombreCompleto = rs.getString("nombre") + " " + rs.getString("apellidos");
-                tecnicos.add(nombreCompleto);
-            }
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Error al obtener técnicos: " + e.getMessage(), e);
+        while (rs.next()) {
+            String nombreCompleto = rs.getString("nombre") + " " + rs.getString("apellidos");
+            tecnicos.add(nombreCompleto);
         }
         
-        return tecnicos;
+    } catch (SQLException e) {
+        throw new RuntimeException("Error al obtener técnicos: " + e.getMessage(), e);
     }
+    
+    return tecnicos;
+}
     
     public EstadisticasTecnico generarEstadisticas(String nombreTecnico) {
         System.out.println("Generando estadísticas para: " + nombreTecnico);
@@ -77,9 +77,9 @@ public class AdminReporteDesempeno {
         EstadisticasTecnico estadisticas = new EstadisticasTecnico();
         
         try {
-            // Obtener ID del técnico por nombre completo
-            int tecnicoId = obtenerIdUsuarioPorNombre(nombreTecnico);
-            if (tecnicoId == -1) {
+            // Obtener ID del técnico por nombre completo (ahora es String)
+            String tecnicoId = obtenerIdUsuarioPorNombre(nombreTecnico);
+            if (tecnicoId == null || tecnicoId.isEmpty()) {
                 throw new RuntimeException("No se encontró el técnico: " + nombreTecnico);
             }
             
@@ -100,7 +100,7 @@ public class AdminReporteDesempeno {
         return estadisticas;
     }
     
-    private int obtenerIdUsuarioPorNombre(String nombreCompleto) throws SQLException {
+    private String obtenerIdUsuarioPorNombre(String nombreCompleto) throws SQLException {
         // Separar nombre y apellidos del string completo
         String[] partes = nombreCompleto.split(" ", 2);
         String nombre = partes[0];
@@ -116,65 +116,76 @@ public class AdminReporteDesempeno {
             ResultSet rs = pstmt.executeQuery();
             
             if (rs.next()) {
-                return rs.getInt("id");
+                return rs.getString("id"); // Cambiado a getString
             }
         }
         
-        return -1;
+        return null; // Cambiado a null
     }
     
-    private void cargarEstadisticasGenerales(EstadisticasTecnico estadisticas, int tecnicoId) throws SQLException {
-        String sql = "SELECT " +
-                    "COUNT(*) as total_asignados, " +
-                    "SUM(CASE WHEN estado_id = 3 THEN 1 ELSE 0 END) as resueltos, " +
-                    "SUM(CASE WHEN estado_id = 2 THEN 1 ELSE 0 END) as pendientes " +
-                    "FROM solicitudes WHERE asignado_a_id = ?";
+    private void cargarEstadisticasGenerales(EstadisticasTecnico estadisticas, String tecnicoId) throws SQLException {
+    System.out.println("Cargando estadísticas generales para técnico ID: " + tecnicoId);
+    
+    // Consulta corregida - usando asignado_a_id directamente de solicitudes
+    String sql = "SELECT " +
+                "COUNT(*) as total_asignados, " +
+                "SUM(CASE WHEN e.nombre = 'Resuelto' THEN 1 ELSE 0 END) as resueltos, " +
+                "SUM(CASE WHEN e.nombre IN ('Pendiente', 'En Progreso', 'Abierto') THEN 1 ELSE 0 END) as pendientes " +
+                "FROM public.solicitudes s " +
+                "INNER JOIN public.estados e ON s.estado_id = e.id " +
+                "WHERE s.asignado_a_id = ?";
+    
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
         
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, tecnicoId);
+        ResultSet rs = pstmt.executeQuery();
+        
+        if (rs.next()) {
+            int total = rs.getInt("total_asignados");
+            int resueltos = rs.getInt("resueltos");
+            int pendientes = rs.getInt("pendientes");
             
-            pstmt.setInt(1, tecnicoId);
-            ResultSet rs = pstmt.executeQuery();
+            estadisticas.setTicketsAsignados(total);
+            estadisticas.setTicketsResueltos(resueltos);
+            estadisticas.setTicketsPendientes(pendientes);
             
-            if (rs.next()) {
-                estadisticas.setTicketsAsignados(rs.getInt("total_asignados"));
-                estadisticas.setTicketsResueltos(rs.getInt("resueltos"));
-                estadisticas.setTicketsPendientes(rs.getInt("pendientes"));
-            }
+            System.out.println("Estadísticas encontradas - Total: " + total + 
+                             ", Resueltos: " + resueltos + 
+                             ", Pendientes: " + pendientes);
+        } else {
+            System.out.println("No se encontraron estadísticas para este técnico");
         }
     }
+}
     
-    private void cargarEstadisticasPorCategoria(EstadisticasTecnico estadisticas, int tecnicoId) throws SQLException {
-        String sql = "SELECT " +
-                    "categoria_id, " +
-                    "COUNT(*) as cantidad " +
-                    "FROM solicitudes " +
-                    "WHERE asignado_a_id = ? " +
-                    "GROUP BY categoria_id";
+    private void cargarEstadisticasPorCategoria(EstadisticasTecnico estadisticas, String tecnicoId) throws SQLException {
+    System.out.println("Cargando estadísticas por categoría para técnico ID: " + tecnicoId);
+    
+    // Consulta corregida - usando asignado_a_id directamente de solicitudes
+    String sql = "SELECT " +
+                "c.nombre as categoria_nombre, " +
+                "COUNT(*) as cantidad " +
+                "FROM public.solicitudes s " +
+                "INNER JOIN public.categorias c ON s.categoria_id = c.id " +
+                "WHERE s.asignado_a_id = ? " +
+                "GROUP BY c.nombre";
+    
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
         
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, tecnicoId);
-            ResultSet rs = pstmt.executeQuery();
-            
-            while (rs.next()) {
-                int categoriaId = rs.getInt("categoria_id");
-                int cantidad = rs.getInt("cantidad");
-                String nombreCategoria = obtenerNombreCategoria(categoriaId);
-                estadisticas.agregarTicketCategoria(nombreCategoria, cantidad);
-            }
+        pstmt.setString(1, tecnicoId);
+        ResultSet rs = pstmt.executeQuery();
+        
+        int totalCategorias = 0;
+        while (rs.next()) {
+            String nombreCategoria = rs.getString("categoria_nombre");
+            int cantidad = rs.getInt("cantidad");
+            estadisticas.agregarTicketCategoria(nombreCategoria, cantidad);
+            totalCategorias++;
+            System.out.println("Categoría: " + nombreCategoria + " - Cantidad: " + cantidad);
         }
-    }
-    
-    private String obtenerNombreCategoria(int categoriaId) {
-        switch (categoriaId) {
-            case 1: return "Hardware";
-            case 2: return "Software";
-            case 3: return "Redes";
-            case 4: return "Cuentas";
-            case 5: return "Consultas";
-            default: return "Categoría " + categoriaId;
+        System.out.println("Total de categorías encontradas: " + totalCategorias);
         }
     }
 }
