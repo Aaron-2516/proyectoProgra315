@@ -83,6 +83,7 @@ public javax.swing.JComboBox<String> getCmbSubtipoSoporte() {
 
         cmbRol.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         cmbRol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Empleado", "Tecnico", "Programador" }));
+        cmbRol.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         cmbRol.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmbRolActionPerformed(evt);
@@ -109,6 +110,7 @@ public javax.swing.JComboBox<String> getCmbSubtipoSoporte() {
 
         btnAgregarUsuario.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         btnAgregarUsuario.setText("Agregar Usuario");
+        btnAgregarUsuario.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAgregarUsuario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAgregarUsuarioActionPerformed(evt);
@@ -116,6 +118,7 @@ public javax.swing.JComboBox<String> getCmbSubtipoSoporte() {
         });
 
         jtfNombre.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jtfNombre.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         jtfNombre.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jtfNombreActionPerformed(evt);
@@ -131,6 +134,7 @@ public javax.swing.JComboBox<String> getCmbSubtipoSoporte() {
         jLabel1.setText("Subtipo Soporte:");
 
         cmbSubtipoSoporte.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbSubtipoSoporte.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);

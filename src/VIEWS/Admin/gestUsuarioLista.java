@@ -103,6 +103,7 @@ public class gestUsuarioLista extends javax.swing.JPanel {
                 return types [columnIndex];
             }
         });
+        tblListaUsuarios.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jScrollPane1.setViewportView(tblListaUsuarios);
 
         add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 80, 530, 370));
@@ -118,6 +119,7 @@ public class gestUsuarioLista extends javax.swing.JPanel {
             }
         });
         btnEliminarUsuario.setText("");
+        btnEliminarUsuario.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnEliminarUsuario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEliminarUsuarioActionPerformed(evt);
@@ -128,6 +130,7 @@ public class gestUsuarioLista extends javax.swing.JPanel {
         btnEditarUsuario.setBackground(new java.awt.Color(0, 153, 0));
         btnEditarUsuario.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         btnEditarUsuario.setText("");
+        btnEditarUsuario.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnEditarUsuario.setMaximumSize(new java.awt.Dimension(94, 29));
         btnEditarUsuario.setMinimumSize(new java.awt.Dimension(94, 29));
         btnEditarUsuario.setPreferredSize(new java.awt.Dimension(94, 29));

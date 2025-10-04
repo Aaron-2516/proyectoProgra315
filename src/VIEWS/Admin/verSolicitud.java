@@ -129,6 +129,7 @@ public class verSolicitud extends javax.swing.JPanel {
         jLabel7.setText("Descripcion");
 
         btnCerrar.setText("Cerrar");
+        btnCerrar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnCerrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCerrarActionPerformed(evt);
@@ -151,6 +152,7 @@ public class verSolicitud extends javax.swing.JPanel {
         jLabel9.setText("Bucar ID");
 
         btnBuscar.setText("Buscar");
+        btnBuscar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnBuscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnBuscarActionPerformed(evt);
@@ -158,6 +160,7 @@ public class verSolicitud extends javax.swing.JPanel {
         });
 
         btnVerSolicitud.setText("Ver");
+        btnVerSolicitud.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnVerSolicitud.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnVerSolicitudActionPerformed(evt);
@@ -165,6 +168,7 @@ public class verSolicitud extends javax.swing.JPanel {
         });
 
         CMBcategorias.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        CMBcategorias.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         CMBcategorias.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CMBcategoriasActionPerformed(evt);

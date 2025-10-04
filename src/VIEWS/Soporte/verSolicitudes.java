@@ -141,6 +141,7 @@ public class verSolicitudes extends javax.swing.JPanel {
         jScrollPane1.setViewportView(tablaAsignado);
 
         CmbCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        CmbCategoria.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         CmbCategoria.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CmbCategoriaActionPerformed(evt);
@@ -150,6 +151,7 @@ public class verSolicitudes extends javax.swing.JPanel {
         jLabel2.setText("Buscar Categoria");
 
         BtnBuscar.setText("Buscar");
+        BtnBuscar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         BtnBuscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 BtnBuscarActionPerformed(evt);
@@ -162,6 +164,7 @@ public class verSolicitudes extends javax.swing.JPanel {
         jLabel3.setToolTipText("");
 
         btnVersolicitud.setText("Ver Solicitud");
+        btnVersolicitud.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnVersolicitud.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnVersolicitudActionPerformed(evt);
@@ -169,6 +172,8 @@ public class verSolicitudes extends javax.swing.JPanel {
         });
 
         btnCerrarSesion.setText("CerrarSesión");
+        btnCerrarSesion.setActionCommand("Cerrar Sesión");
+        btnCerrarSesion.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnCerrarSesion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCerrarSesionActionPerformed(evt);

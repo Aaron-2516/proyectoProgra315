@@ -98,6 +98,7 @@ public class Login extends javax.swing.JFrame {
         panelInterno.add(usuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 180, -1, -1));
 
         UsuarioTxt.setBorder(null);
+        UsuarioTxt.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         UsuarioTxt.setName("usuarioTxt"); // NOI18N
         UsuarioTxt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -116,6 +117,7 @@ public class Login extends javax.swing.JFrame {
         panelInterno.add(contrasenaTxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 210, 170, -1));
 
         btnAcceder.setText("ACCEDER");
+        btnAcceder.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAcceder.setName("btnAcceder"); // NOI18N
         panelInterno.add(btnAcceder, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 250, 120, -1));
 
@@ -123,6 +125,7 @@ public class Login extends javax.swing.JFrame {
         panelInterno.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 310, -1, -1));
 
         btnRegistroLogin.setText("REGISTRARSE");
+        btnRegistroLogin.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnRegistroLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnRegistroLoginActionPerformed(evt);

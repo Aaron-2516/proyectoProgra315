@@ -71,15 +71,19 @@ public class asignarSolicitudes extends javax.swing.JPanel {
         jPanel2.add(idSolicitudTxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 40, 110, -1));
 
         tecnicoRadioBtn.setText("Técnico");
+        tecnicoRadioBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jPanel2.add(tecnicoRadioBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 20, -1, -1));
 
         desarrolladorRadioBtn.setText("Desarrollador");
+        desarrolladorRadioBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jPanel2.add(desarrolladorRadioBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 50, -1, -1));
 
         combobox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        combobox.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jPanel2.add(combobox, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 30, 140, -1));
 
         asignarBtn.setText("Asignar");
+        asignarBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jPanel2.add(asignarBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 30, 90, -1));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 480, 710, 90));

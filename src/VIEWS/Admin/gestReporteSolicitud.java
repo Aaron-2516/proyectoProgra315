@@ -89,9 +89,11 @@ public class gestReporteSolicitud extends javax.swing.JPanel {
         txtTipoSolicitud.setText("Tipo de Solicitud:");
 
         cmbTipoSolicitud.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        cmbTipoSolicitud.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         btnGenerarReporte.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         btnGenerarReporte.setText("Generar Reporte");
+        btnGenerarReporte.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);

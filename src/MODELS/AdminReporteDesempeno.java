@@ -16,39 +16,57 @@ import java.util.Map;
 public class AdminReporteDesempeno {
     
      public static class EstadisticasTecnico {
-        private int ticketsResueltos;
-        private int ticketsPendientes;
-        private int ticketsAsignados;
-        private Map<String, Integer> ticketsPorCategoria;
-        
-        public EstadisticasTecnico() {
-            this.ticketsPorCategoria = new HashMap<>();
-        }
-        
-        // Getters
-        public int getTicketsResueltos() { return ticketsResueltos; }
-        public int getTicketsPendientes() { return ticketsPendientes; }
-        public int getTicketsAsignados() { return ticketsAsignados; }
-        public Map<String, Integer> getTicketsPorCategoria() { return ticketsPorCategoria; }
-        
-        // Setters
-        public void setTicketsResueltos(int ticketsResueltos) { this.ticketsResueltos = ticketsResueltos; }
-        public void setTicketsPendientes(int ticketsPendientes) { this.ticketsPendientes = ticketsPendientes; }
-        public void setTicketsAsignados(int ticketsAsignados) { this.ticketsAsignados = ticketsAsignados; }
-        
-        public void agregarTicketCategoria(String categoria, int cantidad) {
-            ticketsPorCategoria.put(categoria, cantidad);
-        }
-        
-        public int getTotalTickets() {
-            return ticketsResueltos + ticketsPendientes;
-        }
-        
-        public double getTasaResolucion() {
-            if (getTotalTickets() == 0) return 0.0;
-            return (double) ticketsResueltos / getTotalTickets() * 100;
-        }
+    private int ticketsResueltos; // Ahora son Cerradas
+    private int ticketsPendientes; // Ahora son Abiertas + En Proceso + Pausadas
+    private int ticketsAsignados;
+    private Map<String, Integer> ticketsPorCategoria;
+    
+    // Nuevos campos para los estados específicos
+    private int ticketsAbiertas;
+    private int ticketsEnProceso;
+    private int ticketsPausadas;
+    private int ticketsCerradas;
+    
+    public EstadisticasTecnico() {
+        this.ticketsPorCategoria = new HashMap<>();
     }
+    
+    // Getters existentes
+    public int getTicketsResueltos() { return ticketsResueltos; }
+    public int getTicketsPendientes() { return ticketsPendientes; }
+    public int getTicketsAsignados() { return ticketsAsignados; }
+    public Map<String, Integer> getTicketsPorCategoria() { return ticketsPorCategoria; }
+    
+    // Nuevos getters
+    public int getTicketsAbiertas() { return ticketsAbiertas; }
+    public int getTicketsEnProceso() { return ticketsEnProceso; }
+    public int getTicketsPausadas() { return ticketsPausadas; }
+    public int getTicketsCerradas() { return ticketsCerradas; }
+    
+    // Setters existentes
+    public void setTicketsResueltos(int ticketsResueltos) { this.ticketsResueltos = ticketsResueltos; }
+    public void setTicketsPendientes(int ticketsPendientes) { this.ticketsPendientes = ticketsPendientes; }
+    public void setTicketsAsignados(int ticketsAsignados) { this.ticketsAsignados = ticketsAsignados; }
+    
+    // Nuevos setters
+    public void setTicketsAbiertas(int ticketsAbiertas) { this.ticketsAbiertas = ticketsAbiertas; }
+    public void setTicketsEnProceso(int ticketsEnProceso) { this.ticketsEnProceso = ticketsEnProceso; }
+    public void setTicketsPausadas(int ticketsPausadas) { this.ticketsPausadas = ticketsPausadas; }
+    public void setTicketsCerradas(int ticketsCerradas) { this.ticketsCerradas = ticketsCerradas; }
+    
+    public void agregarTicketCategoria(String categoria, int cantidad) {
+        ticketsPorCategoria.put(categoria, cantidad);
+    }
+    
+    public int getTotalTickets() {
+        return ticketsAbiertas + ticketsEnProceso + ticketsPausadas + ticketsCerradas;
+    }
+    
+    public double getTasaResolucion() {
+        if (getTotalTickets() == 0) return 0.0;
+        return (double) ticketsCerradas / getTotalTickets() * 100;
+    }
+}
     
     public List<String> obtenerTecnicos() {
     List<String> tecnicos = new ArrayList<>();
@@ -123,14 +141,13 @@ public class AdminReporteDesempeno {
         return null; // Cambiado a null
     }
     
-    private void cargarEstadisticasGenerales(EstadisticasTecnico estadisticas, String tecnicoId) throws SQLException {
-    System.out.println("Cargando estadísticas generales para técnico ID: " + tecnicoId);
-    
-    // Consulta corregida - usando asignado_a_id directamente de solicitudes
+   private void cargarEstadisticasGenerales(EstadisticasTecnico estadisticas, String tecnicoId) throws SQLException {
     String sql = "SELECT " +
                 "COUNT(*) as total_asignados, " +
-                "SUM(CASE WHEN e.nombre = 'Resuelto' THEN 1 ELSE 0 END) as resueltos, " +
-                "SUM(CASE WHEN e.nombre IN ('Pendiente', 'En Progreso', 'Abierto') THEN 1 ELSE 0 END) as pendientes " +
+                "SUM(CASE WHEN e.id = 'EST4' THEN 1 ELSE 0 END) as cerradas, " +
+                "SUM(CASE WHEN e.id = 'EST1' THEN 1 ELSE 0 END) as abiertas, " +
+                "SUM(CASE WHEN e.id = 'EST2' THEN 1 ELSE 0 END) as en_proceso, " +
+                "SUM(CASE WHEN e.id = 'EST3' THEN 1 ELSE 0 END) as pausadas " +
                 "FROM public.solicitudes s " +
                 "INNER JOIN public.estados e ON s.estado_id = e.id " +
                 "WHERE s.asignado_a_id = ?";
@@ -142,19 +159,22 @@ public class AdminReporteDesempeno {
         ResultSet rs = pstmt.executeQuery();
         
         if (rs.next()) {
-            int total = rs.getInt("total_asignados");
-            int resueltos = rs.getInt("resueltos");
-            int pendientes = rs.getInt("pendientes");
+            estadisticas.setTicketsAsignados(rs.getInt("total_asignados"));
+            estadisticas.setTicketsResueltos(rs.getInt("cerradas")); // Ahora son cerradas
+            estadisticas.setTicketsPendientes(rs.getInt("abiertas") + rs.getInt("en_proceso") + rs.getInt("pausadas"));
             
-            estadisticas.setTicketsAsignados(total);
-            estadisticas.setTicketsResueltos(resueltos);
-            estadisticas.setTicketsPendientes(pendientes);
+            // Guardar los nuevos valores para usar en el gráfico
+            estadisticas.setTicketsAbiertas(rs.getInt("abiertas"));
+            estadisticas.setTicketsEnProceso(rs.getInt("en_proceso"));
+            estadisticas.setTicketsPausadas(rs.getInt("pausadas"));
+            estadisticas.setTicketsCerradas(rs.getInt("cerradas"));
             
-            System.out.println("Estadísticas encontradas - Total: " + total + 
-                             ", Resueltos: " + resueltos + 
-                             ", Pendientes: " + pendientes);
-        } else {
-            System.out.println("No se encontraron estadísticas para este técnico");
+            System.out.println("=== DATOS OBTENIDOS ===");
+            System.out.println("Total Asignados: " + rs.getInt("total_asignados"));
+            System.out.println("Abiertas: " + rs.getInt("abiertas"));
+            System.out.println("En Proceso: " + rs.getInt("en_proceso"));
+            System.out.println("Pausadas: " + rs.getInt("pausadas"));
+            System.out.println("Cerradas: " + rs.getInt("cerradas"));
         }
     }
 }
