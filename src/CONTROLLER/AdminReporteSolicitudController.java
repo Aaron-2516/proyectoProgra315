@@ -6,6 +6,8 @@ package CONTROLLER;
 
 import MODELS.AdminReporteSolicitud;
 import VIEWS.Admin.gestReporteSolicitud;
+import java.awt.Color;
+import java.awt.Font;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,9 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.title.TextTitle;
+import org.jfree.chart.ui.HorizontalAlignment;
+import org.jfree.chart.ui.RectangleEdge;
 /**
  *
  * @author ADMIN
@@ -125,6 +130,7 @@ public class AdminReporteSolicitudController {
             );
             
             // Crear panel del gráfico
+            agregarTextoTotal(chart, datos.getTotalSolicitudes());
             ChartPanel chartPanel = new ChartPanel(chart);
             chartPanel.setPreferredSize(new java.awt.Dimension(450, 300));
             
@@ -133,30 +139,40 @@ public class AdminReporteSolicitudController {
             
             System.out.println("Gráfico creado exitosamente");
             
+            
         } catch (Exception e) {
             System.err.println("ERROR creando gráfico: " + e.toString());
             // Intentar método alternativo
             crearGrafico(datos, tipoSolicitud);
         }
+        
     }
+    private void agregarTextoTotal(JFreeChart chart, int total) {
+    // Crear un texto con mejor formato
+    TextTitle totalText = new TextTitle("Total de Solicitudes: " + total, 
+        new Font("Arial", Font.BOLD, 12));
     
+    // Configurar posición y color
+    totalText.setPosition(RectangleEdge.BOTTOM);
+    totalText.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+    
+    // Opcional: agregar fondo o borde
+    totalText.setPaint(Color.DARK_GRAY);
+    
+    // Agregar al gráfico
+    chart.addSubtitle(totalText);
+}
+        
     private DefaultCategoryDataset crearDatasetSeguro(AdminReporteSolicitud.DatosReporte datos) {
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        
-        // Asegurar valores positivos
-        int total = Math.max(0, datos.getTotalSolicitudes());
-        int pendientes = Math.max(0, datos.getSolicitudesPendientes());
-        int cerradas = Math.max(0, datos.getSolicitudesCerradas());
-        
-        System.out.println("Datos para gráfico - Total: " + total + ", Pendientes: " + pendientes + ", Cerradas: " + cerradas);
-        
-        // Agregar datos de forma explícita
-        dataset.addValue(total, "Solicitudes", "Total");
-        dataset.addValue(pendientes, "Solicitudes", "Pendientes");
-        dataset.addValue(cerradas, "Solicitudes", "Cerradas");
-        
-        return dataset;
-    }
+    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+    
+    dataset.addValue(datos.getSolicitudesAbiertas(), "Solicitudes", "Abiertas");
+    dataset.addValue(datos.getSolicitudesEnProceso(), "Solicitudes", "En Proceso");
+    dataset.addValue(datos.getSolicitudesPausadas(), "Solicitudes", "Pausadas");
+    dataset.addValue(datos.getSolicitudesCerradas(), "Solicitudes", "Cerradas");
+    
+    return dataset;
+}
     
     private void crearGrafico(AdminReporteSolicitud.DatosReporte datos, String tipoSolicitud) {
         try {

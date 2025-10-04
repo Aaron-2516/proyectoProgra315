@@ -22,21 +22,32 @@ import java.util.Map;
 public class AdminReporteSolicitud {
     
     public static class DatosReporte {
-        private int totalSolicitudes;
-        private int solicitudesPendientes;
-        private int solicitudesCerradas;
-        
-        public DatosReporte(int total, int pendientes, int cerradas) {
-            this.totalSolicitudes = total;
-            this.solicitudesPendientes = pendientes;
-            this.solicitudesCerradas = cerradas;
-        }
-        
-        // Getters
-        public int getTotalSolicitudes() { return totalSolicitudes; }
-        public int getSolicitudesPendientes() { return solicitudesPendientes; }
-        public int getSolicitudesCerradas() { return solicitudesCerradas; }
+    private int totalSolicitudes;
+    private int solicitudesAbiertas;
+    private int solicitudesEnProceso;
+    private int solicitudesPausadas;
+    private int solicitudesCerradas;
+    
+    public DatosReporte(int total, int abiertas, int enProceso, int pausadas, int cerradas) {
+        this.totalSolicitudes = total;
+        this.solicitudesAbiertas = abiertas;
+        this.solicitudesEnProceso = enProceso;
+        this.solicitudesPausadas = pausadas;
+        this.solicitudesCerradas = cerradas;
     }
+    
+    // Getters
+    public int getTotalSolicitudes() { return totalSolicitudes; }
+    public int getSolicitudesAbiertas() { return solicitudesAbiertas; }
+    public int getSolicitudesEnProceso() { return solicitudesEnProceso; }
+    public int getSolicitudesPausadas() { return solicitudesPausadas; }
+    public int getSolicitudesCerradas() { return solicitudesCerradas; }
+    
+    // Para compatibilidad con el código existente
+    public int getSolicitudesPendientes() { 
+        return solicitudesAbiertas + solicitudesEnProceso + solicitudesPausadas; 
+    }
+}
     
     // Nuevo método para obtener categorías desde la base de datos
     public List<Map<String, String>> obtenerCategoriasDesdeBD() {
@@ -66,78 +77,83 @@ public class AdminReporteSolicitud {
     }
     
     public DatosReporte generarReporte(Date fechaInicio, Date fechaFin, String tipoSolicitud) {
-        String sql = construirQuery(fechaInicio, fechaFin, tipoSolicitud);
-        System.out.println("Query SQL: " + sql);
-        
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            System.out.println("Conexión a BD establecida correctamente");
-            
-            // Configurar parámetros
-            int paramIndex = 1;
-            if (fechaInicio != null) {
-                pstmt.setDate(paramIndex++, new java.sql.Date(fechaInicio.getTime()));
-            }
-            if (fechaFin != null) {
-                pstmt.setDate(paramIndex++, new java.sql.Date(fechaFin.getTime()));
-            }
-            if (!tipoSolicitud.equals("Todas las Solicitudes")) {
-                String categoriaId = obtenerIdCategoria(tipoSolicitud);
-                pstmt.setString(paramIndex++, categoriaId);
-            }
-            
-            ResultSet rs = pstmt.executeQuery();
-            
-            if (rs.next()) {
-                int total = rs.getInt("total_solicitudes");
-                int pendientes = rs.getInt("solicitudes_pendientes");
-                int cerradas = rs.getInt("solicitudes_cerradas");
-                
-                System.out.println("=== RESULTADOS OBTENIDOS ===");
-                System.out.println("Total: " + total);
-                System.out.println("Pendientes: " + pendientes);
-                System.out.println("Cerradas: " + cerradas);
-                
-                return new DatosReporte(total, pendientes, cerradas);
-            } else {
-                System.out.println("No se obtuvieron resultados de la consulta");
-                return new DatosReporte(0, 0, 0);
-            }
-            
-        } catch (SQLException e) {
-            System.err.println("ERROR SQL: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Error al generar reporte: " + e.getMessage(), e);
-        } catch (Exception e) {
-            System.err.println("ERROR GENERAL: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Error al generar reporte: " + e.getMessage(), e);
-        }
-    }
+    String sql = construirQuery(fechaInicio, fechaFin, tipoSolicitud);
+    System.out.println("Query SQL: " + sql);
     
-    private String construirQuery(Date fechaInicio, Date fechaFin, String tipoSolicitud) {
-        StringBuilder sql = new StringBuilder(
-            "SELECT " +
-            "COUNT(*) as total_solicitudes, " +
-            "SUM(CASE WHEN estado_id = '2' THEN 1 ELSE 0 END) as solicitudes_pendientes, " +  // Usar '2' como texto
-            "SUM(CASE WHEN estado_id = '3' THEN 1 ELSE 0 END) as solicitudes_cerradas " +     // Usar '3' como texto
-            "FROM public.solicitudes WHERE 1=1"
-        );
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
         
+        System.out.println("Conexión a BD establecida correctamente");
+        
+        // Configurar parámetros
+        int paramIndex = 1;
         if (fechaInicio != null) {
-            sql.append(" AND fecha_registro >= ?");
+            pstmt.setDate(paramIndex++, new java.sql.Date(fechaInicio.getTime()));
         }
         if (fechaFin != null) {
-            sql.append(" AND fecha_registro <= ?");
+            pstmt.setDate(paramIndex++, new java.sql.Date(fechaFin.getTime()));
         }
         if (!tipoSolicitud.equals("Todas las Solicitudes")) {
-            sql.append(" AND categoria_id = ?");
+            String categoriaId = obtenerIdCategoria(tipoSolicitud);
+            pstmt.setString(paramIndex++, categoriaId);
         }
         
-        System.out.println("Query construido: " + sql.toString());
-        return sql.toString();
+        ResultSet rs = pstmt.executeQuery();
+        
+        if (rs.next()) {
+            int total = rs.getInt("total_solicitudes");
+            int abiertas = rs.getInt("abiertas");
+            int enProceso = rs.getInt("en_proceso");
+            int pausadas = rs.getInt("pausadas");
+            int cerradas = rs.getInt("cerradas");
+            
+            System.out.println("=== RESULTADOS OBTENIDOS ===");
+            System.out.println("Total: " + total);
+            System.out.println("Abiertas: " + abiertas);
+            System.out.println("En proceso: " + enProceso);
+            System.out.println("Pausadas: " + pausadas);
+            System.out.println("Cerradas: " + cerradas);
+            
+            return new DatosReporte(total, abiertas, enProceso, pausadas, cerradas);
+        } else {
+            System.out.println("No se obtuvieron resultados de la consulta");
+            return new DatosReporte(0, 0, 0, 0, 0);
+        }
+        
+    } catch (SQLException e) {
+        System.err.println("ERROR SQL: " + e.getMessage());
+        e.printStackTrace();
+        throw new RuntimeException("Error al generar reporte: " + e.getMessage(), e);
+    } catch (Exception e) {
+        System.err.println("ERROR GENERAL: " + e.getMessage());
+        e.printStackTrace();
+        throw new RuntimeException("Error al generar reporte: " + e.getMessage(), e);
     }
+}
+    
+    private String construirQuery(Date fechaInicio, Date fechaFin, String tipoSolicitud) {
+    StringBuilder sql = new StringBuilder(
+        "SELECT " +
+        "COUNT(*) as total_solicitudes, " +
+        "SUM(CASE WHEN estado_id = 'EST1' THEN 1 ELSE 0 END) as abiertas, " +
+        "SUM(CASE WHEN estado_id = 'EST2' THEN 1 ELSE 0 END) as en_proceso, " +
+        "SUM(CASE WHEN estado_id = 'EST3' THEN 1 ELSE 0 END) as pausadas, " +
+        "SUM(CASE WHEN estado_id = 'EST4' THEN 1 ELSE 0 END) as cerradas " +
+        "FROM public.solicitudes WHERE 1=1"
+    );
+    
+    if (fechaInicio != null) {
+        sql.append(" AND fecha_registro >= ?");
+    }
+    if (fechaFin != null) {
+        sql.append(" AND fecha_registro <= ?");
+    }
+    if (!tipoSolicitud.equals("Todas las Solicitudes")) {
+        sql.append(" AND categoria_id = ?");
+    }
+    
+    return sql.toString();
+}
     
     private String obtenerIdCategoria(String tipoSolicitud) {
         System.out.println("Convirtiendo tipo solicitud: " + tipoSolicitud);
