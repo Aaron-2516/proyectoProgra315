@@ -15,6 +15,11 @@ public class Login extends javax.swing.JFrame {
         controller = new LoginController(this);
 
         btnAcceder.addActionListener(e -> controller.iniciarSesion(UsuarioTxt.getText(), new String(contrasenaTxt.getPassword())));
+        btnRegistrarUsuario.addActionListener(new java.awt.event.ActionListener() {
+    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        abrirRegistrarUsuario();
+    }
+});
     }
     
    public String getUsername() { return UsuarioTxt.getText(); }
@@ -28,6 +33,17 @@ public class Login extends javax.swing.JFrame {
         new DashboardUsuario(user).setVisible(true);
         this.dispose();
     }
+    
+    private void abrirRegistrarUsuario() {
+        try {
+            // Asumiendo que RegistrarUsuario está en el mismo paquete VIEWS
+            new RegistrarUsuario().setVisible(true);
+            this.dispose(); // Cierra la ventana de login
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al abrir formulario de registro: " + e.getMessage());
+        }
+    }
+    
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -51,7 +67,7 @@ public class Login extends javax.swing.JFrame {
         contrasenaTxt = new javax.swing.JPasswordField();
         btnAcceder = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
-        btnRegistroLogin = new javax.swing.JButton();
+        btnRegistrarUsuario = new javax.swing.JToggleButton();
         fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -124,14 +140,13 @@ public class Login extends javax.swing.JFrame {
         jLabel5.setText("¿No tienes cuenta?");
         panelInterno.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 310, -1, -1));
 
-        btnRegistroLogin.setText("REGISTRARSE");
-        btnRegistroLogin.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnRegistroLogin.addActionListener(new java.awt.event.ActionListener() {
+        btnRegistrarUsuario.setText("REGISTRARSE");
+        btnRegistrarUsuario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRegistroLoginActionPerformed(evt);
+                btnRegistrarUsuarioActionPerformed(evt);
             }
         });
-        panelInterno.add(btnRegistroLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 310, -1, -1));
+        panelInterno.add(btnRegistrarUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 310, -1, -1));
 
         panel2.add(panelInterno, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 70, 600, 350));
 
@@ -157,13 +172,9 @@ public class Login extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_UsuarioTxtActionPerformed
 
-    private void btnRegistroLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistroLoginActionPerformed
-    JDialog dialog = new JDialog((Frame) this.getParent(), "Registro de Usuario", true);
-    dialog.setContentPane(new Registrarse()); // Aquí agregas tu JPanel
-    dialog.pack();
-    dialog.setLocationRelativeTo(this);
-    dialog.setVisible(true);
-    }//GEN-LAST:event_btnRegistroLoginActionPerformed
+    private void btnRegistrarUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarUsuarioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnRegistrarUsuarioActionPerformed
 
     /**
      * @param args the command line arguments
@@ -173,7 +184,7 @@ public class Login extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField UsuarioTxt;
     private javax.swing.JButton btnAcceder;
-    private javax.swing.JButton btnRegistroLogin;
+    private javax.swing.JToggleButton btnRegistrarUsuario;
     private javax.swing.JPasswordField contrasenaTxt;
     private javax.swing.JLabel cuadroInterno;
     private javax.swing.JLabel fondo;

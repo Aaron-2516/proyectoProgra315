@@ -26,10 +26,6 @@ public class gestEstadisticaDesempeno extends javax.swing.JPanel {
     }
     
     // Getters para que el controller acceda
-    public javax.swing.JButton getBtnGenerarPDF() {
-        return btnGenerarPDF;
-    }
-
     public javax.swing.JComboBox<String> getJComboBox1() {
         return jComboBox1;
     }
@@ -77,7 +73,6 @@ public class gestEstadisticaDesempeno extends javax.swing.JPanel {
         btnGenerarEstadisticas = new javax.swing.JButton();
         jPanelGrafico = new javax.swing.JPanel();
         jComboBox1 = new javax.swing.JComboBox<>();
-        btnGenerarPDF = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Arial Black", 0, 24)); // NOI18N
         jLabel1.setText("Estadistica de Desempeño");
@@ -100,17 +95,6 @@ public class gestEstadisticaDesempeno extends javax.swing.JPanel {
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         jComboBox1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        btnGenerarPDF.setText("jButton1");
-        btnGenerarPDF.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnGenerarPDF.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/file_pdf_download_icon-icons.com_68954.png")));
-        btnGenerarPDF.setText("");
-        btnGenerarPDF.setToolTipText("Generar PDF");
-        btnGenerarPDF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -128,9 +112,7 @@ public class gestEstadisticaDesempeno extends javax.swing.JPanel {
                                 .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(116, 116, 116)
                                 .addComponent(btnGenerarEstadisticas)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnGenerarPDF)
-                        .addGap(86, 86, 86))))
+                        .addGap(86, 434, Short.MAX_VALUE))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(58, Short.MAX_VALUE)
                 .addComponent(jPanelGrafico, javax.swing.GroupLayout.PREFERRED_SIZE, 786, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -145,17 +127,11 @@ public class gestEstadisticaDesempeno extends javax.swing.JPanel {
                 .addComponent(jLabel2)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(130, 130, 130)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnGenerarEstadisticas))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 80, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnGenerarPDF)
-                        .addGap(94, 94, 94)))
+                .addGap(130, 130, 130)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnGenerarEstadisticas))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
                 .addComponent(jPanelGrafico, javax.swing.GroupLayout.PREFERRED_SIZE, 321, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(39, 39, 39))
         );
@@ -169,7 +145,6 @@ public class gestEstadisticaDesempeno extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGenerarEstadisticas;
-    private javax.swing.JButton btnGenerarPDF;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

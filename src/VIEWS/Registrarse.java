@@ -3,7 +3,6 @@ package VIEWS;
 
 import VIEWS.Login;
 import MODELS.DatabaseConnection;
-import MODELS.DatabaseConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -126,61 +125,61 @@ public class Registrarse extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 // </editor-fold>                        
 
-   private void registrarUsuario() {
-
-        String nombre = txtNombre.getText().trim();
-        String correo = txtCorreo.getText().trim();
-        String contraseña = txtContraseña.getText().trim();
-        String username = txtUsername.getText().trim();
-        String Apellido = txtApellido.getText().trim();
-
-        if (nombre.isEmpty() || correo.isEmpty() || contraseña.isEmpty() || username.isEmpty() || contraseña.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor complete los datos del registro");
-            return;
-        }
-
-        Connection con = null;
-        PreparedStatement ps = null;
-
-        try {
-            con = DatabaseConnection.getConnection();
-            String sql = "INSERT INTO usuarios (username, contrasena, nombre, apellido, correo, rol_id) " + "VALUES (?, ?, ?, ?, ?, ?)";
-            ps = con.prepareStatement(sql);
-            
-            ps.setString(1, txtUsername.getText().trim());
-            ps.setString(2, txtContraseña.getText().trim());
-            ps.setString(3, txtNombre.getText().trim());
-            ps.setString(4, txtApellido.getText().trim());
-            ps.setString(5, txtCorreo.getText().trim());
-            ps.setInt(6, 3); // rol_id = 3 → usuario normal
-
-            int filas = ps.executeUpdate(); // Ejecuta una sola vez
-        if (filas > 0) {
-            JOptionPane.showMessageDialog(this, "Usuario registrado con éxito");
-
-             // Abrir login
-            Login login = new Login(); // constructor sin parámetros
-            login.setVisible(true);
-
-            // Cerrar ventana de registro
-            SwingUtilities.getWindowAncestor(this).dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "No se pudo registrar el usuario");
-        }
-
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Error al registrar: " + e.getMessage());
-        e.printStackTrace();
-    } finally {
-        try { if (ps != null) ps.close(); } catch (SQLException e) {}
-        DatabaseConnection.closeConnection(con);
-    }
-    }
+//   private void registrarUsuario() {
+//
+//        String nombre = txtNombre.getText().trim();
+//        String correo = txtCorreo.getText().trim();
+//        String contraseña = txtContraseña.getText().trim();
+//        String username = txtUsername.getText().trim();
+//        String Apellido = txtApellido.getText().trim();
+//
+//        if (nombre.isEmpty() || correo.isEmpty() || contraseña.isEmpty() || username.isEmpty() || contraseña.isEmpty()) {
+//            JOptionPane.showMessageDialog(this, "Por favor complete los datos del registro");
+//            return;
+//        }
+//
+//        Connection con = null;
+//        PreparedStatement ps = null;
+//
+//        try {
+//            con = DatabaseConnection.getConnection();
+//            String sql = "INSERT INTO usuarios (username, contrasena, nombre, apellido, correo, rol_id) " + "VALUES (?, ?, ?, ?, ?, ?)";
+//            ps = con.prepareStatement(sql);
+//            
+//            ps.setString(1, txtUsername.getText().trim());
+//            ps.setString(2, txtContraseña.getText().trim());
+//            ps.setString(3, txtNombre.getText().trim());
+//            ps.setString(4, txtApellido.getText().trim());
+//            ps.setString(5, txtCorreo.getText().trim());
+//            ps.setInt(6, 3); // rol_id = 3 → usuario normal
+//
+//            int filas = ps.executeUpdate(); // Ejecuta una sola vez
+//        if (filas > 0) {
+//            JOptionPane.showMessageDialog(this, "Usuario registrado con éxito");
+//
+//             // Abrir login
+//            Login login = new Login(); // constructor sin parámetros
+//            login.setVisible(true);
+//
+//            // Cerrar ventana de registro
+//            SwingUtilities.getWindowAncestor(this).dispose();
+//        } else {
+//            JOptionPane.showMessageDialog(this, "No se pudo registrar el usuario");
+//        }
+//
+//    } catch (SQLException e) {
+//        JOptionPane.showMessageDialog(this, "Error al registrar: " + e.getMessage());
+//        e.printStackTrace();
+//    } finally {
+//        try { if (ps != null) ps.close(); } catch (SQLException e) {}
+//        DatabaseConnection.closeConnection(con);
+//    }
+//    }
 
    
     
     private void btnRegistroUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistroUsuarioActionPerformed
-        registrarUsuario();
+        //registrarUsuario();
     }//GEN-LAST:event_btnRegistroUsuarioActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

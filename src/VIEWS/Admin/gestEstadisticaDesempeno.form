@@ -32,9 +32,7 @@
                               <Component id="btnGenerarEstadisticas" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Component id="btnGenerarPDF" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="86" max="-2" attributes="0"/>
+                      <EmptySpace min="86" pref="434" max="32767" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -55,21 +53,12 @@
               <EmptySpace max="32767" attributes="0"/>
           </Group>
           <Group type="102" alignment="0" attributes="0">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <EmptySpace min="-2" pref="130" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jComboBox1" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="btnGenerarEstadisticas" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace pref="80" max="32767" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Component id="btnGenerarPDF" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="94" max="-2" attributes="0"/>
-                  </Group>
+              <EmptySpace min="-2" pref="130" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jComboBox1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnGenerarEstadisticas" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
+              <EmptySpace pref="80" max="32767" attributes="0"/>
               <Component id="jPanelGrafico" min="-2" pref="321" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
           </Group>
@@ -132,17 +121,6 @@
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
-      </AuxValues>
-    </Component>
-    <Component class="javax.swing.JButton" name="btnGenerarPDF">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jButton1"/>
-        <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
-          <Color id="Hand Cursor"/>
-        </Property>
-      </Properties>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="btnGenerarPDF.setIcon(new javax.swing.ImageIcon(getClass().getResource(&quot;/Imagenes/file_pdf_download_icon-icons.com_68954.png&quot;)));&#xa;    btnGenerarPDF.setText(&quot;&quot;);&#xa;    btnGenerarPDF.setToolTipText(&quot;Generar PDF&quot;);&#xa;    btnGenerarPDF.addActionListener(new java.awt.event.ActionListener() {&#xa;        public void actionPerformed(java.awt.event.ActionEvent evt) {&#xa;            &#xa;        }&#xa;    });"/>
       </AuxValues>
     </Component>
   </SubComponents>

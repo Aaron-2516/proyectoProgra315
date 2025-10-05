@@ -36,9 +36,6 @@ public class AdminReporteDesempenoController {
         if (view.getBtnGenerarEstadisticas() != null) {
             view.getBtnGenerarEstadisticas().addActionListener(e -> generarEstadisticas());
         }    
-        if (view.getBtnGenerarPDF() != null) {
-        view.getBtnGenerarPDF().addActionListener(e -> generarPDF());
-    }
     }
     
     private void cargarTecnicosInicialmente() {
@@ -104,29 +101,6 @@ public class AdminReporteDesempenoController {
         mostrarError("Error al generar estadísticas: " + e.getMessage());
     }
 }
-
-private void generarPDF() {
-    try {
-        String tecnicoSeleccionado = (String) view.getJComboBox1().getSelectedItem();
-        
-        if (tecnicoSeleccionado == null || tecnicoSeleccionado.trim().isEmpty()) {
-            mostrarError("Por favor seleccione un técnico");
-            return;
-        }
-        
-        // Obtener estadísticas
-        AdminReporteDesempeno.EstadisticasTecnico estadisticas = 
-            model.generarEstadisticas(tecnicoSeleccionado);
-        
-        // Generar PDF
-        generarReportePDF(estadisticas, tecnicoSeleccionado);
-        
-    } catch (Exception e) {
-        System.err.println("Error al generar PDF: " + e.getMessage());
-        mostrarError("Error al generar PDF: " + e.getMessage());
-    }
-}
-
 
 // Método auxiliar para validar si es placeholder o inválido
 private boolean esPlaceholderOInvalido(String tecnicoSeleccionado) {
@@ -362,141 +336,7 @@ private boolean esPlaceholderOInvalido(String tecnicoSeleccionado) {
         contenedor.revalidate(); // Refresca
         contenedor.repaint();
     }
-    
-    private void generarReportePDF(AdminReporteDesempeno.EstadisticasTecnico estadisticas, String tecnico) {
-    try {
-        // Diálogo para guardar archivo
-        javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
-        fileChooser.setDialogTitle("Guardar reporte PDF");
-        fileChooser.setSelectedFile(new java.io.File("reporte_desempeno_" + tecnico.replace(" ", "_") + ".pdf"));
         
-        if (fileChooser.showSaveDialog(view) == javax.swing.JFileChooser.APPROVE_OPTION) {
-            java.io.File file = fileChooser.getSelectedFile();
-            
-            // Crear documento PDF
-            com.itextpdf.text.Document document = new com.itextpdf.text.Document();
-            com.itextpdf.text.pdf.PdfWriter.getInstance(document, new java.io.FileOutputStream(file));
-            
-            document.open();
-            
-            // ===== TÍTULO PRINCIPAL =====
-            com.itextpdf.text.Font tituloFont = new com.itextpdf.text.Font(
-                com.itextpdf.text.Font.FontFamily.HELVETICA, 20, com.itextpdf.text.Font.BOLD
-            );
-            com.itextpdf.text.Paragraph titulo = new com.itextpdf.text.Paragraph(
-                "REPORTE DE DESEMPEÑO", tituloFont
-            );
-            titulo.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
-            titulo.setSpacingAfter(20);
-            document.add(titulo);
-            
-            // ===== INFORMACIÓN DEL TÉCNICO =====
-            com.itextpdf.text.Font tecnicoFont = new com.itextpdf.text.Font(
-                com.itextpdf.text.Font.FontFamily.HELVETICA, 16, com.itextpdf.text.Font.BOLD
-            );
-            com.itextpdf.text.Paragraph parTecnico = new com.itextpdf.text.Paragraph(
-                "Técnico: " + tecnico, tecnicoFont
-            );
-            parTecnico.setSpacingAfter(15);
-            document.add(parTecnico);
-            
-            // ===== ESTADÍSTICAS GENERALES =====
-            com.itextpdf.text.Font seccionFont = new com.itextpdf.text.Font(
-                com.itextpdf.text.Font.FontFamily.HELVETICA, 14, com.itextpdf.text.Font.BOLD
-            );
-            com.itextpdf.text.Paragraph seccion1 = new com.itextpdf.text.Paragraph(
-                "ESTADÍSTICAS GENERALES", seccionFont
-            );
-            seccion1.setSpacingAfter(10);
-            document.add(seccion1);
-            
-            // Crear tabla para estadísticas
-            com.itextpdf.text.pdf.PdfPTable tablaEstadisticas = new com.itextpdf.text.pdf.PdfPTable(2);
-            tablaEstadisticas.setWidthPercentage(100);
-            tablaEstadisticas.setSpacingBefore(10);
-            tablaEstadisticas.setSpacingAfter(20);
-            
-            // Encabezados de tabla
-            com.itextpdf.text.Font headerFont = new com.itextpdf.text.Font(
-                com.itextpdf.text.Font.FontFamily.HELVETICA, 12, com.itextpdf.text.Font.BOLD
-            );
-            
-            tablaEstadisticas.addCell(new com.itextpdf.text.Phrase("Métrica", headerFont));
-            tablaEstadisticas.addCell(new com.itextpdf.text.Phrase("Valor", headerFont));
-            
-            // Datos de la tabla
-            com.itextpdf.text.Font normalFont = new com.itextpdf.text.Font(
-                com.itextpdf.text.Font.FontFamily.HELVETICA, 12, com.itextpdf.text.Font.NORMAL
-            );
-            
-            tablaEstadisticas.addCell(new com.itextpdf.text.Phrase("Tickets Asignados", normalFont));
-            tablaEstadisticas.addCell(new com.itextpdf.text.Phrase(String.valueOf(estadisticas.getTicketsAsignados()), normalFont));
-            
-            tablaEstadisticas.addCell(new com.itextpdf.text.Phrase("Tickets Abiertas", normalFont));
-            tablaEstadisticas.addCell(new com.itextpdf.text.Phrase(String.valueOf(estadisticas.getTicketsAbiertas()), normalFont));
-            
-            tablaEstadisticas.addCell(new com.itextpdf.text.Phrase("Tickets En Proceso", normalFont));
-            tablaEstadisticas.addCell(new com.itextpdf.text.Phrase(String.valueOf(estadisticas.getTicketsEnProceso()), normalFont));
-            
-            tablaEstadisticas.addCell(new com.itextpdf.text.Phrase("Tickets Pausadas", normalFont));
-            tablaEstadisticas.addCell(new com.itextpdf.text.Phrase(String.valueOf(estadisticas.getTicketsPausadas()), normalFont));
-            
-            tablaEstadisticas.addCell(new com.itextpdf.text.Phrase("Tickets Cerradas", normalFont));
-            tablaEstadisticas.addCell(new com.itextpdf.text.Phrase(String.valueOf(estadisticas.getTicketsCerradas()), normalFont));
-            
-            tablaEstadisticas.addCell(new com.itextpdf.text.Phrase("Tasa de Resolución", normalFont));
-            tablaEstadisticas.addCell(new com.itextpdf.text.Phrase(
-                String.format("%.2f%%", estadisticas.getTasaResolucion()), normalFont
-            ));
-            
-            document.add(tablaEstadisticas);
-            
-            // ===== TICKETS POR CATEGORÍA =====
-            com.itextpdf.text.Paragraph seccion2 = new com.itextpdf.text.Paragraph(
-                "TICKETS POR CATEGORÍA", seccionFont
-            );
-            seccion2.setSpacingAfter(10);
-            document.add(seccion2);
-            
-            if (!estadisticas.getTicketsPorCategoria().isEmpty()) {
-                com.itextpdf.text.pdf.PdfPTable tablaCategorias = new com.itextpdf.text.pdf.PdfPTable(2);
-                tablaCategorias.setWidthPercentage(100);
-                tablaCategorias.setSpacingBefore(10);
-                tablaCategorias.setSpacingAfter(20);
-                
-                tablaCategorias.addCell(new com.itextpdf.text.Phrase("Categoría", headerFont));
-                tablaCategorias.addCell(new com.itextpdf.text.Phrase("Cantidad", headerFont));
-                
-                for (Map.Entry<String, Integer> entry : estadisticas.getTicketsPorCategoria().entrySet()) {
-                    tablaCategorias.addCell(new com.itextpdf.text.Phrase(entry.getKey(), normalFont));
-                    tablaCategorias.addCell(new com.itextpdf.text.Phrase(String.valueOf(entry.getValue()), normalFont));
-                }
-                
-                document.add(tablaCategorias);
-            } else {
-                document.add(new com.itextpdf.text.Paragraph("No hay tickets por categoría", normalFont));
-            }
-            
-            // ===== PIE DE PÁGINA =====
-            com.itextpdf.text.Font pieFont = new com.itextpdf.text.Font(
-                com.itextpdf.text.Font.FontFamily.HELVETICA, 10, com.itextpdf.text.Font.ITALIC
-            );
-            com.itextpdf.text.Paragraph pie = new com.itextpdf.text.Paragraph(
-                "Generado el: " + new java.util.Date(), pieFont
-            );
-            pie.setAlignment(com.itextpdf.text.Element.ALIGN_RIGHT);
-            document.add(pie);
-            
-            document.close();
-            
-            mostrarExito("PDF generado exitosamente: " + file.getName());
-        }
-        
-    } catch (Exception e) {
-        throw new RuntimeException("Error generando PDF: " + e.getMessage(), e);
-    }
-}
-    
     private void mostrarError(String mensaje) {
         JOptionPane.showMessageDialog(view, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
     }
