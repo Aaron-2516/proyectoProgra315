@@ -69,10 +69,10 @@ public class AdminVerSolicitudController {
                 solicitud.getFechaRegistro(),
                 solicitud.getDescripcion(),
                 solicitud.getCreadaPor(),
-                solicitud.getCategoriaId(),
-                solicitud.getPrioridadId(),
-                solicitud.getEstadoId(),
-                solicitud.getAsignadoAId()
+                solicitud.getCategoria(),
+                solicitud.getPrioridad(),
+                solicitud.getEstado(),
+                solicitud.getAsignadoA()
             };
             modelo.addRow(fila);
         }
@@ -99,10 +99,10 @@ public class AdminVerSolicitudController {
                 solicitud.getFechaRegistro(),
                 solicitud.getDescripcion(),
                 solicitud.getCreadaPor(),
-                solicitud.getCategoriaId(),
-                solicitud.getPrioridadId(),
-                solicitud.getEstadoId(),
-                solicitud.getAsignadoAId()
+                solicitud.getCategoria(),
+                solicitud.getPrioridad(),
+                solicitud.getEstado(),
+                solicitud.getAsignadoA()
             };
             modelo.addRow(fila);
             

@@ -22,21 +22,21 @@ public class AdminVerSolicitud {
         private String fechaRegistro;
         private String descripcion;
         private String creadaPor;
-        private String categoriaId;
-        private String prioridadId;
-        private String estadoId;
-        private String asignadoAId;
+        private String categoria;
+        private String prioridad;
+        private String estado;
+        private String asignadoA;
         
         public Solicitud(String id, String fechaRegistro, String descripcion, String creadaPor, 
-                        String categoriaId, String prioridadId, String estadoId, String asignadoAId) {
+                        String categoria, String prioridad, String estado, String asignadoA) {
             this.id = id;
             this.fechaRegistro = fechaRegistro;
             this.descripcion = descripcion;
             this.creadaPor = creadaPor;
-            this.categoriaId = categoriaId;
-            this.prioridadId = prioridadId;
-            this.estadoId = estadoId;
-            this.asignadoAId = asignadoAId;
+            this.categoria = categoria;
+            this.prioridad = prioridad;
+            this.estado = estado;
+            this.asignadoA = asignadoA;
         }
         
         // Getters
@@ -44,10 +44,10 @@ public class AdminVerSolicitud {
         public String getFechaRegistro() { return fechaRegistro; }
         public String getDescripcion() { return descripcion; }
         public String getCreadaPor() { return creadaPor; }
-        public String getCategoriaId() { return categoriaId; }
-        public String getPrioridadId() { return prioridadId; }
-        public String getEstadoId() { return estadoId; }
-        public String getAsignadoAId() { return asignadoAId; }
+        public String getCategoria() { return categoria; }
+        public String getPrioridad() { return prioridad; }
+        public String getEstado() { return estado; }
+        public String getAsignadoA() { return asignadoA; }
     }
     
     // Clase para representar una categoría
@@ -96,21 +96,28 @@ public class AdminVerSolicitud {
         return categorias;
     }
     
-    // Método para obtener todas las solicitudes (con filtro por categoría)
+    // Método para obtener todas las solicitudes (con filtro por categoría) - OPTIMIZADO
     public List<Solicitud> obtenerSolicitudes(String filtroCategoriaId) {
         List<Solicitud> solicitudes = new ArrayList<>();
         Connection con = DatabaseConnection.getConnection();
         if (con == null) return solicitudes;
 
         StringBuilder sql = new StringBuilder(
-            "SELECT id, fecha_registro, descripcion, creada_por, "
-            + "categoria_id, prioridad_id, estado_id, asignado_a_id "
-            + "FROM public.solicitudes"
+            "SELECT s.id, s.fecha_registro, s.descripcion, s.creada_por, " +
+            "cat.nombre as categoria_nombre, " +
+            "pri.nombre as prioridad_nombre, " +
+            "est.nombre as estado_nombre, " +
+            "COALESCE(u.nombre || ' ' || u.apellidos, 'No asignado') as asignado_nombre " +
+            "FROM public.solicitudes s " +
+            "LEFT JOIN public.categorias cat ON s.categoria_id = cat.id " +
+            "LEFT JOIN public.prioridades pri ON s.prioridad_id = pri.id " +
+            "LEFT JOIN public.estados est ON s.estado_id = est.id " +
+            "LEFT JOIN public.usuarios u ON s.asignado_a_id = u.id"
         );
 
         // Si se selecciona una categoría específica (no "Todos")
         if (filtroCategoriaId != null && !filtroCategoriaId.equals("0")) {
-            sql.append(" WHERE categoria_id = ?");
+            sql.append(" WHERE s.categoria_id = ?");
         }
 
         try (PreparedStatement ps = con.prepareStatement(sql.toString())) {
@@ -125,10 +132,10 @@ public class AdminVerSolicitud {
                         rs.getString("fecha_registro"),
                         rs.getString("descripcion"),
                         rs.getString("creada_por"),
-                        rs.getString("categoria_id"),
-                        rs.getString("prioridad_id"),
-                        rs.getString("estado_id"),
-                        rs.getString("asignado_a_id")
+                        rs.getString("categoria_nombre"),
+                        rs.getString("prioridad_nombre"),
+                        rs.getString("estado_nombre"),
+                        rs.getString("asignado_nombre")
                     );
                     solicitudes.add(solicitud);
                 }
@@ -143,14 +150,22 @@ public class AdminVerSolicitud {
         return solicitudes;
     }
     
-    // Método para buscar solicitud por ID
+    // Método para buscar solicitud por ID - OPTIMIZADO
     public Solicitud buscarSolicitudPorId(String id) {
         Connection con = DatabaseConnection.getConnection();
         if (con == null) return null;
 
-        String sql = "SELECT id, fecha_registro, descripcion, creada_por, "
-                   + "categoria_id, prioridad_id, estado_id, asignado_a_id "
-                   + "FROM public.solicitudes WHERE id = ?";
+        String sql = "SELECT s.id, s.fecha_registro, s.descripcion, s.creada_por, " +
+                     "cat.nombre as categoria_nombre, " +
+                     "pri.nombre as prioridad_nombre, " +
+                     "est.nombre as estado_nombre, " +
+                     "COALESCE(u.nombre || ' ' || u.apellidos, 'No asignado') as asignado_nombre " +
+                     "FROM public.solicitudes s " +
+                     "LEFT JOIN public.categorias cat ON s.categoria_id = cat.id " +
+                     "LEFT JOIN public.prioridades pri ON s.prioridad_id = pri.id " +
+                     "LEFT JOIN public.estados est ON s.estado_id = est.id " +
+                     "LEFT JOIN public.usuarios u ON s.asignado_a_id = u.id " +
+                     "WHERE s.id = ?";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, id);
@@ -162,10 +177,10 @@ public class AdminVerSolicitud {
                         rs.getString("fecha_registro"),
                         rs.getString("descripcion"),
                         rs.getString("creada_por"),
-                        rs.getString("categoria_id"),
-                        rs.getString("prioridad_id"),
-                        rs.getString("estado_id"),
-                        rs.getString("asignado_a_id")
+                        rs.getString("categoria_nombre"),
+                        rs.getString("prioridad_nombre"),
+                        rs.getString("estado_nombre"),
+                        rs.getString("asignado_nombre")
                     );
                 }
             }
@@ -186,10 +201,10 @@ public class AdminVerSolicitud {
         return "ID: " + solicitud.getId() + "\n" +
                "Fecha: " + solicitud.getFechaRegistro() + "\n" +
                "Cliente: " + solicitud.getCreadaPor() + "\n" +
-               "Categoría: " + solicitud.getCategoriaId() + "\n" +
-               "Prioridad: " + solicitud.getPrioridadId() + "\n" +
-               "Estado: " + solicitud.getEstadoId() + "\n" +
-               "Asignado a: " + solicitud.getAsignadoAId() + "\n\n" +
+               "Categoría: " + solicitud.getCategoria() + "\n" +
+               "Prioridad: " + solicitud.getPrioridad() + "\n" +
+               "Estado: " + solicitud.getEstado() + "\n" +
+               "Asignado a: " + solicitud.getAsignadoA() + "\n\n" +
                "Descripción:\n" + solicitud.getDescripcion();
     }
 }
