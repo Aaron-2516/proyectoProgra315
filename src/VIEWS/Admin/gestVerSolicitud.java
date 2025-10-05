@@ -1,13 +1,7 @@
 package VIEWS.Admin;
 
-import javax.swing.JOptionPane;
+import CONTROLLER.AdminVerSolicitudController;
 import javax.swing.table.DefaultTableModel;
-import MODELS.DatabaseConnection;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 /**
  *
  * @author GerardRG
@@ -16,23 +10,18 @@ public class gestVerSolicitud extends javax.swing.JPanel {
 
     private DefaultTableModel modelo;
     private javax.swing.JTextArea txtDescripcion;
+    private AdminVerSolicitudController controller;
 
     /**
      * Creates new form verSolicitud
      */
-    public gestVerSolicitud() {
+     public gestVerSolicitud() {
         initComponents();
-        inicializarTabla();
-        cargarDatos();
-        
-        txtDescripcion = new javax.swing.JTextArea();
-        txtDescripcion.setColumns(20);
-        txtDescripcion.setRows(5);
-        txtDescripcion.setEditable(false);
-        SCPInformacion.setViewportView(txtDescripcion);
+        inicializarComponentes();
+        controller = new AdminVerSolicitudController(this);
     }
     
-    private void inicializarTabla() {
+    private void inicializarComponentes() {
         modelo = new DefaultTableModel();
         String[] columnas = {
             "ID", "Fecha Registro", "Descripción", "Cliente",
@@ -45,60 +34,48 @@ public class gestVerSolicitud extends javax.swing.JPanel {
         CMBcategorias.setModel(new javax.swing.DefaultComboBoxModel<>( 
             new String[] { "Todos", "Acceso", "Rendimiento", "Errores", "Consultas" }
         ));
+        
+        txtDescripcion = new javax.swing.JTextArea();
+        txtDescripcion.setColumns(20);
+        txtDescripcion.setRows(5);
+        txtDescripcion.setEditable(false);
+        SCPInformacion.setViewportView(txtDescripcion);
     }
 
-    private void cargarDatos() {
-        cargarDatos(0); // 0 = todos
+    // Getters para el controller
+    public javax.swing.JButton getBtnBuscar() {
+        return btnBuscar;
     }
-
-    private void cargarDatos(int filtroCategoria) {
-        Connection con = DatabaseConnection.getConnection();
-        if (con == null) {
-            JOptionPane.showMessageDialog(this, "No se pudo conectar a la BD");
-            return;
-        }
-
-        String sql = "SELECT id, fecha_registro, descripcion, creada_por, "
-                   + "categoria_id, prioridad_id, estado_id, asignado_a_id "
-                   + "FROM public.solicitudes";
-
-        // Si se selecciona una categoría específica, agregar filtro
-        if (filtroCategoria > 0) {
-            sql += " WHERE categoria_id = '" + filtroCategoria + "'";
-        }
-
-        try (PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            modelo.setRowCount(0);
-
-            while (rs.next()) {
-                // Asignación directa de las columnas como String
-                String categoria = rs.getString("categoria_id");
-                String prioridad = rs.getString("prioridad_id");
-                String estado = rs.getString("estado_id");
-                String asignado = rs.getString("asignado_a_id");
-
-                // Mostrar los datos en la tabla
-                Object[] fila = {
-                    rs.getString("id"),
-                    rs.getTimestamp("fecha_registro"),
-                    rs.getString("descripcion"),
-                    rs.getString("creada_por"),
-                    categoria,
-                    prioridad,
-                    estado,
-                    asignado
-                };
-                modelo.addRow(fila);
-            }
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar datos: " + e.getMessage());
-        } finally {
-            DatabaseConnection.closeConnection(con);
-        }
+    
+    public javax.swing.JButton getBtnCerrar() {
+        return btnCerrar;
     }
+    
+    public javax.swing.JButton getBtnVerSolicitud() {
+        return btnVerSolicitud;
+    }
+    
+    public javax.swing.JComboBox<String> getCMBcategorias() {
+        return CMBcategorias;
+    }
+    
+    public javax.swing.JTextField getTxtBuscar() {
+        return txtBuscar;
+    }
+    
+    public javax.swing.JTextArea getTxtDescripcion() {
+        return txtDescripcion;
+    }
+    
+    public javax.swing.JTable getJTable1() {
+        return jTable1;
+    }
+    
+    public DefaultTableModel getModelo() {
+        return modelo;
+    }
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -237,128 +214,19 @@ public class gestVerSolicitud extends javax.swing.JPanel {
 
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        String idBuscar = txtBuscar.getText().trim();
-
-        if (idBuscar.isEmpty()) {
-            cargarDatos();
-            txtDescripcion.setText("");
-            return;
-        }
-
-        Connection con = DatabaseConnection.getConnection();
-        if (con == null) {
-            JOptionPane.showMessageDialog(this, "No se pudo conectar a la BD");
-            return;
-        }
-
-        String sql = "SELECT id, fecha_registro, descripcion, creada_por, " +
-                     "categoria_id, prioridad_id, estado_id, asignado_a_id " +
-                     "FROM public.solicitudes WHERE id = ?";
-
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, idBuscar);
-            try (ResultSet rs = ps.executeQuery()) {
-                modelo.setRowCount(0); 
-
-                if (rs.next()) {
-                    String categoria = rs.getString("categoria_id");
-                    String prioridad = rs.getString("prioridad_id");
-                    String estado = rs.getString("estado_id");
-
-                    // Mostrar los datos en la tabla
-                    Object[] fila = {
-                        rs.getString("id"),
-                        rs.getTimestamp("fecha_registro"),
-                        rs.getString("descripcion"),
-                        rs.getString("creada_por"),
-                        categoria,
-                        prioridad,
-                        estado,
-                        rs.getString("asignado_a_id")
-                    };
-                    modelo.addRow(fila);
-
-                    // Mostrar los detalles en el JTextArea
-                    txtDescripcion.setText(
-                        "ID: " + rs.getString("id") + "\n" +
-                        "Fecha: " + rs.getTimestamp("fecha_registro") + "\n" +
-                        "Cliente: " + rs.getString("creada_por") + "\n" +
-                        "Categoría: " + categoria + "\n" +
-                        "Prioridad: " + prioridad + "\n" +
-                        "Estado: " + estado + "\n" +
-                        "Asignado a: " + rs.getString("asignado_a_id") + "\n\n" +
-                        "Descripción:\n" + rs.getString("descripcion")
-                    );
-                } else {
-                    JOptionPane.showMessageDialog(this, "No se encontró el ID ingresado");
-                    txtDescripcion.setText("");
-                }
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error en búsqueda: " + e.getMessage());
-        } finally {
-            DatabaseConnection.closeConnection(con);
-        }
+        
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed
-       javax.swing.SwingUtilities.getWindowAncestor(this).dispose();
+       
     }//GEN-LAST:event_btnCerrarActionPerformed
 
     private void btnVerSolicitudActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerSolicitudActionPerformed
-      int fila = jTable1.getSelectedRow();
-        if (fila == -1) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar una solicitud");
-            return;
-        }
-
-        // Obtener el ID de la solicitud seleccionada
-        String idSolicitud = (String) modelo.getValueAt(fila, 0);
-
-        Connection con = DatabaseConnection.getConnection();
-        if (con == null) {
-            JOptionPane.showMessageDialog(this, "No se pudo conectar a la BD");
-            return;
-        }
-
-        String sql = "SELECT id, fecha_registro, descripcion, creada_por, "
-                   + "categoria_id, prioridad_id, estado_id, asignado_a_id "
-                   + "FROM public.solicitudes WHERE id = ?";
-
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, idSolicitud);  // Aseguramos que el ID sea tratado como String
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                String categoria = rs.getString("categoria_id");
-                String prioridad = rs.getString("prioridad_id");
-                String estado = rs.getString("estado_id");
-                String asignado = rs.getString("asignado_a_id");
-
-                // Mostrar en cascada dentro del JTextArea
-                txtDescripcion.setText(
-                    "ID: " + rs.getString("id") + "\n" +
-                    "Fecha de registro: " + rs.getTimestamp("fecha_registro") + "\n" +
-                    "Cliente: " + rs.getString("creada_por") + "\n" +
-                    "Categoría: " + categoria + "\n" +
-                    "Prioridad: " + prioridad + "\n" +
-                    "Estado: " + estado + "\n" +
-                    "Asignado a: " + asignado + "\n\n" +
-                    "Descripción:\n" + rs.getString("descripcion")
-                );
-            }
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar solicitud: " + e.getMessage());
-        } finally {
-            DatabaseConnection.closeConnection(con);
-        }   
+      
     }//GEN-LAST:event_btnVerSolicitudActionPerformed
 
     private void CMBcategoriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CMBcategoriasActionPerformed
-      int index = CMBcategorias.getSelectedIndex();
-        cargarDatos(index);
-        
+
     }//GEN-LAST:event_CMBcategoriasActionPerformed
 
 
