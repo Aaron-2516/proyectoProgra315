@@ -11,7 +11,7 @@ import VIEWS.Usuarios.Actualizar;
 import VIEWS.Admin.verSolicitudes;
 import VIEWS.Admin.asignarSolicitudes;
 import VIEWS.Admin.gestionUsuarios;
-import VIEWS.Admin.verSolicitud;
+import VIEWS.Admin.gestVerSolicitud;
 
 import javax.swing.*;
 import java.awt.*;
@@ -97,7 +97,7 @@ public class DashboardUsuario extends javax.swing.JFrame {
         content.add(new verSolicitudes(), R_VER_SOLICITUDES);   
         content.add(new asignarSolicitudes(), R_ASIGNAR);       
         content.add(new gestionUsuarios(), R_GESTION_USUARIOS); 
-        content.add(new verSolicitud(), R_VER_SOLICITUD);       
+        content.add(new gestVerSolicitud(), R_VER_SOLICITUD);       
 
         makePanelButton(m.getBtnReportes(), () -> showView(R_VER_SOLICITUDES));
         makePanelButton(m.getBtnAsignar(), () -> showView(R_ASIGNAR));

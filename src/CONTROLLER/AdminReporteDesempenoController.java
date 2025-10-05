@@ -292,7 +292,7 @@ private boolean esPlaceholderOInvalido(String tecnicoSeleccionado) {
     
     dataset.addValue(estadisticas.getTicketsAsignados(), "Cantidad", "Asignados");
     dataset.addValue(estadisticas.getTicketsAbiertas(), "Cantidad", "Abiertas");
-    dataset.addValue(estadisticas.getTicketsEnProceso(), "Cantidad", "En Proceso");
+    dataset.addValue(estadisticas.getTicketsEnProceso(), "Cantidad", "Proceso");
     dataset.addValue(estadisticas.getTicketsPausadas(), "Cantidad", "Pausadas");
     dataset.addValue(estadisticas.getTicketsCerradas(), "Cantidad", "Cerradas");
     

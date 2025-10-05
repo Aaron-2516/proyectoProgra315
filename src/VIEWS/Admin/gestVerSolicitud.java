@@ -12,7 +12,7 @@ import java.sql.SQLException;
  *
  * @author GerardRG
  */
-public class verSolicitud extends javax.swing.JPanel {
+public class gestVerSolicitud extends javax.swing.JPanel {
 
     private DefaultTableModel modelo;
     private javax.swing.JTextArea txtDescripcion;
@@ -20,7 +20,7 @@ public class verSolicitud extends javax.swing.JPanel {
     /**
      * Creates new form verSolicitud
      */
-    public verSolicitud() {
+    public gestVerSolicitud() {
         initComponents();
         inicializarTabla();
         cargarDatos();
