@@ -109,14 +109,21 @@ public class DashboardUsuario extends javax.swing.JFrame {
     }
 
     private void setupSoporte() {
-        Menu.removeAll();
-        Menu.setPreferredSize(new Dimension(0, 0));
-        Menu.setVisible(false);
-        Menu.getParent().revalidate();
+    Menu.removeAll();
+    Menu.setPreferredSize(new Dimension(0, 0));
+    Menu.setVisible(false);
+    Menu.getParent().revalidate();
 
-        content.add(new VIEWS.Soporte.verSolicitudes(), R_VER_SOLICITUDES);
-        showView(R_VER_SOLICITUDES);
-    }
+    // Obtener el username del usuario actual
+    String usuario = currentUser.getUsername();
+    
+    System.out.println("=== DEBUG DASHBOARD ===");
+    System.out.println("Usuario actual: " + usuario);
+    System.out.println("Rol actual: " + currentUser.getRole());
+    
+    content.add(new VIEWS.Soporte.gestVerSolicitudesSoporte(usuario), R_VER_SOLICITUDES);
+    showView(R_VER_SOLICITUDES);
+}
 
     private void showView(String key) {
         card.show(content, key);

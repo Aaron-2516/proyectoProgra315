@@ -1,112 +1,75 @@
 
 package VIEWS.Soporte;
 
-import MODELS.DatabaseConnection;
-import VIEWS.Login;
-import javax.swing.*;
+import CONTROLLER.VerSolicitudesSoporteController;
 import javax.swing.table.DefaultTableModel;
-import java.sql.*;
 
-
-public class verSolicitudes extends javax.swing.JPanel {
-
-     private DefaultTableModel modelo; 
-      private javax.swing.JTextArea txtDescripcion;
+public class gestVerSolicitudesSoporte extends javax.swing.JPanel {
+private DefaultTableModel modelo; 
+    private javax.swing.JTextArea txtDescripcion;
+    private VerSolicitudesSoporteController controller;
+    
     /**
      * Creates new form verSolicitudes
      */
-    public verSolicitudes() {
+    
+    public gestVerSolicitudesSoporte(String usuarioSoporte) {
         initComponents();
-        inicializarTabla();
-        cargarDatos(); 
-        
-    txtDescripcion = new javax.swing.JTextArea();
-    txtDescripcion.setColumns(20);
-    txtDescripcion.setRows(5);
-    txtDescripcion.setEditable(false);
-    SCrollInformacion.setViewportView(txtDescripcion);
+        inicializarComponentes();
+        controller = new VerSolicitudesSoporteController(this, usuarioSoporte);
     }
     
-    private void inicializarTabla() {
+    private void inicializarComponentes() {
         modelo = new DefaultTableModel();
-        String[] columnas = { "ID", "Fecha Registro", "Descripción", "Nombre", "Categoría", "Prioridad", "Estado" };
+        String[] columnas = {
+            "ID", "Fecha Registro", "Descripción", "Nombre", "Categoria", "Prioridad", "Estado"
+        };
         modelo.setColumnIdentifiers(columnas);
         tablaAsignado.setModel(modelo);
-
-        // Inicializar el combo box
-        CmbCategoria.setModel(new DefaultComboBoxModel<>(new String[] { "Todos", "Acceso", "Rendimiento", "Errores", "Consultas" }));
+        
+        txtDescripcion = new javax.swing.JTextArea();
+        txtDescripcion.setColumns(20);
+        txtDescripcion.setRows(5);
+        txtDescripcion.setEditable(false);
+        SCrollInformacion.setViewportView(txtDescripcion);
     }
 
-    private void cargarDatos() {
-        cargarDatos(0, ""); // 0 = todos, "" = sin filtro de ID
+    // Getters para el controller
+    public javax.swing.JButton getBtnBuscar() {
+        return BtnBuscar;
     }
-
-    private void cargarDatos(int filtroCategoria, String filtroID) {
-        Connection con = DatabaseConnection.getConnection();
-        if (con == null) {
-            JOptionPane.showMessageDialog(this, "No se pudo conectar a la BD");
-            return;
-        }
-
-        String sql = "SELECT id, fecha_registro, descripcion, cliente_nombre, categoria_id, prioridad_id, estado_id "
-                   + "FROM public.solicitudes WHERE 1=1";
-
-        if (filtroCategoria > 0) {
-            sql += " AND categoria_id = " + filtroCategoria;
-        }
-        if (!filtroID.isEmpty()) {
-            sql += " AND id = " + filtroID;
-        }
-
-        try (PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            modelo.setRowCount(0);
-
-            while (rs.next()) {
-                // Mapear valores de categoría
-                String categoria = switch (rs.getInt("categoria_id")) {
-                    case 1 -> "Acceso";
-                    case 2 -> "Rendimiento";
-                    case 3 -> "Errores";
-                    case 4 -> "Consultas";
-                    default -> "Desconocida";
-                };
-
-                // Mapear valores de prioridad
-                String prioridad = switch (rs.getInt("prioridad_id")) {
-                    case 1 -> "Baja";
-                    case 2 -> "Media";
-                    case 3 -> "Alta";
-                    default -> "Desconocida";
-                };
-
-                // Mapear valores de estado
-                String estado = switch (rs.getInt("estado_id")) {
-                    case 1 -> "Abierta";
-                    case 2 -> "En Progreso";
-                    case 3 -> "Cerrada";
-                    default -> "Desconocido";
-                };
-
-                Object[] fila = {
-                    rs.getInt("id"),
-                    rs.getTimestamp("fecha_registro"),
-                    rs.getString("descripcion"),
-                    rs.getString("cliente_nombre"),
-                    categoria,
-                    prioridad,
-                    estado
-                };
-                modelo.addRow(fila);
-            }
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar datos: " + e.getMessage());
-        } finally {
-            DatabaseConnection.closeConnection(con);
-        }
-    } 
+    
+    public javax.swing.JButton getBtnCerrarSesion() {
+        return btnCerrarSesion;
+    }
+    
+    public javax.swing.JButton getBtnVersolicitud() {
+        return btnVersolicitud;
+    }
+    
+    public javax.swing.JComboBox<String> getCmbCategoria() {
+        return CmbCategoria;
+    }
+    
+    public javax.swing.JTextField getTxtBuscar() {
+        return txtBuscar;
+    }
+    
+    public javax.swing.JTextArea getTxtDescripcion() {
+        return txtDescripcion;
+    }
+    
+    public javax.swing.JTable getTablaAsignado() {
+        return tablaAsignado;
+    }
+    
+    public javax.swing.JLabel getLblNombreSoporte() {
+        return lblNombreSoporte;
+    }
+    
+    public DefaultTableModel getModelo() {
+        return modelo;
+    }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -241,94 +204,19 @@ public class verSolicitudes extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVersolicitudActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVersolicitudActionPerformed
-        int fila =tablaAsignado.getSelectedRow();
-        if (fila == -1) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar una solicitud");
-            return;
-        }
-
-        // Obtener el ID de la solicitud seleccionada
-        int idSolicitud = (int) modelo.getValueAt(fila, 0);
-
-        Connection con = DatabaseConnection.getConnection();
-        if (con == null) {
-            JOptionPane.showMessageDialog(this, "No se pudo conectar a la BD");
-            return;
-        }
-
-        String sql = "SELECT id, fecha_registro, descripcion, cliente_nombre, "
-                   + "categoria_id, prioridad_id, estado_id, asignado_a_id "
-                   + "FROM public.solicitudes WHERE id = ?";
-
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, idSolicitud);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                String categoria;
-                switch (rs.getInt("categoria_id")) {
-                    case 1 -> categoria = "Acceso";
-                    case 2 -> categoria = "Rendimiento";
-                    case 3 -> categoria = "Errores";
-                    case 4 -> categoria = "Consultas";
-                    default -> categoria = "Desconocido";
-                }
-
-                String prioridad;
-                switch (rs.getInt("prioridad_id")) {
-                    case 1 -> prioridad = "Baja";
-                    case 2 -> prioridad = "Media";
-                    case 3 -> prioridad = "Alta";
-                    default -> prioridad = "Desconocida";
-                }
-
-                String estado;
-                switch (rs.getInt("estado_id")) {
-                    case 1 -> estado = "Abierta";
-                    case 2 -> estado = "En progreso";
-                    case 3 -> estado = "Cerrada";
-                    default -> estado = "Desconocido";
-                }
-
-                // Mostrar en cascada dentro del JTextArea
-                txtDescripcion.setText(
-                    "ID: " + rs.getInt("id") + "\n" +
-                    "Fecha de registro: " + rs.getTimestamp("fecha_registro") + "\n" +
-                    "Cliente: " + rs.getString("cliente_nombre") + "\n" +
-                    "Categoría: " + categoria + "\n" +
-                    "Prioridad: " + prioridad + "\n" +
-                    "Estado: " + estado + "\n" +
-                    "Asignado a: " + rs.getInt("asignado_a_id") + "\n\n" +
-                    "Descripción:\n" + rs.getString("descripcion")
-                );
-            }
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar solicitud: " + e.getMessage());
-        } finally {
-            DatabaseConnection.closeConnection(con);
-        }
+        
     }//GEN-LAST:event_btnVersolicitudActionPerformed
 
     private void BtnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnBuscarActionPerformed
-      String filtroID = txtBuscar.getText().trim();
-            int categoria = CmbCategoria.getSelectedIndex(); // 0 = Todos
-            cargarDatos(categoria, filtroID);
+
     }//GEN-LAST:event_BtnBuscarActionPerformed
 
     private void CmbCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CmbCategoriaActionPerformed
-        String filtroID = txtBuscar.getText().trim();
-            int categoria = CmbCategoria.getSelectedIndex();
-            cargarDatos(categoria, filtroID);
+        
     }//GEN-LAST:event_CmbCategoriaActionPerformed
 
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
-        int opcion = JOptionPane.showConfirmDialog(this, "¿Desea cerrar sesión?", "Cerrar Sesión", JOptionPane.YES_NO_OPTION);
-            if (opcion == JOptionPane.YES_OPTION) {
-                javax.swing.SwingUtilities.getWindowAncestor(this).dispose();
-                Login login = new Login(); // Asegúrate de que Login es tu JFrame de login
-                login.setVisible(true);
-            }
+
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
 
 
