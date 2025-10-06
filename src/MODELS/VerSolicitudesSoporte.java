@@ -87,7 +87,6 @@ public class VerSolicitudesSoporte {
                 );
                 categorias.add(categoria);
             }
-            System.out.println("Categorías obtenidas: " + categorias.size());
         } catch (SQLException e) {
             System.err.println("Error al obtener categorías: " + e.getMessage());
             e.printStackTrace();
@@ -98,7 +97,7 @@ public class VerSolicitudesSoporte {
         return categorias;
     }
     
-    // Método para obtener las solicitudes asignadas al usuario de soporte por username
+    // Método para obtener las solicitudes asignadas al usuario de soporte por username - OPTIMIZADO
     public List<Solicitud> obtenerSolicitudesAsignadas(String usuarioSoporte, String filtroCategoriaId) {
         List<Solicitud> solicitudes = new ArrayList<>();
         Connection con = DatabaseConnection.getConnection();
@@ -107,19 +106,23 @@ public class VerSolicitudesSoporte {
             return solicitudes;
         }
 
-        System.out.println("=== DEBUG: Buscando solicitudes para usuario: " + usuarioSoporte + " ===");
-        
+        // Consulta optimizada con todos los JOINs necesarios
         StringBuilder sql = new StringBuilder(
-            "SELECT s.id, s.fecha_registro, s.descripcion, s.creada_por, " +
-            "cat.nombre as categoria_nombre, " +
-            "pri.nombre as prioridad_nombre, " +
-            "est.nombre as estado_nombre " +
+            "SELECT " +
+            "    s.id, " +
+            "    s.fecha_registro, " +
+            "    s.descripcion, " +
+            "    COALESCE(uc.nombre || ' ' || uc.apellidos, 'Usuario') as creada_por_nombre, " +
+            "    cat.nombre as categoria_nombre, " +
+            "    pri.nombre as prioridad_nombre, " +
+            "    est.nombre as estado_nombre " +
             "FROM public.solicitudes s " +
             "LEFT JOIN public.categorias cat ON s.categoria_id = cat.id " +
             "LEFT JOIN public.prioridades pri ON s.prioridad_id = pri.id " +
             "LEFT JOIN public.estados est ON s.estado_id = est.id " +
-            "LEFT JOIN public.usuarios u ON s.asignado_a_id = u.id " +
-            "WHERE u.usuario = ?"
+            "LEFT JOIN public.usuarios ua ON s.asignado_a_id = ua.id " +  // Usuario asignado
+            "LEFT JOIN public.usuarios uc ON s.creada_por = uc.id " +     // Usuario que creó la solicitud
+            "WHERE ua.usuario = ?"
         );
 
         // Si se selecciona una categoría específica (no "Todos")
@@ -129,9 +132,6 @@ public class VerSolicitudesSoporte {
 
         sql.append(" ORDER BY s.fecha_registro DESC");
 
-        System.out.println("SQL: " + sql.toString());
-        System.out.println("Parámetros: usuario=" + usuarioSoporte + ", categoria=" + filtroCategoriaId);
-
         try (PreparedStatement ps = con.prepareStatement(sql.toString())) {
             ps.setString(1, usuarioSoporte);
             
@@ -140,24 +140,18 @@ public class VerSolicitudesSoporte {
             }
             
             try (ResultSet rs = ps.executeQuery()) {
-                int count = 0;
                 while (rs.next()) {
-                    count++;
                     Solicitud solicitud = new Solicitud(
                         rs.getString("id"),
                         rs.getString("fecha_registro"),
                         rs.getString("descripcion"),
-                        rs.getString("creada_por"),
+                        rs.getString("creada_por_nombre"), // Ya viene el nombre completo
                         rs.getString("categoria_nombre"),
                         rs.getString("prioridad_nombre"),
                         rs.getString("estado_nombre")
                     );
                     solicitudes.add(solicitud);
-                    System.out.println("Solicitud " + count + ": ID=" + solicitud.getId() + 
-                                     ", Categoría=" + solicitud.getCategoria() +
-                                     ", Estado=" + solicitud.getEstado());
                 }
-                System.out.println("Total de solicitudes encontradas: " + count);
             }
         } catch (SQLException e) {
             System.err.println("Error al obtener solicitudes asignadas: " + e.getMessage());
@@ -169,21 +163,28 @@ public class VerSolicitudesSoporte {
         return solicitudes;
     }
     
-    // Método para buscar solicitud por ID (solo las asignadas al usuario)
+    // Método para buscar solicitud por ID (solo las asignadas al usuario) - OPTIMIZADO
     public Solicitud buscarSolicitudPorId(String id, String usuarioSoporte) {
         Connection con = DatabaseConnection.getConnection();
         if (con == null) return null;
 
-        String sql = "SELECT s.id, s.fecha_registro, s.descripcion, s.creada_por, " +
-                     "cat.nombre as categoria_nombre, " +
-                     "pri.nombre as prioridad_nombre, " +
-                     "est.nombre as estado_nombre " +
-                     "FROM public.solicitudes s " +
-                     "LEFT JOIN public.categorias cat ON s.categoria_id = cat.id " +
-                     "LEFT JOIN public.prioridades pri ON s.prioridad_id = pri.id " +
-                     "LEFT JOIN public.estados est ON s.estado_id = est.id " +
-                     "LEFT JOIN public.usuarios u ON s.asignado_a_id = u.id " +
-                     "WHERE s.id = ? AND u.usuario = ?";
+        // Consulta optimizada con todos los JOINs necesarios
+        String sql = 
+            "SELECT " +
+            "    s.id, " +
+            "    s.fecha_registro, " +
+            "    s.descripcion, " +
+            "    COALESCE(uc.nombre || ' ' || uc.apellidos, 'Usuario') as creada_por_nombre, " +
+            "    cat.nombre as categoria_nombre, " +
+            "    pri.nombre as prioridad_nombre, " +
+            "    est.nombre as estado_nombre " +
+            "FROM public.solicitudes s " +
+            "LEFT JOIN public.categorias cat ON s.categoria_id = cat.id " +
+            "LEFT JOIN public.prioridades pri ON s.prioridad_id = pri.id " +
+            "LEFT JOIN public.estados est ON s.estado_id = est.id " +
+            "LEFT JOIN public.usuarios ua ON s.asignado_a_id = ua.id " +  // Usuario asignado
+            "LEFT JOIN public.usuarios uc ON s.creada_por = uc.id " +     // Usuario que creó la solicitud
+            "WHERE s.id = ? AND ua.usuario = ?";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, id);
@@ -195,7 +196,7 @@ public class VerSolicitudesSoporte {
                         rs.getString("id"),
                         rs.getString("fecha_registro"),
                         rs.getString("descripcion"),
-                        rs.getString("creada_por"),
+                        rs.getString("creada_por_nombre"), // Ya viene el nombre completo
                         rs.getString("categoria_nombre"),
                         rs.getString("prioridad_nombre"),
                         rs.getString("estado_nombre")
@@ -239,12 +240,12 @@ public class VerSolicitudesSoporte {
                     String nombre = rs.getString("nombre");
                     String apellidos = rs.getString("apellidos");
                     String nombreCompleto = (nombre + " " + apellidos).trim();
-                    System.out.println("Nombre completo obtenido: " + nombreCompleto);
-                    return nombreCompleto;
+                    return nombreCompleto.isEmpty() ? "Usuario" : nombreCompleto;
                 }
             }
         } catch (SQLException e) {
             System.err.println("Error al obtener nombre de usuario: " + e.getMessage());
+            e.printStackTrace();
         } finally {
             DatabaseConnection.closeConnection(con);
         }
