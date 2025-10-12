@@ -65,8 +65,6 @@ public class AdminReporteSolicitud {
                 categorias.add(categoria);
             }
             
-            System.out.println("Categorías obtenidas de BD: " + categorias.size());
-            
         } catch (SQLException e) {
             System.err.println("ERROR al obtener categorías: " + e.getMessage());
             e.printStackTrace();
@@ -82,8 +80,6 @@ public class AdminReporteSolicitud {
     
     try (Connection conn = DatabaseConnection.getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        
-        System.out.println("Conexión a BD establecida correctamente");
         
         // Configurar parámetros
         int paramIndex = 1;

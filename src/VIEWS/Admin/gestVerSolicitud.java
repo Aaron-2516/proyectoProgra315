@@ -2,6 +2,7 @@ package VIEWS.Admin;
 
 import CONTROLLER.AdminVerSolicitudController;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.Timer;
 /**
  *
  * @author GerardRG
@@ -11,6 +12,7 @@ public class gestVerSolicitud extends javax.swing.JPanel {
     private DefaultTableModel modelo;
     private javax.swing.JTextArea txtDescripcion;
     private AdminVerSolicitudController controller;
+    private Timer autoRefreshTimer;
 
     /**
      * Creates new form verSolicitud
@@ -19,6 +21,16 @@ public class gestVerSolicitud extends javax.swing.JPanel {
         initComponents();
         inicializarComponentes();
         controller = new AdminVerSolicitudController(this);
+        iniciarActualizacionAutomatica();
+    }
+     
+     private void iniciarActualizacionAutomatica() {
+        autoRefreshTimer = new Timer(20000, e -> { // 20000 ms = 20 segundos
+            System.out.println("🔄 Actualización automática de solicitudes (VER SOLICITUDES)...");
+            controller.cargarDatosIniciales();
+        });
+        autoRefreshTimer.start();
+        System.out.println("✅ Actualización automática iniciada (cada 20 segundos VER sOLICITUDES)");
     }
     
     private void inicializarComponentes() {
@@ -47,9 +59,7 @@ public class gestVerSolicitud extends javax.swing.JPanel {
         return btnBuscar;
     }
     
-    public javax.swing.JButton getBtnCerrar() {
-        return btnCerrar;
-    }
+    
     
     public javax.swing.JButton getBtnVerSolicitud() {
         return btnVerSolicitud;
@@ -88,7 +98,6 @@ public class gestVerSolicitud extends javax.swing.JPanel {
 
         jLabel1 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        btnCerrar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jLabel9 = new javax.swing.JLabel();
@@ -104,14 +113,6 @@ public class gestVerSolicitud extends javax.swing.JPanel {
 
         jLabel7.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
         jLabel7.setText("Descripcion");
-
-        btnCerrar.setText("Cerrar");
-        btnCerrar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnCerrar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCerrarActionPerformed(evt);
-            }
-        });
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -179,9 +180,7 @@ public class gestVerSolicitud extends javax.swing.JPanel {
                                 .addComponent(CMBcategorias, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(SCPInformacion, javax.swing.GroupLayout.PREFERRED_SIZE, 842, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(211, 211, 211)
-                        .addComponent(btnCerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(202, 202, 202)
+                        .addGap(521, 521, 521)
                         .addComponent(btnVerSolicitud, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(25, Short.MAX_VALUE))
         );
@@ -205,9 +204,7 @@ public class gestVerSolicitud extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(SCPInformacion, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnCerrar)
-                    .addComponent(btnVerSolicitud))
+                .addComponent(btnVerSolicitud)
                 .addGap(35, 35, 35))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -216,10 +213,6 @@ public class gestVerSolicitud extends javax.swing.JPanel {
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         
     }//GEN-LAST:event_btnBuscarActionPerformed
-
-    private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed
-       
-    }//GEN-LAST:event_btnCerrarActionPerformed
 
     private void btnVerSolicitudActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerSolicitudActionPerformed
       
@@ -235,7 +228,6 @@ public class gestVerSolicitud extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> CMBcategorias;
     private javax.swing.JScrollPane SCPInformacion;
     private javax.swing.JButton btnBuscar;
-    private javax.swing.JButton btnCerrar;
     private javax.swing.JButton btnVerSolicitud;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

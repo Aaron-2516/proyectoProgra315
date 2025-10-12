@@ -11,6 +11,8 @@ public class Login extends javax.swing.JFrame {
     private LoginController controller;
    public Login() {
         initComponents();
+        setLocationRelativeTo(null);
+
         getRootPane().setDefaultButton(btnAcceder);
         controller = new LoginController(this);
 

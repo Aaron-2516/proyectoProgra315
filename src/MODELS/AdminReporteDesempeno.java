@@ -90,7 +90,6 @@ public class AdminReporteDesempeno {
 }
     
     public EstadisticasTecnico generarEstadisticas(String nombreTecnico) {
-        System.out.println("Generando estadísticas para: " + nombreTecnico);
         
         EstadisticasTecnico estadisticas = new EstadisticasTecnico();
         
@@ -107,9 +106,6 @@ public class AdminReporteDesempeno {
             // Estadísticas por categoría
             cargarEstadisticasPorCategoria(estadisticas, tecnicoId);
             
-            System.out.println("Estadísticas generadas - Resueltos: " + estadisticas.getTicketsResueltos() + 
-                             ", Pendientes: " + estadisticas.getTicketsPendientes() +
-                             ", Asignados: " + estadisticas.getTicketsAsignados());
             
         } catch (SQLException e) {
             throw new RuntimeException("Error al generar estadísticas: " + e.getMessage(), e);
@@ -168,19 +164,11 @@ public class AdminReporteDesempeno {
             estadisticas.setTicketsEnProceso(rs.getInt("en_proceso"));
             estadisticas.setTicketsPausadas(rs.getInt("pausadas"));
             estadisticas.setTicketsCerradas(rs.getInt("cerradas"));
-            
-            System.out.println("=== DATOS OBTENIDOS ===");
-            System.out.println("Total Asignados: " + rs.getInt("total_asignados"));
-            System.out.println("Abiertas: " + rs.getInt("abiertas"));
-            System.out.println("En Proceso: " + rs.getInt("en_proceso"));
-            System.out.println("Pausadas: " + rs.getInt("pausadas"));
-            System.out.println("Cerradas: " + rs.getInt("cerradas"));
         }
     }
 }
     
     private void cargarEstadisticasPorCategoria(EstadisticasTecnico estadisticas, String tecnicoId) throws SQLException {
-    System.out.println("Cargando estadísticas por categoría para técnico ID: " + tecnicoId);
     
     // Consulta corregida - usando asignado_a_id directamente de solicitudes
     String sql = "SELECT " +
@@ -203,9 +191,7 @@ public class AdminReporteDesempeno {
             int cantidad = rs.getInt("cantidad");
             estadisticas.agregarTicketCategoria(nombreCategoria, cantidad);
             totalCategorias++;
-            System.out.println("Categoría: " + nombreCategoria + " - Cantidad: " + cantidad);
         }
-        System.out.println("Total de categorías encontradas: " + totalCategorias);
         }
     }
 }

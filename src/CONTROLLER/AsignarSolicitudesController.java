@@ -40,7 +40,7 @@ public class AsignarSolicitudesController {
         view.getTabla().setAutoCreateRowSorter(true);
         view.getTabla().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
-
+   
     public void cargarSolicitudes() {
         List<SolicitudPendienteRow> lista = Asignacion.getSolicitudesNoAsignadas();
         DefaultTableModel model = (DefaultTableModel) view.getTabla().getModel();

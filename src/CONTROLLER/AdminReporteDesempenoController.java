@@ -52,10 +52,8 @@ public class AdminReporteDesempenoController {
                     if (tecnicos != null && !tecnicos.isEmpty()) {
                         view.cargarTecnicosEnComboBox(tecnicos);
                         comboBoxCargado = true;
-                        System.out.println("Técnicos cargados exitosamente: " + tecnicos.size());
                     } else {
                         view.cargarTecnicosEnComboBox(new ArrayList<>());
-                        System.out.println("No se encontraron técnicos");
                     }
                 } catch (Exception e) {
                     System.err.println("Error en carga inicial: " + e.getMessage());
@@ -85,8 +83,6 @@ public class AdminReporteDesempenoController {
             mostrarError("Por favor seleccione un técnico válido de la lista desplegable");
             return;
         }
-        
-        System.out.println("Generando estadísticas para: " + tecnicoSeleccionado);
         
         AdminReporteDesempeno.EstadisticasTecnico estadisticas = 
             model.generarEstadisticas(tecnicoSeleccionado);

@@ -31,12 +31,17 @@ public class AdminVerSolicitudController {
         
         // Conectar eventos
         view.getBtnBuscar().addActionListener(e -> buscarSolicitud());
-        view.getBtnCerrar().addActionListener(e -> cerrarVentana());
         view.getBtnVerSolicitud().addActionListener(e -> verSolicitudSeleccionada());
         view.getCMBcategorias().addActionListener(e -> filtrarPorCategoria());
         
         // Cargar datos iniciales (todas las solicitudes)
         cargarSolicitudes("0");
+    }
+    
+    public void cargarDatosIniciales() {
+        System.out.println("📋 Cargando datos iniciales (Admin)...");
+        String filtroCategoria = obtenerFiltroCategoriaActual();
+        cargarSolicitudes(filtroCategoria);
     }
     
     private void cargarCategorias() {
@@ -55,13 +60,11 @@ public class AdminVerSolicitudController {
     }
     
     private void cargarSolicitudes(String filtroCategoriaId) {
-        System.out.println("Cargando solicitudes con filtro categoría ID: " + filtroCategoriaId);
-        
+                
         List<AdminVerSolicitud.Solicitud> solicitudes = model.obtenerSolicitudes(filtroCategoriaId);
         DefaultTableModel modelo = view.getModelo();
         modelo.setRowCount(0);
         
-        System.out.println("Solicitudes encontradas: " + solicitudes.size());
         
         for (AdminVerSolicitud.Solicitud solicitud : solicitudes) {
             Object[] fila = {

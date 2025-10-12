@@ -54,7 +54,6 @@ public class AdminReporteSolicitudController {
                 view.getCmbTipoSolicitud().addItem(categoria.get("nombre"));
             }
             
-            System.out.println("Categorías cargadas exitosamente: " + categorias.size());
             
         } catch (Exception e) {
             System.err.println("Error al cargar categorías: " + e.getMessage());
@@ -136,9 +135,7 @@ public class AdminReporteSolicitudController {
             
             // Mostrar gráfico
             mostrarGraficoEnPanel(chartPanel);
-            
-            System.out.println("Gráfico creado exitosamente");
-            
+                        
             
         } catch (Exception e) {
             System.err.println("ERROR creando gráfico: " + e.toString());

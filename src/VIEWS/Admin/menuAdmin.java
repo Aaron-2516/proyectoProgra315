@@ -41,7 +41,7 @@ public class menuAdmin extends javax.swing.JPanel {
         jLabel6.setText("Reportes y estadisticas");
         btnReportes.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 10, -1, -1));
 
-        add(btnReportes, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 160, 270, 50));
+        add(btnReportes, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 350, 270, 50));
 
         btnAsignar.setBackground(new java.awt.Color(18, 90, 173));
         btnAsignar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -55,7 +55,7 @@ public class menuAdmin extends javax.swing.JPanel {
         jLabel8.setText("ASIGNAR");
         btnAsignar.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(71, 13, -1, -1));
 
-        add(btnAsignar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 310, 270, 50));
+        add(btnAsignar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 250, 270, 50));
 
         btnGestionarUsuarios.setBackground(new java.awt.Color(18, 90, 173));
         btnGestionarUsuarios.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -69,7 +69,7 @@ public class menuAdmin extends javax.swing.JPanel {
         jLabel10.setText("Gestion de usuarios");
         btnGestionarUsuarios.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(71, 13, -1, -1));
 
-        add(btnGestionarUsuarios, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 210, 270, 50));
+        add(btnGestionarUsuarios, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 300, 270, 50));
 
         btnVer.setBackground(new java.awt.Color(18, 90, 173));
         btnVer.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -83,7 +83,7 @@ public class menuAdmin extends javax.swing.JPanel {
         jLabel12.setText("VER");
         btnVer.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(71, 13, -1, -1));
 
-        add(btnVer, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 260, 270, 50));
+        add(btnVer, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 200, 270, 50));
     }// </editor-fold>//GEN-END:initComponents
 
 

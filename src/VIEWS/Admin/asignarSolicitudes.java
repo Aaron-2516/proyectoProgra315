@@ -1,14 +1,16 @@
 
-    package VIEWS.Admin;
+package VIEWS.Admin;
 
 import CONTROLLER.AsignarSolicitudesController;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.Timer;
 
 public class asignarSolicitudes extends javax.swing.JPanel {
 
     private AsignarSolicitudesController controller;
     private ButtonGroup soporteGroup; // agrupa los radios
+    private Timer autoRefreshTimer;
 
     public asignarSolicitudes() {
         initComponents();
@@ -21,7 +23,18 @@ public class asignarSolicitudes extends javax.swing.JPanel {
         soporteGroup.add(desarrolladorRadioBtn);
 
         controller = new AsignarSolicitudesController(this);
+        iniciarActualizacionAutomatica();
     }
+    
+    private void iniciarActualizacionAutomatica() {
+        autoRefreshTimer = new Timer(20000, e -> { 
+            System.out.println("🔄 Actualización automática de ASIGNAR SOLICITUDES...");
+            controller.cargarSolicitudes(); // ← Este método YA EXISTE en el controller
+        });
+        autoRefreshTimer.start();
+        System.out.println("✅ Actualización automática iniciada (cada 20 segundos ASIGNAR SOLICITUDES)");
+    }
+    
 
     public JTable getTabla() { return solicitudesPendientesTable; }
     public JButton getAsignarBtn() { return asignarBtn; }

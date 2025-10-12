@@ -131,6 +131,8 @@ public class verSolicitudes extends javax.swing.JPanel {
         jLabel6 = new javax.swing.JLabel();
         conten = new javax.swing.JPanel();
 
+        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
         background.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         panelMenu.setBackground(new java.awt.Color(102, 255, 255));
@@ -141,24 +143,26 @@ public class verSolicitudes extends javax.swing.JPanel {
         btnSolicitud.setPreferredSize(new java.awt.Dimension(279, 36));
         btnSolicitud.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Reporte de Solicitud");
-        btnSolicitud.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 20, 120, -1));
+        btnSolicitud.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 20, 120, -1));
 
         jLabel1.setText("jLabel1");
         btnSolicitud.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 20, -1, -1));
 
-        panelMenu.add(btnSolicitud, new org.netbeans.lib.awtextra.AbsoluteConstraints(-30, 0, 320, 70));
+        panelMenu.add(btnSolicitud, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 300, 70));
 
         btnTiempo.setMinimumSize(new java.awt.Dimension(267, 36));
         btnTiempo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Reporte de Tiempo");
         btnTiempo.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 20, -1, -1));
 
         jLabel3.setText("jLabel1");
         btnTiempo.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 20, -1, -1));
 
-        panelMenu.add(btnTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 0, 290, 70));
+        panelMenu.add(btnTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 0, 300, 70));
 
         btnDesempeno.setMinimumSize(new java.awt.Dimension(267, 36));
         btnDesempeno.setPreferredSize(new java.awt.Dimension(267, 36));
@@ -167,32 +171,19 @@ public class verSolicitudes extends javax.swing.JPanel {
         jLabel5.setText("jLabel1");
         btnDesempeno.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 20, -1, -1));
 
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Estadistica de Desempeño");
-        btnDesempeno.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, -1, -1));
+        btnDesempeno.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 20, -1, -1));
 
-        panelMenu.add(btnDesempeno, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 0, 320, 70));
+        panelMenu.add(btnDesempeno, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 0, 310, 70));
 
         background.add(panelMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, 70));
 
         conten.setBackground(new java.awt.Color(255, 255, 153));
         conten.setLayout(new java.awt.CardLayout());
-        background.add(conten, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, 900, 530));
+        background.add(conten, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 80, 900, 530));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(background, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(3, 3, 3)
-                .addComponent(background, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(3, 3, 3))
-        );
+        add(background, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, 610));
     }// </editor-fold>//GEN-END:initComponents
 
 
