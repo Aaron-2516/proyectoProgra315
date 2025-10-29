@@ -1,24 +1,16 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
+
 package VIEWS.Admin;
 
 import CONTROLLER.AdminReporteSolicitudController;
 import org.jdesktop.swingx.JXDatePicker;
 import java.util.Date;
 
-/**
- *
- * @author CastellaSagarra
- */
+
 public class gestReporteSolicitud extends javax.swing.JPanel {
 
     private AdminReporteSolicitudController controller;
     
-    /**
-     * Creates new form gestReporteSolicitud
-     */
+
     public gestReporteSolicitud() {
         initComponents();
         configurarDatePickers();

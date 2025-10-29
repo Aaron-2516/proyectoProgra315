@@ -4,6 +4,7 @@ import MODELS.Asignacion;
 import MODELS.SolicitudPendienteRow;
 import MODELS.UsuarioModel;
 import MODELS.UsuarioRef;
+import MODELS.PrioridadDAO;
 import VIEWS.Admin.asignarSolicitudes;
 
 import javax.swing.*;
@@ -15,6 +16,7 @@ public class AsignarSolicitudesController {
 
     private final asignarSolicitudes view;
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private final PrioridadDAO prioridadDAO = new PrioridadDAO();
 
     private static class UsuarioItem {
         final String id;
@@ -23,13 +25,21 @@ public class AsignarSolicitudesController {
         @Override public String toString() { return label; }
     }
 
+    private static class PrioridadItem {
+        final String id;
+        final String label;
+        PrioridadItem(String id, String label) { this.id = id; this.label = label; }
+        @Override public String toString() { return label; }
+    }
+
     public AsignarSolicitudesController(asignarSolicitudes view) {
         this.view = view;
         configurarModeloTabla();
         cargarSolicitudes();
         configurarSeleccionTabla();
-        configurarFiltrosSoporte(); 
-        configurarBotonAsignar();   
+        configurarFiltrosSoporte();
+        cargarPrioridades();                
+        configurarBotonAsignar();
     }
 
     private void configurarModeloTabla() {
@@ -77,53 +87,75 @@ public class AsignarSolicitudesController {
     }
 
     private void cargarComboSoporte(String subtipo) {
-    List<UsuarioRef> soporte = UsuarioModel.listarSoportePorSubtipo(subtipo);
+        List<UsuarioRef> soporte = UsuarioModel.listarSoportePorSubtipo(subtipo);
 
-    DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<>();
-    for (UsuarioRef u : soporte) {
-        model.addElement(new UsuarioItem(u.getId(), u.getLabel()));
+        DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<>();
+        for (UsuarioRef u : soporte) {
+            model.addElement(new UsuarioItem(u.getId(), u.getLabel()));
+        }
+        view.getCombobox().setModel(model);
+
+        if (model.getSize() > 0) view.getCombobox().setSelectedIndex(0);
     }
-    view.getCombobox().setModel(model);
 
-    if (model.getSize() > 0) view.getCombobox().setSelectedIndex(0);
+ 
+    private void cargarPrioridades() {
+        DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<>();
+        for (PrioridadDAO.Prioridad p : prioridadDAO.listar()) {
+            if (p.getId() != null && p.getNombre() != null) {
+                model.addElement(new PrioridadItem(p.getId(), p.getNombre()));
+            }
+        }
+        
+        
+        JComboBox<String> combo = view.getPrioridadCmb();
+        combo.setModel((DefaultComboBoxModel) model);
+        if (model.getSize() > 0) combo.setSelectedIndex(0);
     }
-
-
 
     private void configurarBotonAsignar() {
-    view.getAsignarBtn().addActionListener(e -> {
-        String solicitudId = view.getIdSolicitudTxt();
-        if (solicitudId != null) solicitudId = solicitudId.trim();
+        view.getAsignarBtn().addActionListener(e -> {
+            String solicitudId = view.getIdSolicitudTxt();
+            if (solicitudId != null) solicitudId = solicitudId.trim();
 
-        if (solicitudId == null || solicitudId.isEmpty()) {
-            JOptionPane.showMessageDialog(view, "Seleccione una solicitud de la tabla.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+            if (solicitudId == null || solicitudId.isEmpty()) {
+                JOptionPane.showMessageDialog(view, "Seleccione una solicitud de la tabla.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
-        Object sel = view.getCombobox().getSelectedItem();
-        if (!(sel instanceof UsuarioItem)) {
-            JOptionPane.showMessageDialog(view, "Seleccione un técnico/desarrollador del listado.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        String soporteId = ((UsuarioItem) sel).id;
+            // soporte seleccionado
+            Object sel = view.getCombobox().getSelectedItem();
+            if (!(sel instanceof UsuarioItem)) {
+                JOptionPane.showMessageDialog(view, "Seleccione un técnico/desarrollador del listado.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            String soporteId = ((UsuarioItem) sel).id;
 
-        boolean ok = Asignacion.asignarSolicitud(solicitudId, soporteId);
-        if (ok) {
-            JOptionPane.showMessageDialog(view, "Solicitud asignada correctamente.");
-            cargarSolicitudes();                
-            view.setIdSolicitudTxt("");
-            view.getTabla().clearSelection();
-        } else {
-            JOptionPane.showMessageDialog(
-                view,
-                "No se pudo asignar la solicitud.\n" +
-                "• Verifique que el ID existe y no esté ya asignado.\n" +
-                "• Revise espacios/capitalización del ID.\n" +
-                "• Asegúrese de haber seleccionado un Técnico/Desarrollador.",
-                "Asignación",
-                JOptionPane.WARNING_MESSAGE
-            );
-        }
-    });
-}
+            // prioridad seleccionada
+            Object selPri = ((JComboBox<?>) view.getPrioridadCmb()).getSelectedItem();
+            if (!(selPri instanceof PrioridadItem)) {
+                JOptionPane.showMessageDialog(view, "Seleccione una prioridad.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            String prioridadId = ((PrioridadItem) selPri).id;
+
+            boolean ok = Asignacion.asignarSolicitud(solicitudId, soporteId, prioridadId);
+            if (ok) {
+                JOptionPane.showMessageDialog(view, "Solicitud asignada correctamente.");
+                cargarSolicitudes();
+                view.setIdSolicitudTxt("");
+                view.getTabla().clearSelection();
+            } else {
+                JOptionPane.showMessageDialog(
+                    view,
+                    "No se pudo asignar la solicitud.\n" +
+                    "• Verifique que el ID existe y no esté ya asignado.\n" +
+                    "• Revise espacios/capitalización del ID.\n" +
+                    "• Asegúrese de haber seleccionado Soporte y Prioridad.",
+                    "Asignación",
+                    JOptionPane.WARNING_MESSAGE
+                );
+            }
+        });
+    }
 }

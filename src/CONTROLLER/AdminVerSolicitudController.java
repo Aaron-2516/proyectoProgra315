@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package CONTROLLER;
 
 import MODELS.AdminVerSolicitud;
@@ -9,103 +5,135 @@ import VIEWS.Admin.gestVerSolicitud;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-/**
- *
- * @author ADMIN
- */
+
 public class AdminVerSolicitudController {
-    
-    private gestVerSolicitud view;
-    private AdminVerSolicitud model;
+
+    private final gestVerSolicitud view;
+    private final AdminVerSolicitud model;
+
     private List<AdminVerSolicitud.Categoria> categorias;
-    
+    private List<AdminVerSolicitud.Estado> estados;
+
     public AdminVerSolicitudController(gestVerSolicitud view) {
         this.view = view;
         this.model = new AdminVerSolicitud();
         inicializarController();
     }
-    
+
     private void inicializarController() {
-        // Cargar categorías primero
+        // Cargar catálogos
         cargarCategorias();
-        
+        cargarEstados();
+
         // Conectar eventos
         view.getBtnBuscar().addActionListener(e -> buscarSolicitud());
-        view.getBtnCerrar().addActionListener(e -> cerrarVentana());
         view.getBtnVerSolicitud().addActionListener(e -> verSolicitudSeleccionada());
-        view.getCMBcategorias().addActionListener(e -> filtrarPorCategoria());
-        
-        // Cargar datos iniciales (todas las solicitudes)
-        cargarSolicitudes("0");
+
+        // Filtros combinados: categoría + estado
+        view.getCMBcategorias().addActionListener(e -> filtrarPorFiltros());
+        view.getEestadosCmb().addActionListener(e -> filtrarPorFiltros());
+
+        // Cargar datos iniciales (sin filtros)
+        cargarSolicitudes("0", "0");
     }
-    
+
+    public void cargarDatosIniciales() {
+        System.out.println("Cargando datos iniciales (Admin)...");
+        String filtroCategoria = obtenerFiltroCategoriaActual();
+        String filtroEstado = obtenerFiltroEstadoActual();
+        cargarSolicitudes(filtroCategoria, filtroEstado);
+    }
+
+
     private void cargarCategorias() {
         categorias = model.obtenerCategorias();
-        
-        // Limpiar el ComboBox
+
+        // Resetear combo
         view.getCMBcategorias().removeAllItems();
-        
-        // Agregar opción "Todos"
         view.getCMBcategorias().addItem("Todos");
-        
-        // Agregar categorías desde la base de datos
-        for (AdminVerSolicitud.Categoria categoria : categorias) {
-            view.getCMBcategorias().addItem(categoria.getNombre());
+
+        if (categorias != null) {
+            for (AdminVerSolicitud.Categoria categoria : categorias) {
+                view.getCMBcategorias().addItem(categoria.getNombre());
+            }
         }
     }
-    
-    private void cargarSolicitudes(String filtroCategoriaId) {
-        System.out.println("Cargando solicitudes con filtro categoría ID: " + filtroCategoriaId);
-        
-        List<AdminVerSolicitud.Solicitud> solicitudes = model.obtenerSolicitudes(filtroCategoriaId);
+
+    private void cargarEstados() {
+        estados = model.obtenerEstados();
+
+        // Resetear combo
+        javax.swing.JComboBox<String> cmb = view.getEestadosCmb();
+        cmb.removeAllItems();
+        cmb.addItem("Todos");
+
+        if (estados != null) {
+            for (AdminVerSolicitud.Estado e : estados) {
+                cmb.addItem(e.getNombre());
+            }
+        }
+    }
+
+
+    // Método principal con filtros combinados
+    private void cargarSolicitudes(String filtroCategoriaId, String filtroEstadoId) {
+        List<AdminVerSolicitud.Solicitud> solicitudes =
+                model.obtenerSolicitudes(filtroCategoriaId, filtroEstadoId);
+
         DefaultTableModel modelo = view.getModelo();
         modelo.setRowCount(0);
-        
-        System.out.println("Solicitudes encontradas: " + solicitudes.size());
-        
-        for (AdminVerSolicitud.Solicitud solicitud : solicitudes) {
-            Object[] fila = {
-                solicitud.getId(),
-                solicitud.getFechaRegistro(),
-                solicitud.getDescripcion(),
-                solicitud.getCreadaPor(),
-                solicitud.getCategoria(),
-                solicitud.getPrioridad(),
-                solicitud.getEstado(),
-                solicitud.getAsignadoA()
-            };
-            modelo.addRow(fila);
+
+        if (solicitudes != null) {
+            for (AdminVerSolicitud.Solicitud s : solicitudes) {
+                modelo.addRow(new Object[]{
+                        s.getId(),
+                        s.getFechaRegistro(),
+                        s.getDescripcion(),
+                        s.getCreadaPor(),
+                        s.getCategoria(),
+                        s.getPrioridad(),
+                        s.getEstado(),
+                        s.getAsignadoA()
+                });
+            }
         }
     }
-    
+
+    // Overload para mantener compatibilidad con llamadas existentes de 1 parámetro
+    private void cargarSolicitudes(String filtroCategoriaId) {
+        cargarSolicitudes(filtroCategoriaId, "0");
+    }
+
+
+
     private void buscarSolicitud() {
         String idBuscar = view.getTxtBuscar().getText().trim();
-        
+
         if (idBuscar.isEmpty()) {
-            // Si no hay búsqueda, volver a cargar con el filtro actual
-            String filtroActual = obtenerFiltroCategoriaActual();
-            cargarSolicitudes(filtroActual);
+            // Si no hay ID, recargar respetando filtros actuales
+            String filtroCategoria = obtenerFiltroCategoriaActual();
+            String filtroEstado = obtenerFiltroEstadoActual();
+            cargarSolicitudes(filtroCategoria, filtroEstado);
             view.getTxtDescripcion().setText("");
             return;
         }
-        
+
         AdminVerSolicitud.Solicitud solicitud = model.buscarSolicitudPorId(idBuscar);
         DefaultTableModel modelo = view.getModelo();
         modelo.setRowCount(0);
-        
+
         if (solicitud != null) {
-            Object[] fila = {
-                solicitud.getId(),
-                solicitud.getFechaRegistro(),
-                solicitud.getDescripcion(),
-                solicitud.getCreadaPor(),
-                solicitud.getCategoria(),
-                solicitud.getPrioridad(),
-                solicitud.getEstado(),
-                solicitud.getAsignadoA()
-            };
-            modelo.addRow(fila);
-            
+            modelo.addRow(new Object[]{
+                    solicitud.getId(),
+                    solicitud.getFechaRegistro(),
+                    solicitud.getDescripcion(),
+                    solicitud.getCreadaPor(),
+                    solicitud.getCategoria(),
+                    solicitud.getPrioridad(),
+                    solicitud.getEstado(),
+                    solicitud.getAsignadoA()
+            });
+
             // Mostrar detalles
             String detalles = model.obtenerDetallesSolicitud(idBuscar);
             view.getTxtDescripcion().setText(detalles);
@@ -114,48 +142,71 @@ public class AdminVerSolicitudController {
             view.getTxtDescripcion().setText("");
         }
     }
-    
+
     private void verSolicitudSeleccionada() {
         int fila = view.getJTable1().getSelectedRow();
         if (fila == -1) {
             JOptionPane.showMessageDialog(view, "Debe seleccionar una solicitud");
             return;
         }
-        
+
         String idSolicitud = (String) view.getModelo().getValueAt(fila, 0);
         String detalles = model.obtenerDetallesSolicitud(idSolicitud);
-        
+
         if (detalles != null) {
             view.getTxtDescripcion().setText(detalles);
         } else {
             JOptionPane.showMessageDialog(view, "Error al cargar la solicitud");
         }
     }
-    
+
+    // Mantengo este método por compatibilidad
     private void filtrarPorCategoria() {
-        String filtroCategoriaId = obtenerFiltroCategoriaActual();
-        cargarSolicitudes(filtroCategoriaId);
+        filtrarPorFiltros();
     }
-    
+
+    private void filtrarPorFiltros() {
+        String filtroCategoriaId = obtenerFiltroCategoriaActual();
+        String filtroEstadoId = obtenerFiltroEstadoActual();
+        cargarSolicitudes(filtroCategoriaId, filtroEstadoId);
+    }
+
+   
+
     private String obtenerFiltroCategoriaActual() {
         int selectedIndex = view.getCMBcategorias().getSelectedIndex();
-        
-        if (selectedIndex == 0) {
-            // "Todos" seleccionado - no aplicar filtro
+
+        if (selectedIndex <= 0) {
+            // "Todos" o nada seleccionado
             return "0";
         } else {
-            // Obtener el ID de la categoría seleccionada
-            int categoriaIndex = selectedIndex - 1; // Restar 1 porque el índice 0 es "Todos"
-            if (categoriaIndex < categorias.size()) {
-                AdminVerSolicitud.Categoria categoriaSeleccionada = categorias.get(categoriaIndex);
-                return categoriaSeleccionada.getId();
+            int categoriaIndex = selectedIndex - 1; // porque 0 es "Todos"
+            if (categorias != null && categoriaIndex >= 0 && categoriaIndex < categorias.size()) {
+                return categorias.get(categoriaIndex).getId();
             }
         }
-        return "0"; // Por defecto, no filtrar
+        return "0";
     }
-    
+
+    private String obtenerFiltroEstadoActual() {
+        javax.swing.JComboBox<String> cmb = view.getEestadosCmb();
+        int selectedIndex = (cmb != null) ? cmb.getSelectedIndex() : -1;
+
+        if (selectedIndex <= 0) {
+            // "Todos" o nada seleccionado
+            return "0";
+        } else {
+            int estadoIndex = selectedIndex - 1; // porque 0 es "Todos"
+            if (estados != null && estadoIndex >= 0 && estadoIndex < estados.size()) {
+                return estados.get(estadoIndex).getId();
+            }
+        }
+        return "0";
+    }
+
+   
+
     private void cerrarVentana() {
         javax.swing.SwingUtilities.getWindowAncestor(view).dispose();
     }
 }
-

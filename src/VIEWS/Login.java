@@ -11,6 +11,8 @@ public class Login extends javax.swing.JFrame {
     private LoginController controller;
    public Login() {
         initComponents();
+        setLocationRelativeTo(null);
+
         getRootPane().setDefaultButton(btnAcceder);
         controller = new LoginController(this);
 
@@ -36,7 +38,6 @@ public class Login extends javax.swing.JFrame {
     
     private void abrirRegistrarUsuario() {
         try {
-            // Asumiendo que RegistrarUsuario está en el mismo paquete VIEWS
             new RegistrarUsuario().setVisible(true);
             this.dispose(); // Cierra la ventana de login
         } catch (Exception e) {
@@ -91,11 +92,11 @@ public class Login extends javax.swing.JFrame {
         jLabel1.setText("Hola,");
         panelInterno.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 160, -1, -1));
 
-        nombreEmpresa.setFont(new java.awt.Font("Arial Narrow", 1, 18)); // NOI18N
+        nombreEmpresa.setFont(new java.awt.Font("Bahnschrift", 1, 18)); // NOI18N
         nombreEmpresa.setForeground(new java.awt.Color(255, 255, 255));
         nombreEmpresa.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        nombreEmpresa.setText("BANCO");
-        panelInterno.add(nombreEmpresa, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 130, 80, 20));
+        nombreEmpresa.setText("BANCO SV");
+        panelInterno.add(nombreEmpresa, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 130, 100, 20));
 
         logo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/favicon (1).png"))); // NOI18N

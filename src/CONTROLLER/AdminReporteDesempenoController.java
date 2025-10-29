@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package CONTROLLER;
 
 import MODELS.AdminReporteDesempeno;
@@ -15,15 +12,20 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
-/**
- *
- * @author ADMIN
- */
+
+
 public class AdminReporteDesempenoController {
     
     private gestEstadisticaDesempeno view;
     private AdminReporteDesempeno model;
     private boolean comboBoxCargado = false;
+    
+    //Metodo para actualizar lista de tecnicos
+    public void actualizarListaTecnicos() {
+        List<String> tecnicos = model.obtenerTecnicos();
+        view.cargarTecnicosEnComboBox(tecnicos);
+    }
+    
     
     public AdminReporteDesempenoController(gestEstadisticaDesempeno view) {
         this.view = view;
@@ -38,6 +40,7 @@ public class AdminReporteDesempenoController {
         }    
     }
     
+    //Metodo de carga para los tecnicos
     private void cargarTecnicosInicialmente() {
         new javax.swing.SwingWorker<List<String>, Void>() {
             @Override
@@ -52,10 +55,8 @@ public class AdminReporteDesempenoController {
                     if (tecnicos != null && !tecnicos.isEmpty()) {
                         view.cargarTecnicosEnComboBox(tecnicos);
                         comboBoxCargado = true;
-                        System.out.println("Técnicos cargados exitosamente: " + tecnicos.size());
                     } else {
                         view.cargarTecnicosEnComboBox(new ArrayList<>());
-                        System.out.println("No se encontraron técnicos");
                     }
                 } catch (Exception e) {
                     System.err.println("Error en carga inicial: " + e.getMessage());
@@ -65,6 +66,7 @@ public class AdminReporteDesempenoController {
         }.execute();
     }
     
+    //Lista para obtener los tecnicos
     public List<String> cargarTecnicos() {
         try {
             List<String> tecnicos = model.obtenerTecnicos();
@@ -76,17 +78,15 @@ public class AdminReporteDesempenoController {
         }
     }
     
+    //Metodo para generar las estadisticas
     private void generarEstadisticas() {
     try {
         String tecnicoSeleccionado = (String) view.getJComboBox1().getSelectedItem();
         
-        // Validación específica para el placeholder
         if (esPlaceholderOInvalido(tecnicoSeleccionado)) {
             mostrarError("Por favor seleccione un técnico válido de la lista desplegable");
             return;
         }
-        
-        System.out.println("Generando estadísticas para: " + tecnicoSeleccionado);
         
         AdminReporteDesempeno.EstadisticasTecnico estadisticas = 
             model.generarEstadisticas(tecnicoSeleccionado);
@@ -103,13 +103,13 @@ public class AdminReporteDesempenoController {
 }
 
 // Método auxiliar para validar si es placeholder o inválido
-private boolean esPlaceholderOInvalido(String tecnicoSeleccionado) {
-    if (tecnicoSeleccionado == null || tecnicoSeleccionado.trim().isEmpty()) {
-        return true;
-    }
+    private boolean esPlaceholderOInvalido(String tecnicoSeleccionado) {
+        if (tecnicoSeleccionado == null || tecnicoSeleccionado.trim().isEmpty()) {
+            return true;  
+        }
     
-    // Lista de textos que se consideran placeholders/inválidos
-    String[] textosInvalidos = {
+    // Lista placeholders/inválidos   
+    String[] textosInvalidos = {   
         "-- Seleccione un técnico --",
         "No hay técnicos disponibles",
         "Seleccione un técnico",
@@ -120,42 +120,38 @@ private boolean esPlaceholderOInvalido(String tecnicoSeleccionado) {
         if (textoInvalido.equals(tecnicoSeleccionado)) {
             return true;
         }
+    }   
+    return false;
     }
     
-    return false;
-}
-    
+//Metodo para crear graficos
     private void crearGraficos(AdminReporteDesempeno.EstadisticasTecnico estadisticas, String tecnico) {
         try {
             // Crear panel para los gráficos
             javax.swing.JPanel panelGraficos = new javax.swing.JPanel();
             panelGraficos.setLayout(new java.awt.GridLayout(2, 2, 10, 10));
-            
             // Gráfico 1: Estado de tickets (Pie Chart)
             ChartPanel chartEstado = crearGraficoEstado(estadisticas, tecnico);
             panelGraficos.add(chartEstado);
-            
             // Gráfico 2: Tasa de resolución (Bar Chart)
             ChartPanel chartTasa = crearGraficoTasaResolucion(estadisticas, tecnico);
-            panelGraficos.add(chartTasa);
-            
+            panelGraficos.add(chartTasa);          
             // Gráfico 3: Tickets por categoría (Bar Chart)
             ChartPanel chartCategorias = crearGraficoCategorias(estadisticas, tecnico);
-            panelGraficos.add(chartCategorias);
-            
+            panelGraficos.add(chartCategorias);           
             // Gráfico 4: Resumen general (Bar Chart)
             ChartPanel chartResumen = crearGraficoResumen(estadisticas, tecnico);
-            panelGraficos.add(chartResumen);
-            
-            // Mostrar gráficos en la vista - FORMA ORIGINAL
+            panelGraficos.add(chartResumen);           
+            // Mostrar gráficos en la vista
             mostrarGraficosEnVista(panelGraficos);
-            
         } catch (Exception e) {
             System.err.println("Error creando gráficos: " + e.getMessage());
             throw new RuntimeException("Error al crear gráficos: " + e.getMessage(), e);
         }
     }
     
+    
+    //Metodo para crear grafico de estado
     private ChartPanel crearGraficoEstado(AdminReporteDesempeno.EstadisticasTecnico estadisticas, String tecnico) {
     DefaultPieDataset dataset = new DefaultPieDataset();
     
@@ -165,32 +161,28 @@ private boolean esPlaceholderOInvalido(String tecnicoSeleccionado) {
     
     // Solo agregar categorías que tengan valores mayores a 0
     if (enProceso > 0) {
-        dataset.setValue("En Proceso", enProceso);
+    dataset.setValue("En Proceso", enProceso);
     }
-    
     if (pausadas > 0) {
-        dataset.setValue("Pausada", pausadas);
+    dataset.setValue("Pausadas", pausadas);
     }
-    
-    if (finalizadas > 0) {
-        dataset.setValue("Finalizada", finalizadas);
+    if (finalizadas > 0) { // este es ticketsCerradas
+    dataset.setValue("Cerradas", finalizadas);
     }
-    
-    // Si no hay ningún dato mayor a 0, mostrar mensaje
     if (dataset.getItemCount() == 0) {
-        dataset.setValue("Sin tickets activos", 1);
-    }
-    
+    dataset.setValue("Sin tickets activos", 1);
+}
+
     JFreeChart chart = ChartFactory.createPieChart(
         "Estado de Tickets - " + tecnico,
         dataset,
         true, true, false
     );
     
-    // Personalizar colores del gráfico de pastel - FORMA SIMPLIFICADA
+    // Personalizacion de colores del gráfico de pastel
     org.jfree.chart.plot.PiePlot plot = (org.jfree.chart.plot.PiePlot) chart.getPlot();
     
-    // Usar colores predefinidos en orden
+    // Colores predefinidos en orden
     java.awt.Color[] colores = {
         new java.awt.Color(255, 193, 7),   // Amarillo - En Proceso
         new java.awt.Color(33, 150, 243),  // Azul - Pausada
@@ -198,26 +190,25 @@ private boolean esPlaceholderOInvalido(String tecnicoSeleccionado) {
         new java.awt.Color(158, 158, 158)  // Gris - Sin tickets
     };
     
-    // Aplicar colores en el orden que aparecen las categorías
+    // Colores en el orden que aparecen las categorías
     int colorIndex = 0;
     for (Object key : dataset.getKeys()) {
         if (colorIndex < colores.length) {
             plot.setSectionPaint((String) key, colores[colorIndex]);
             colorIndex++;
         }
-    }
-    
+    }    
     ChartPanel chartPanel = new ChartPanel(chart);
     chartPanel.setPreferredSize(new java.awt.Dimension(300, 300));
     return chartPanel;
 }
-    
+ 
+    //Grafico tasa de resolucion
     private ChartPanel crearGraficoTasaResolucion(AdminReporteDesempeno.EstadisticasTecnico estadisticas, String tecnico) {
     DefaultCategoryDataset dataset = new DefaultCategoryDataset();
     double tasaResolucion = estadisticas.getTasaResolucion();
     
-    dataset.addValue(tasaResolucion, "Tasa", "Resolución");
-    
+    dataset.addValue(tasaResolucion, "Tasa", "Resolución");    
     JFreeChart chart = ChartFactory.createBarChart(
         "Tasa de Resolución - " + tecnico,
         "",
@@ -248,6 +239,7 @@ private boolean esPlaceholderOInvalido(String tecnicoSeleccionado) {
     return chartPanel;
 }
     
+    //Metodo para crear grafico por categoria
     private ChartPanel crearGraficoCategorias(AdminReporteDesempeno.EstadisticasTecnico estadisticas, String tecnico) {
     DefaultCategoryDataset dataset = new DefaultCategoryDataset();
     
@@ -287,6 +279,7 @@ private boolean esPlaceholderOInvalido(String tecnicoSeleccionado) {
     return chartPanel;
 }
     
+    //Crear grafico Resumen
     private ChartPanel crearGraficoResumen(AdminReporteDesempeno.EstadisticasTecnico estadisticas, String tecnico) {
     DefaultCategoryDataset dataset = new DefaultCategoryDataset();
     
@@ -327,6 +320,7 @@ private boolean esPlaceholderOInvalido(String tecnicoSeleccionado) {
     return chartPanel;
 }
     
+    //Metodo para mostrar el grafico en el jpanel
     private void mostrarGraficosEnVista(javax.swing.JPanel panelGraficos) {
         javax.swing.JPanel contenedor = view.getJPanelGrafico();
         contenedor.removeAll(); // Limpia gráficos anteriores
@@ -337,10 +331,12 @@ private boolean esPlaceholderOInvalido(String tecnicoSeleccionado) {
         contenedor.repaint();
     }
         
+    //Metodo de error
     private void mostrarError(String mensaje) {
         JOptionPane.showMessageDialog(view, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
     }
     
+    //Metodo de exito
     private void mostrarExito(String mensaje) {
         JOptionPane.showMessageDialog(view, mensaje, "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }

@@ -43,7 +43,7 @@ public class gestUsuarioAgregar extends javax.swing.JPanel {
         return jtfUsuario;
     }
     
-    // en VIEWS.Admin.gestUsuarioAgregar
+
 public javax.swing.JComboBox<String> getCmbSubtipoSoporte() {
     return cmbSubtipoSoporte;
 }

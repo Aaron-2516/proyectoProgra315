@@ -6,13 +6,15 @@ import javax.swing.table.DefaultTableModel;
 import CONTROLLER.AdminUsuarioListaController;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
+import javax.swing.Timer;
+
 
 
 public class gestUsuarioLista extends javax.swing.JPanel {
 
-    private DefaultTableModel modeloTabla;
-    
+    private DefaultTableModel modeloTabla;    
     private AdminUsuarioListaController controller;
+    private Timer autoRefreshTimer;
     
     public gestUsuarioLista() {
         initComponents();
@@ -21,13 +23,22 @@ public class gestUsuarioLista extends javax.swing.JPanel {
         controller.setModeloTabla(modeloTabla);
         controller.cargarUsuarios();
         configurarAncestorListener();
+        iniciarActualizacionAutomatica();
+    }
+    private void iniciarActualizacionAutomatica() {
+        autoRefreshTimer = new Timer(25000, e -> { // 25000 ms = 25 segundos
+            System.out.println("🔄 Actualización automática de lista de usuarios...");
+            controller.cargarUsuarios();
+        });
+        autoRefreshTimer.start();
+        System.out.println("✅ Actualización automática iniciada (cada 25 segundos - lista usuarios)");
     }
     
     private void configurarAncestorListener() {
         this.addAncestorListener(new AncestorListener() {
             @Override
             public void ancestorAdded(AncestorEvent event) {
-                System.out.println("🔍 Panel agregado a la jerarquía - Actualizando tabla...");
+                System.out.println("🔍 Panel agregado a la jerarquía - Actualizando tabla lista usuarios...");
                 controller.cargarUsuarios();
             }
             

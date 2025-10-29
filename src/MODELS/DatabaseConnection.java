@@ -8,15 +8,16 @@ import java.util.logging.Logger;
 
 
 
+
 public class DatabaseConnection {
 
-    private static final String URL = "jdbc:postgresql://hopper.proxy.rlwy.net:30248/railway"; //  nombre de base de datos
-    private static final String USER = "postgres";  //  nombre de usuario de Postgre
-    private static final String PASSWORD = "oVGfgeyjLKLxNOzzBZnZLdWUPBzOnhjV";  // contraseña de PostgreSQL
+//    private static final String URL  = "jdbc:postgresql://centerbeam.proxy.rlwy.net:54144/railway"; //  nombre de base de datos
+//    private static final String USER = "postgres";  //  nombre de usuario de Postgre
+//    private static final String PASSWORD = "yodsnFOVFQRdgYFdzuYxNqksitMKrtdg";
     
-    //private static final String URL = "jdbc:postgresql://localhost:5432/PRUEBA BASE NUEVA";
-    //private static final String USER = "postgres";
-    //private static final String PASSWORD = "admin";
+    private static final String URL = "jdbc:postgresql://localhost:5432/proyectoLocal";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "hs23012";
     
     public static Connection getConnection() {
         Connection connection = null;

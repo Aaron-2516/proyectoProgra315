@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package MODELS;
 
 import java.sql.Connection;
@@ -11,10 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author ADMIN
- */
+
 public class AdminVerSolicitud {
     
     public static class Solicitud {
@@ -69,6 +63,49 @@ public class AdminVerSolicitud {
         }
     }
     
+    public static class Estado {
+    private String id;
+    private String nombre;
+
+    public Estado(String id, String nombre) {
+        this.id = id;
+        this.nombre = nombre;
+    }
+
+    public String getId() { return id; }
+    public String getNombre() { return nombre; }
+
+    @Override
+    public String toString() {
+        return nombre;
+    }
+}
+    
+    public List<Estado> obtenerEstados() {
+    List<Estado> estados = new ArrayList<>();
+    Connection con = DatabaseConnection.getConnection();
+    if (con == null) return estados;
+
+    String sql = "SELECT id, nombre FROM public.estados ORDER BY nombre";
+
+    try (PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            estados.add(new Estado(
+                rs.getString("id"),
+                rs.getString("nombre")
+            ));
+        }
+
+    } catch (SQLException e) {
+        System.err.println("Error al obtener estados: " + e.getMessage());
+    } finally {
+        DatabaseConnection.closeConnection(con);
+    }
+    return estados;
+}
+    
     // Método para obtener todas las categorías desde la base de datos
     public List<Categoria> obtenerCategorias() {
         List<Categoria> categorias = new ArrayList<>();
@@ -96,61 +133,68 @@ public class AdminVerSolicitud {
         return categorias;
     }
     
-    // Método para obtener todas las solicitudes (con filtro por categoría) - OPTIMIZADO
-    public List<Solicitud> obtenerSolicitudes(String filtroCategoriaId) {
-        List<Solicitud> solicitudes = new ArrayList<>();
-        Connection con = DatabaseConnection.getConnection();
-        if (con == null) return solicitudes;
+public List<Solicitud> obtenerSolicitudes(String filtroCategoriaId, String filtroEstadoId) {
+    List<Solicitud> solicitudes = new ArrayList<>();
+    Connection con = DatabaseConnection.getConnection();
+    if (con == null) return solicitudes;
 
-        StringBuilder sql = new StringBuilder(
-            "SELECT s.id, s.fecha_registro, s.descripcion, s.creada_por, " +
-            "cat.nombre as categoria_nombre, " +
-            "pri.nombre as prioridad_nombre, " +
-            "est.nombre as estado_nombre, " +
-            "COALESCE(u.nombre || ' ' || u.apellidos, 'No asignado') as asignado_nombre " +
-            "FROM public.solicitudes s " +
-            "LEFT JOIN public.categorias cat ON s.categoria_id = cat.id " +
-            "LEFT JOIN public.prioridades pri ON s.prioridad_id = pri.id " +
-            "LEFT JOIN public.estados est ON s.estado_id = est.id " +
-            "LEFT JOIN public.usuarios u ON s.asignado_a_id = u.id"
-        );
+    StringBuilder sql = new StringBuilder(
+        "SELECT s.id, s.fecha_registro, s.descripcion, s.creada_por, " +
+        "cat.nombre as categoria_nombre, " +
+        "pri.nombre as prioridad_nombre, " +
+        "est.nombre as estado_nombre, " +
+        "COALESCE(u.nombre || ' ' || u.apellidos, 'No asignado') as asignado_nombre " +
+        "FROM public.solicitudes s " +
+        "LEFT JOIN public.categorias cat ON s.categoria_id = cat.id " +
+        "LEFT JOIN public.prioridades pri ON s.prioridad_id = pri.id " +
+        "LEFT JOIN public.estados est ON s.estado_id = est.id " +
+        "LEFT JOIN public.usuarios u ON s.asignado_a_id = u.id "
+    );
 
-        // Si se selecciona una categoría específica (no "Todos")
-        if (filtroCategoriaId != null && !filtroCategoriaId.equals("0")) {
-            sql.append(" WHERE s.categoria_id = ?");
-        }
-
-        try (PreparedStatement ps = con.prepareStatement(sql.toString())) {
-            if (filtroCategoriaId != null && !filtroCategoriaId.equals("0")) {
-                ps.setString(1, filtroCategoriaId);
-            }
-            
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    Solicitud solicitud = new Solicitud(
-                        rs.getString("id"),
-                        rs.getString("fecha_registro"),
-                        rs.getString("descripcion"),
-                        rs.getString("creada_por"),
-                        rs.getString("categoria_nombre"),
-                        rs.getString("prioridad_nombre"),
-                        rs.getString("estado_nombre"),
-                        rs.getString("asignado_nombre")
-                    );
-                    solicitudes.add(solicitud);
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Error al obtener solicitudes: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            DatabaseConnection.closeConnection(con);
-        }
-        
-        return solicitudes;
+    List<String> params = new ArrayList<>();
+    if (filtroCategoriaId != null && !filtroCategoriaId.equals("0")) {
+        sql.append(params.isEmpty() ? " WHERE " : " AND ");
+        sql.append("s.categoria_id = ?");
+        params.add(filtroCategoriaId);
     }
-    
-    // Método para buscar solicitud por ID - OPTIMIZADO
+    if (filtroEstadoId != null && !filtroEstadoId.equals("0")) {
+        sql.append(params.isEmpty() ? " WHERE " : " AND ");
+        sql.append("s.estado_id = ?");
+        params.add(filtroEstadoId);
+    }
+
+    try (PreparedStatement ps = con.prepareStatement(sql.toString())) {
+        for (int i = 0; i < params.size(); i++) {
+            ps.setString(i + 1, params.get(i));
+        }
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                solicitudes.add(new Solicitud(
+                    rs.getString("id"),
+                    rs.getString("fecha_registro"),
+                    rs.getString("descripcion"),
+                    rs.getString("creada_por"),
+                    rs.getString("categoria_nombre"),
+                    rs.getString("prioridad_nombre"),
+                    rs.getString("estado_nombre"),
+                    rs.getString("asignado_nombre")
+                ));
+            }
+        }
+    } catch (SQLException e) {
+        System.err.println("Error al obtener solicitudes: " + e.getMessage());
+        e.printStackTrace();
+    } finally {
+        DatabaseConnection.closeConnection(con);
+    }
+    return solicitudes;
+}
+
+
+public List<Solicitud> obtenerSolicitudes(String filtroCategoriaId) {
+    return obtenerSolicitudes(filtroCategoriaId, "0");
+}
+
     public Solicitud buscarSolicitudPorId(String id) {
         Connection con = DatabaseConnection.getConnection();
         if (con == null) return null;

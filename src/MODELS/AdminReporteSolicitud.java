@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package MODELS;
 
 import java.sql.Connection;
@@ -15,24 +12,18 @@ import java.util.List;
 import java.util.Map;
 
 
-/**
- *
- * @author ADMIN
- */
 public class AdminReporteSolicitud {
     
     public static class DatosReporte {
     private int totalSolicitudes;
     private int solicitudesAbiertas;
     private int solicitudesEnProceso;
-    private int solicitudesPausadas;
     private int solicitudesCerradas;
     
-    public DatosReporte(int total, int abiertas, int enProceso, int pausadas, int cerradas) {
+    public DatosReporte(int total, int abiertas, int enProceso,  int cerradas) {
         this.totalSolicitudes = total;
         this.solicitudesAbiertas = abiertas;
         this.solicitudesEnProceso = enProceso;
-        this.solicitudesPausadas = pausadas;
         this.solicitudesCerradas = cerradas;
     }
     
@@ -40,12 +31,11 @@ public class AdminReporteSolicitud {
     public int getTotalSolicitudes() { return totalSolicitudes; }
     public int getSolicitudesAbiertas() { return solicitudesAbiertas; }
     public int getSolicitudesEnProceso() { return solicitudesEnProceso; }
-    public int getSolicitudesPausadas() { return solicitudesPausadas; }
     public int getSolicitudesCerradas() { return solicitudesCerradas; }
     
     // Para compatibilidad con el código existente
     public int getSolicitudesPendientes() { 
-        return solicitudesAbiertas + solicitudesEnProceso + solicitudesPausadas; 
+        return solicitudesAbiertas + solicitudesEnProceso ; 
     }
 }
     
@@ -65,8 +55,6 @@ public class AdminReporteSolicitud {
                 categorias.add(categoria);
             }
             
-            System.out.println("Categorías obtenidas de BD: " + categorias.size());
-            
         } catch (SQLException e) {
             System.err.println("ERROR al obtener categorías: " + e.getMessage());
             e.printStackTrace();
@@ -82,8 +70,6 @@ public class AdminReporteSolicitud {
     
     try (Connection conn = DatabaseConnection.getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        
-        System.out.println("Conexión a BD establecida correctamente");
         
         // Configurar parámetros
         int paramIndex = 1;
@@ -104,20 +90,18 @@ public class AdminReporteSolicitud {
             int total = rs.getInt("total_solicitudes");
             int abiertas = rs.getInt("abiertas");
             int enProceso = rs.getInt("en_proceso");
-            int pausadas = rs.getInt("pausadas");
             int cerradas = rs.getInt("cerradas");
             
             System.out.println("=== RESULTADOS OBTENIDOS ===");
             System.out.println("Total: " + total);
             System.out.println("Abiertas: " + abiertas);
             System.out.println("En proceso: " + enProceso);
-            System.out.println("Pausadas: " + pausadas);
             System.out.println("Cerradas: " + cerradas);
             
-            return new DatosReporte(total, abiertas, enProceso, pausadas, cerradas);
+            return new DatosReporte(total, abiertas, enProceso, cerradas);
         } else {
             System.out.println("No se obtuvieron resultados de la consulta");
-            return new DatosReporte(0, 0, 0, 0, 0);
+            return new DatosReporte(0, 0, 0, 0);
         }
         
     } catch (SQLException e) {
@@ -131,29 +115,31 @@ public class AdminReporteSolicitud {
     }
 }
     
-    private String construirQuery(Date fechaInicio, Date fechaFin, String tipoSolicitud) {
+   private String construirQuery(Date fechaInicio, Date fechaFin, String tipoSolicitud) {
     StringBuilder sql = new StringBuilder(
         "SELECT " +
-        "COUNT(*) as total_solicitudes, " +
-        "SUM(CASE WHEN estado_id = 'EST1' THEN 1 ELSE 0 END) as abiertas, " +
-        "SUM(CASE WHEN estado_id = 'EST2' THEN 1 ELSE 0 END) as en_proceso, " +
-        "SUM(CASE WHEN estado_id = 'EST3' THEN 1 ELSE 0 END) as pausadas, " +
-        "SUM(CASE WHEN estado_id = 'EST4' THEN 1 ELSE 0 END) as cerradas " +
-        "FROM public.solicitudes WHERE 1=1"
+        "  COUNT(*) AS total_solicitudes, " +
+        "  SUM(CASE WHEN estado_id = (SELECT id FROM public.estados WHERE UPPER(nombre) = 'ABIERTA' LIMIT 1) THEN 1 ELSE 0 END) AS abiertas, " +
+        "  SUM(CASE WHEN estado_id = (SELECT id FROM public.estados WHERE UPPER(nombre) = 'EN_PROCESO' LIMIT 1) THEN 1 ELSE 0 END) AS en_proceso, " +
+        "  SUM(CASE WHEN estado_id = (SELECT id FROM public.estados WHERE UPPER(nombre) = 'CERRADO' LIMIT 1) THEN 1 ELSE 0 END) AS cerradas " +
+        "FROM public.solicitudes " +
+        "WHERE 1=1"
     );
-    
+
     if (fechaInicio != null) {
         sql.append(" AND fecha_registro >= ?");
     }
     if (fechaFin != null) {
-        sql.append(" AND fecha_registro <= ?");
+        // Incluye TODO el día de fechaFin
+        sql.append(" AND fecha_registro < ?"); // usamos < fin+1
     }
-    if (!tipoSolicitud.equals("Todas las Solicitudes")) {
+    if (!"Todas las Solicitudes".equals(tipoSolicitud)) {
         sql.append(" AND categoria_id = ?");
     }
-    
+
     return sql.toString();
 }
+
     
     private String obtenerIdCategoria(String tipoSolicitud) {
         System.out.println("Convirtiendo tipo solicitud: " + tipoSolicitud);
@@ -164,7 +150,7 @@ public class AdminReporteSolicitud {
             return id;
         }
         
-        // Fallback a mapeo estático si no se encuentra en BD
+
         switch (tipoSolicitud) {
             case "Solicitud de Hardware": 
                 return "1";  // Devuelve String
@@ -207,6 +193,7 @@ public class AdminReporteSolicitud {
         }
         return true;
     }
+    
     
     // Método adicional para obtener estadísticas más detalladas
     public void generarReporteDetallado(Date fechaInicio, Date fechaFin) {

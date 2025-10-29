@@ -47,54 +47,52 @@ public static List<SolicitudPendienteRow> getSolicitudesNoAsignadas() {
     
     }
 
-    public static boolean asignarSolicitud(String solicitudId, String soporteId) {
-    if (solicitudId == null || soporteId == null) return false;
+    public static boolean asignarSolicitud(String solicitudId, String soporteId, String prioridadId) {
+        if (solicitudId == null || soporteId == null || prioridadId == null) return false;
 
-    final String SQL_EXISTE =
-        "SELECT 1 " +
-        "FROM solicitudes " +
-        "WHERE lower(btrim(id)) = lower(btrim(?)) " +
-        "  AND (asignado_a_id IS NULL " +
-        "       OR btrim(asignado_a_id) = '' " +
-        "       OR upper(btrim(asignado_a_id)) = 'NULL')" +  
-        "LIMIT 1";
+        final String SQL_EXISTE =
+            "SELECT 1 " +
+            "FROM solicitudes " +
+            "WHERE lower(btrim(id)) = lower(btrim(?)) " +
+            "  AND (asignado_a_id IS NULL OR btrim(asignado_a_id) = '' OR upper(btrim(asignado_a_id)) = 'NULL') " +
+            "LIMIT 1";
 
-    final String SQL_UPDATE =
-        "UPDATE solicitudes " +
-        "SET asignado_a_id = ?, asignado_en = NOW() " +
-        "WHERE lower(btrim(id)) = lower(btrim(?)) " +
-        "  AND (asignado_a_id IS NULL " +
-        "       OR btrim(asignado_a_id) = '' " +
-        "       OR upper(btrim(asignado_a_id)) = 'NULL')";
+        final String SQL_UPDATE =
+            "UPDATE solicitudes " +
+            "SET asignado_a_id = ?, asignado_en = NOW(), prioridad_id = ? " +   // ← guarda prioridad
+            "WHERE lower(btrim(id)) = lower(btrim(?)) " +
+            "  AND (asignado_a_id IS NULL OR btrim(asignado_a_id) = '' OR upper(btrim(asignado_a_id)) = 'NULL')";
 
-    try (Connection conn = DatabaseConnection.getConnection()) {
-         try { conn.setAutoCommit(true); } catch (SQLException ignore) {}
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            try { conn.setAutoCommit(true); } catch (SQLException ignore) {}
 
-         try (PreparedStatement chk = conn.prepareStatement(SQL_EXISTE)) {
-            chk.setString(1, solicitudId);
-            try (ResultSet rs = chk.executeQuery()) {
-                if (!rs.next()) {
-                    System.err.println("[Asignacion] No existe o ya está asignada: id=" + solicitudId);
-                    return false;
+            try (PreparedStatement chk = conn.prepareStatement(SQL_EXISTE)) {
+                chk.setString(1, solicitudId);
+                try (ResultSet rs = chk.executeQuery()) {
+                    if (!rs.next()) {
+                        System.err.println("[Asignacion] No existe o ya está asignada: id=" + solicitudId);
+                        return false;
+                    }
                 }
             }
-        }
 
-         try (PreparedStatement ps = conn.prepareStatement(SQL_UPDATE)) {
-            ps.setString(1, soporteId);
-            ps.setString(2, solicitudId);
-            int updated = ps.executeUpdate();
-            System.out.println("[Asignacion] Filas actualizadas=" + updated +
-                               " (sol=" + solicitudId + ", soporte=" + soporteId + ")");
-            return updated == 1;
-        }
+            try (PreparedStatement ps = conn.prepareStatement(SQL_UPDATE)) {
+                ps.setString(1, soporteId);
+                ps.setString(2, prioridadId);
+                ps.setString(3, solicitudId);
+                int updated = ps.executeUpdate();
+                System.out.println("[Asignacion] Filas actualizadas=" + updated +
+                                   " (sol=" + solicitudId + ", soporte=" + soporteId +
+                                   ", prioridad=" + prioridadId + ")");
+                return updated == 1;
+            }
 
-    } catch (SQLException e) {
-        System.err.println("[Asignacion] Error al asignar solicitud (sol=" + solicitudId +
-                           ", soporte=" + soporteId + "): " + e.getMessage());
-        e.printStackTrace();
-        return false;
+        } catch (SQLException e) {
+            System.err.println("[Asignacion] Error al asignar solicitud (sol=" + solicitudId +
+                               ", soporte=" + soporteId + ", prioridad=" + prioridadId + "): " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
-}
 
 }

@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package CONTROLLER;
 
 import MODELS.AdminReporteSolicitud;
@@ -40,22 +37,20 @@ public class AdminReporteSolicitudController {
         }
     }
     
-    // Nuevo método para cargar categorías desde la base de datos
+    // Método para cargar categorías desde la base de datos
     public void cargarCategorias() {
         try {
             List<Map<String, String>> categorias = model.obtenerCategoriasDesdeBD();
             view.getCmbTipoSolicitud().removeAllItems();
             
-            // Agregar opción "Todas las Solicitudes"
+            // Opción "Todas las Solicitudes"
             view.getCmbTipoSolicitud().addItem("Todas las Solicitudes");
             
             // Cargar categorías desde la base de datos
             for (Map<String, String> categoria : categorias) {
                 view.getCmbTipoSolicitud().addItem(categoria.get("nombre"));
             }
-            
-            System.out.println("Categorías cargadas exitosamente: " + categorias.size());
-            
+                        
         } catch (Exception e) {
             System.err.println("Error al cargar categorías: " + e.getMessage());
             // Cargar categorías por defecto en caso de error
@@ -63,6 +58,7 @@ public class AdminReporteSolicitudController {
         }
     }
     
+    //Metodo para cargar las categorias de la base de datos
     private void cargarCategoriasPorDefecto() {
         view.getCmbTipoSolicitud().removeAllItems();
         view.getCmbTipoSolicitud().addItem("Todas las Solicitudes");
@@ -72,6 +68,7 @@ public class AdminReporteSolicitudController {
         view.getCmbTipoSolicitud().addItem("Solicitud de Cuentas y Accesos");
     }
     
+    //Metodo para generar reportes
     private void generarReporte() {        
         try {
             // Obtener datos de la vista
@@ -79,7 +76,7 @@ public class AdminReporteSolicitudController {
             Date fechaFin = view.getDateFin().getDate();
             String tipoSolicitud = (String) view.getCmbTipoSolicitud().getSelectedItem();
             
-            // Validaciones básicas
+            // Validaciones basica
             if (fechaInicio == null || fechaFin == null) {
                 mostrarError("Por favor seleccione ambas fechas");
                 return;
@@ -112,6 +109,7 @@ public class AdminReporteSolicitudController {
         }
     }
     
+    //Metodo para crear el grafico
     private void crearGraficoSeguro(AdminReporteSolicitud.DatosReporte datos, String tipoSolicitud) {
         try {          
             // Crear dataset de manera más controlada
@@ -136,9 +134,7 @@ public class AdminReporteSolicitudController {
             
             // Mostrar gráfico
             mostrarGraficoEnPanel(chartPanel);
-            
-            System.out.println("Gráfico creado exitosamente");
-            
+                        
             
         } catch (Exception e) {
             System.err.println("ERROR creando gráfico: " + e.toString());
@@ -147,6 +143,8 @@ public class AdminReporteSolicitudController {
         }
         
     }
+    
+    //Metodo para mostrar el total de elementos
     private void agregarTextoTotal(JFreeChart chart, int total) {
     // Crear un texto con mejor formato
     TextTitle totalText = new TextTitle("Total de Solicitudes: " + total, 
@@ -168,12 +166,12 @@ public class AdminReporteSolicitudController {
     
     dataset.addValue(datos.getSolicitudesAbiertas(), "Solicitudes", "Abiertas");
     dataset.addValue(datos.getSolicitudesEnProceso(), "Solicitudes", "En Proceso");
-    dataset.addValue(datos.getSolicitudesPausadas(), "Solicitudes", "Pausadas");
     dataset.addValue(datos.getSolicitudesCerradas(), "Solicitudes", "Cerradas");
     
     return dataset;
 }
     
+    //Metodo para crear grafico
     private void crearGrafico(AdminReporteSolicitud.DatosReporte datos, String tipoSolicitud) {
         try {
             
@@ -208,6 +206,7 @@ public class AdminReporteSolicitudController {
         }
     }
     
+    //Metodo para mostrar en grafico en el jpanel
     private void mostrarGraficoEnPanel(ChartPanel chartPanel) {
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -225,6 +224,8 @@ public class AdminReporteSolicitudController {
         });
     }
     
+    
+    //Metodo para limpiar los elementos del grafico
     private void limpiarGrafico() {
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -240,14 +241,17 @@ public class AdminReporteSolicitudController {
         });
     }
     
+    //Metodo de error
     private void mostrarError(String mensaje) {
         JOptionPane.showMessageDialog(view, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
     }
     
+    //Metodo de exito
     private void mostrarExito(String mensaje) {
         JOptionPane.showMessageDialog(view, mensaje, "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }
     
+    //Metodo para mostrar info
     private void mostrarInfo(String mensaje) {
         JOptionPane.showMessageDialog(view, mensaje, "Información", JOptionPane.INFORMATION_MESSAGE);
     }

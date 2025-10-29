@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package VIEWS;
 
 import javax.swing.BoxLayout;
@@ -10,18 +7,14 @@ import CONTROLLER.RegistrarUsuarioController;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 
-/**
- *
- * @author ADMIN
- */
+
 public class RegistrarUsuario extends javax.swing.JFrame {
     private RegistrarUsuarioController controller;
     
-    /**
-     * Creates new form NewJFrame
-     */
+
     public RegistrarUsuario() {
         initComponents();
+        setLocationRelativeTo(null);
         controller = new RegistrarUsuarioController(this);
     }  
     

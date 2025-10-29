@@ -1,31 +1,35 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
+
 package VIEWS.Admin;
 
 import CONTROLLER.AdminReporteDesempenoController;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.Timer;
 
 
-/**
- *
- * @author CastellaSagarra
- */
+
 public class gestEstadisticaDesempeno extends javax.swing.JPanel {
 
     private AdminReporteDesempenoController controller;
+    private Timer autoRefreshTimer;
     
-    /**
-     * Creates new form gestEstadisticaDesempeno
-     */
+
     public gestEstadisticaDesempeno() {
         initComponents();
         controller = new AdminReporteDesempenoController(this);
+        iniciarActualizacionAutomatica();
     }
     
-    // Getters para que el controller acceda
+    private  void iniciarActualizacionAutomatica(){
+        autoRefreshTimer = new Timer(20000, e -> { // 20000 ms = 20 segundos
+            System.out.println("🔄 Actualización automática de técnicos (ESTADÍSTICAS)...");
+            controller.actualizarListaTecnicos();
+        });
+        autoRefreshTimer.start();
+        System.out.println("✅ Actualización automática de técnicos iniciada (cada 20 segundos ESTADÍSTICAS)");
+    }
+    
+    // Getters
     public javax.swing.JComboBox<String> getJComboBox1() {
         return jComboBox1;
     }
@@ -102,19 +106,15 @@ public class gestEstadisticaDesempeno extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addContainerGap(525, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(116, 116, 116)
-                                .addComponent(btnGenerarEstadisticas)))
-                        .addGap(86, 434, Short.MAX_VALUE))))
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(45, 45, 45)
+                        .addComponent(btnGenerarEstadisticas)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(58, Short.MAX_VALUE)
+                .addContainerGap(60, Short.MAX_VALUE)
                 .addComponent(jPanelGrafico, javax.swing.GroupLayout.PREFERRED_SIZE, 786, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(56, 56, 56))
         );

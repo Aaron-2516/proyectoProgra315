@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package MODELS;
 
 import java.sql.Connection;
@@ -9,10 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- *
- * @author ADMIN
- */
+
 public class RegistrarUsuarios {
     
     public boolean registrarUsuario(String nombre, String apellido, String correo, String usuario, String contrasena) {
@@ -78,7 +72,7 @@ public class RegistrarUsuarios {
         }
     }
 
-    // Método para validar campos (siguiendo la estructura proporcionada)
+    // Método para validar campos
     public boolean validarCampos(String nombre, String apellido, String username,
                                  String contrasena, String correo) {
         return nombre != null && !nombre.trim().isEmpty() &&

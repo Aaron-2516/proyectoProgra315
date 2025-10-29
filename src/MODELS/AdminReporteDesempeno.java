@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package MODELS;
 
 import java.sql.Connection;
@@ -31,28 +28,25 @@ public class AdminReporteDesempeno {
         this.ticketsPorCategoria = new HashMap<>();
     }
     
-    // Getters existentes
+    // Getters 
     public int getTicketsResueltos() { return ticketsResueltos; }
     public int getTicketsPendientes() { return ticketsPendientes; }
     public int getTicketsAsignados() { return ticketsAsignados; }
     public Map<String, Integer> getTicketsPorCategoria() { return ticketsPorCategoria; }
-    
-    // Nuevos getters
     public int getTicketsAbiertas() { return ticketsAbiertas; }
     public int getTicketsEnProceso() { return ticketsEnProceso; }
     public int getTicketsPausadas() { return ticketsPausadas; }
     public int getTicketsCerradas() { return ticketsCerradas; }
     
-    // Setters existentes
+    // Setters 
     public void setTicketsResueltos(int ticketsResueltos) { this.ticketsResueltos = ticketsResueltos; }
     public void setTicketsPendientes(int ticketsPendientes) { this.ticketsPendientes = ticketsPendientes; }
     public void setTicketsAsignados(int ticketsAsignados) { this.ticketsAsignados = ticketsAsignados; }
-    
-    // Nuevos setters
     public void setTicketsAbiertas(int ticketsAbiertas) { this.ticketsAbiertas = ticketsAbiertas; }
     public void setTicketsEnProceso(int ticketsEnProceso) { this.ticketsEnProceso = ticketsEnProceso; }
     public void setTicketsPausadas(int ticketsPausadas) { this.ticketsPausadas = ticketsPausadas; }
     public void setTicketsCerradas(int ticketsCerradas) { this.ticketsCerradas = ticketsCerradas; }
+    
     
     public void agregarTicketCategoria(String categoria, int cantidad) {
         ticketsPorCategoria.put(categoria, cantidad);
@@ -67,10 +61,12 @@ public class AdminReporteDesempeno {
         return (double) ticketsCerradas / getTotalTickets() * 100;
     }
 }
+     
+     
     
     public List<String> obtenerTecnicos() {
     List<String> tecnicos = new ArrayList<>();
-    // Consulta ORIGINAL corregida - obtener todos los usuarios con rol 2
+    // Consulta ORIGINAL - obtener todos los usuarios con rol 2
     String sql = "SELECT id, nombre, apellidos FROM public.usuarios WHERE id_rol = '2' ORDER BY nombre, apellidos";
     
     try (Connection conn = DatabaseConnection.getConnection();
@@ -88,9 +84,9 @@ public class AdminReporteDesempeno {
     
     return tecnicos;
 }
+
     
     public EstadisticasTecnico generarEstadisticas(String nombreTecnico) {
-        System.out.println("Generando estadísticas para: " + nombreTecnico);
         
         EstadisticasTecnico estadisticas = new EstadisticasTecnico();
         
@@ -107,9 +103,6 @@ public class AdminReporteDesempeno {
             // Estadísticas por categoría
             cargarEstadisticasPorCategoria(estadisticas, tecnicoId);
             
-            System.out.println("Estadísticas generadas - Resueltos: " + estadisticas.getTicketsResueltos() + 
-                             ", Pendientes: " + estadisticas.getTicketsPendientes() +
-                             ", Asignados: " + estadisticas.getTicketsAsignados());
             
         } catch (SQLException e) {
             throw new RuntimeException("Error al generar estadísticas: " + e.getMessage(), e);
@@ -138,49 +131,47 @@ public class AdminReporteDesempeno {
             }
         }
         
-        return null; // Cambiado a null
+        return null; 
     }
     
    private void cargarEstadisticasGenerales(EstadisticasTecnico estadisticas, String tecnicoId) throws SQLException {
-    String sql = "SELECT " +
-                "COUNT(*) as total_asignados, " +
-                "SUM(CASE WHEN e.id = 'EST4' THEN 1 ELSE 0 END) as cerradas, " +
-                "SUM(CASE WHEN e.id = 'EST1' THEN 1 ELSE 0 END) as abiertas, " +
-                "SUM(CASE WHEN e.id = 'EST2' THEN 1 ELSE 0 END) as en_proceso, " +
-                "SUM(CASE WHEN e.id = 'EST3' THEN 1 ELSE 0 END) as pausadas " +
-                "FROM public.solicitudes s " +
-                "INNER JOIN public.estados e ON s.estado_id = e.id " +
-                "WHERE s.asignado_a_id = ?";
-    
+    String sql =
+        "SELECT " +
+        "  COUNT(*) AS total_asignados, " +
+        "  SUM(CASE WHEN UPPER(e.nombre) = 'CERRADO'     THEN 1 ELSE 0 END) AS cerradas, " +
+        "  SUM(CASE WHEN UPPER(e.nombre) = 'ABIERTA'     THEN 1 ELSE 0 END) AS abiertas, " +
+        "  SUM(CASE WHEN UPPER(e.nombre) = 'EN_PROCESO'  THEN 1 ELSE 0 END) AS en_proceso " +
+        "FROM public.solicitudes s " +
+        "JOIN public.estados e ON s.estado_id = e.id " +
+        "WHERE s.asignado_a_id = ?";
+
     try (Connection conn = DatabaseConnection.getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        
+
         pstmt.setString(1, tecnicoId);
         ResultSet rs = pstmt.executeQuery();
-        
+
         if (rs.next()) {
-            estadisticas.setTicketsAsignados(rs.getInt("total_asignados"));
-            estadisticas.setTicketsResueltos(rs.getInt("cerradas")); // Ahora son cerradas
-            estadisticas.setTicketsPendientes(rs.getInt("abiertas") + rs.getInt("en_proceso") + rs.getInt("pausadas"));
-            
-            // Guardar los nuevos valores para usar en el gráfico
-            estadisticas.setTicketsAbiertas(rs.getInt("abiertas"));
-            estadisticas.setTicketsEnProceso(rs.getInt("en_proceso"));
-            estadisticas.setTicketsPausadas(rs.getInt("pausadas"));
-            estadisticas.setTicketsCerradas(rs.getInt("cerradas"));
-            
-            System.out.println("=== DATOS OBTENIDOS ===");
-            System.out.println("Total Asignados: " + rs.getInt("total_asignados"));
-            System.out.println("Abiertas: " + rs.getInt("abiertas"));
-            System.out.println("En Proceso: " + rs.getInt("en_proceso"));
-            System.out.println("Pausadas: " + rs.getInt("pausadas"));
-            System.out.println("Cerradas: " + rs.getInt("cerradas"));
+            int total = rs.getInt("total_asignados");
+            int cerradas = rs.getInt("cerradas");
+            int abiertas = rs.getInt("abiertas");
+            int enProceso = rs.getInt("en_proceso");
+
+            estadisticas.setTicketsAsignados(total);
+            estadisticas.setTicketsCerradas(cerradas);
+            estadisticas.setTicketsAbiertas(abiertas);
+            estadisticas.setTicketsEnProceso(enProceso);
+
+            estadisticas.setTicketsPausadas(0);
+
+            estadisticas.setTicketsPendientes(abiertas + enProceso);
+            estadisticas.setTicketsResueltos(cerradas);
         }
     }
 }
+
     
     private void cargarEstadisticasPorCategoria(EstadisticasTecnico estadisticas, String tecnicoId) throws SQLException {
-    System.out.println("Cargando estadísticas por categoría para técnico ID: " + tecnicoId);
     
     // Consulta corregida - usando asignado_a_id directamente de solicitudes
     String sql = "SELECT " +
@@ -203,9 +194,7 @@ public class AdminReporteDesempeno {
             int cantidad = rs.getInt("cantidad");
             estadisticas.agregarTicketCategoria(nombreCategoria, cantidad);
             totalCategorias++;
-            System.out.println("Categoría: " + nombreCategoria + " - Cantidad: " + cantidad);
         }
-        System.out.println("Total de categorías encontradas: " + totalCategorias);
         }
     }
 }
